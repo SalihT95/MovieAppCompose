@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace 'com.turkoglu.composedeneme'
+    namespace 'com.turkoglu.moviecomposeapp'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.turkoglu.composedeneme"
+        applicationId "com.turkoglu.moviecomposeapp"
         minSdk 24
         targetSdk 33
         versionCode 1

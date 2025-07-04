@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ComposeDeneme"
+rootProject.name = "moviecomposeapp"
 include ':app'
