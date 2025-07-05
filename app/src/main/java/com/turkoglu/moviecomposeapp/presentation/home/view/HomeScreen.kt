@@ -16,11 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -92,18 +93,22 @@ fun HomeScreen(
 }
 @Composable
 fun CustomText(name : String ,modifier: Modifier , navController: NavController) {
-    Spacer(modifier = modifier.height(10.dp))
+    Spacer(modifier = modifier.height(5.dp))
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp), // Sayfa kenarlarından padding
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = name, color = Color.White, fontSize = 18.sp)
-
+        Text(text = name,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Normal,
+            fontSize = 18.sp
+        )
         Text(
             text = "View All",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
             modifier = modifier.clickable {
                 navController.navigate("ViewAll/${name}")
@@ -117,7 +122,7 @@ fun CustomMovies(type : LazyPagingItems<Movie> , modifier: Modifier ,navigateToD
     Box(
         modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(200.dp),
         contentAlignment = Alignment.Center
     ) {
         LazyRow(content = {
@@ -132,7 +137,6 @@ fun CustomMovies(type : LazyPagingItems<Movie> , modifier: Modifier ,navigateToD
                         uniqueIds.add(id)
                     }
                     val key = "${movie.id?.toString()}_${index}"
-                    //Log.d("LazyRowKey", "Key: $key, Index: $index, Movie ID: ${movie.id}")
                     key
                 }
             ) { _, movie ->

@@ -16,7 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,7 +63,7 @@ fun FilmInfo(
                     text = "Release date",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
@@ -70,8 +71,8 @@ fun FilmInfo(
                 Text(
                     text = releaseDate,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.ExtraLight,
-                    color = Color.LightGray
+                    fontWeight = FontWeight.Normal,
+                    color = Color.DarkGray
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -91,7 +92,7 @@ fun FilmInfo(
                         text = "Cast",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .padding(
                                 start = 8.dp
@@ -150,7 +151,7 @@ fun ExpandableText(
 
     Box(modifier) {
         Text(
-            color = Color.LightGray,
+            color = Color.DarkGray,
             text = cutText ?: text,
             fontSize = 13.sp,
             modifier = Modifier

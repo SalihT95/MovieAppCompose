@@ -26,6 +26,7 @@ object AppModule {
             .build()
             .create(MovieAPI::class.java)
     }
+
     @Provides
     @Singleton
     fun provideFavoritesDatabase(application: Application): FavoriteDB {

@@ -32,7 +32,7 @@ fun FragmanButton(
             .width(80.dp)
             .height(38.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Red.copy(alpha = 0.3f),
+            backgroundColor = Color.Red.copy(alpha = 0.7f),
             contentColor = color
         )
     ) {

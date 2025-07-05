@@ -1,52 +1,34 @@
-package com.turkoglu.moviecomposeapp.presentation.detail.view
-
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun CircularBackButtons(
-    color: Color = Color.Gray,
-    elevation: ButtonElevation? = ButtonDefaults.elevation(),
-    onClick: () -> Unit = {}
+    color: Color = MaterialTheme.colorScheme.onBackground,
+    onClick: () -> Unit
 ) {
-    Button(
-        onClick = { onClick() },
-        contentPadding = PaddingValues(),
-        shape = CircleShape,
-        elevation = elevation,
+    IconButton(
+        onClick = onClick,
         modifier = Modifier
-            .width(38.dp)
-            .height(38.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.White.copy(alpha = 0.3f),
-            contentColor = color
-        )
-    ) {
-        IconButton(onClick = {
-            onClick()
-        }) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = null,
-                tint = MaterialTheme.colors.onBackground
+            .size(38.dp)
+            .background(
+                color = Color.White.copy(alpha = 0.3f),
+                shape = CircleShape
             )
-
-        }
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = "Back",
+            tint = color
+        )
     }
-
 }
