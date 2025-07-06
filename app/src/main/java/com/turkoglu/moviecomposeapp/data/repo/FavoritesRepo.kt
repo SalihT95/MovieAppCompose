@@ -21,6 +21,10 @@ class FavoritesRepo @Inject constructor(private val database: FavoriteDB) {
     fun getAFavorites(mediaId: Int): LiveData<Favorite?> {
         return database.dao.getAFavorites(mediaId)
     }
+    suspend fun getAFavoriteOnce(mediaId: Int): Favorite? {
+        return database.dao.getAFavoriteOnce(mediaId)
+    }
+
 
     suspend fun deleteOneFavorite(favorite: Favorite) {
         database.dao.deleteAFavorite(favorite)

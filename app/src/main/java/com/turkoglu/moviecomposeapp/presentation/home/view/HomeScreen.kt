@@ -102,13 +102,13 @@ fun CustomText(name : String ,modifier: Modifier , navController: NavController)
     ) {
         Text(text = name,
             color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.W500,
             fontSize = 18.sp
         )
         Text(
             text = "View All",
             color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.W500,
             fontSize = 18.sp,
             modifier = modifier.clickable {
                 navController.navigate("ViewAll/${name}")

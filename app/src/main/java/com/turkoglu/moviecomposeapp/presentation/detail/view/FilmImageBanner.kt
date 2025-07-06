@@ -87,12 +87,14 @@ fun FilmImageBanner(
                 onClick = { isFav ->
                     coroutineScope.launch {
                         if (isFav) {
-                            Toast.makeText(
-                                context,
-                                "Already added to your favorites",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            // Favoriden çıkar
+                            val favorite = viewModelFav.getAFavoriteOnce(filmId) // yeni suspend fonksiyon
+                            if (favorite != null) {
+                                viewModelFav.deleteOneFavorite(favorite)
+                                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
+                            // Favoriye ekle
                             viewModelFav.insertFavorite(
                                 Favorite(
                                     favorite = true,
@@ -103,10 +105,13 @@ fun FilmImageBanner(
                                     rating = rating
                                 )
                             )
+                            Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             )
+
+
         }
     }
 }

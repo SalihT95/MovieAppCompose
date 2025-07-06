@@ -27,6 +27,7 @@ import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -81,8 +82,8 @@ fun FavScreen(
 
             Text(
                 text = "Favorites",
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colors.onBackground,
+                fontWeight = FontWeight.W500,
                 fontSize = 28.sp
             )
             IconButton(onClick = {
@@ -91,7 +92,7 @@ fun FavScreen(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = MaterialTheme.colors.onBackground
                 )
             }
 
@@ -169,9 +170,6 @@ fun FavScreen(
             }
         }
 
-
-
-
         if ((favoriteFilms.value.isEmpty() || favoriteFilms.value.isNullOrEmpty())) {
             Column(
                 Modifier.fillMaxSize(),
@@ -208,7 +206,7 @@ fun FavScreen(
                         },
                         colors = ButtonDefaults.buttonColors(primaryPink)
                     ) {
-                        Text(text = "Yes", color = Color.White)
+                        Text(text = "Yes", color = MaterialTheme.colors.onBackground)
                     }
                 },
                 dismissButton = {
@@ -218,7 +216,7 @@ fun FavScreen(
                         },
                         colors = ButtonDefaults.buttonColors(primaryPink)
                     ) {
-                        Text(text = "No", color = Color.White)
+                        Text(text = "No", color = MaterialTheme.colors.onBackground)
                     }
                 },
                 backgroundColor = Color.White,
@@ -259,7 +257,6 @@ fun FilmItem(
                     )
                 )
         )
-
         FilmDetails(
             title = filmItem.title,
             releaseDate = filmItem.releaseDate,

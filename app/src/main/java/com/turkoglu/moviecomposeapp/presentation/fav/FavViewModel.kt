@@ -30,6 +30,10 @@ class FavViewModel @Inject constructor(
             repo.deleteOneFavorite(favorite)
         }
     }
+    suspend fun getAFavoriteOnce(mediaId: Int): Favorite? {
+        return repo.getAFavoriteOnce(mediaId)
+    }
+
 
     fun deleteAllFavorites() {
         viewModelScope.launch {

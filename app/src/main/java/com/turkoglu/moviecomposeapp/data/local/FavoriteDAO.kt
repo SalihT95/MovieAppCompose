@@ -21,6 +21,10 @@ interface FavoriteDAO {
     @Query("SELECT favorite FROM favoritestable WHERE mediaId = :mediaId")
     fun isFavorite(mediaId: Int): LiveData<Boolean>
 
+    @Query("SELECT * FROM favoritestable WHERE mediaId = :mediaId LIMIT 1")
+    suspend fun getAFavoriteOnce(mediaId: Int): Favorite?
+
+
     @Delete
     suspend fun deleteAFavorite(favorite: Favorite)
 
