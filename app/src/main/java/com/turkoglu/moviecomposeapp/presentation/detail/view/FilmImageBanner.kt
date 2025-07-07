@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +30,7 @@ import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.presentation.detail.DetailScreenViewModel
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -48,8 +49,11 @@ fun FilmImageBanner(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val state = viewModel.state.value
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(key))
+    val intent = Intent(Intent.ACTION_VIEW, key.toUri())
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+
+    val favorite = viewModelFav.getAFavorite(filmId).collectAsStateWithLifecycle(null).value
+    val isFavorite = favorite != null
 
     Box(
         modifier = Modifier
@@ -83,18 +87,15 @@ fun FilmImageBanner(
                 onClick = { launcher.launch(intent) }
             )
             CircularFavoriteButtons(
-                isLiked = viewModelFav.isAFavorite(filmId).observeAsState().value != null,
+                isLiked = isFavorite,
                 onClick = { isFav ->
                     coroutineScope.launch {
                         if (isFav) {
-                            // Favoriden çıkar
-                            val favorite = viewModelFav.getAFavoriteOnce(filmId) // yeni suspend fonksiyon
-                            if (favorite != null) {
-                                viewModelFav.deleteOneFavorite(favorite)
-                                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                            favorite?.let {
+                                viewModelFav.deleteOneFavorite(it)
+                                Toast.makeText(context, "Favorilerden kaldırıldı", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            // Favoriye ekle
                             viewModelFav.insertFavorite(
                                 Favorite(
                                     favorite = true,
@@ -105,13 +106,11 @@ fun FilmImageBanner(
                                     rating = rating
                                 )
                             )
-                            Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Favorilere eklendi", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             )
-
-
         }
     }
 }

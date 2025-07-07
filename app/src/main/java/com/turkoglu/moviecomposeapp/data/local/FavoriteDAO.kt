@@ -1,10 +1,10 @@
 package com.turkoglu.moviecomposeapp.data.local
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteDAO {
@@ -13,17 +13,10 @@ interface FavoriteDAO {
     suspend fun insertFavorite(favorite: Favorite)
 
     @Query("SELECT * FROM favoritestable ORDER BY mediaId DESC")
-    fun getAllFavorites(): LiveData<List<Favorite>>
-
-    @Query("SELECT * FROM favoritestable WHERE mediaId  == :mediaId")
-    fun getAFavorites(mediaId: Int): LiveData<Favorite?>
-
-    @Query("SELECT favorite FROM favoritestable WHERE mediaId = :mediaId")
-    fun isFavorite(mediaId: Int): LiveData<Boolean>
+    fun getAllFavorites(): Flow<List<Favorite>>
 
     @Query("SELECT * FROM favoritestable WHERE mediaId = :mediaId LIMIT 1")
-    suspend fun getAFavoriteOnce(mediaId: Int): Favorite?
-
+    fun getAFavorite(mediaId: Int): Flow<Favorite?>
 
     @Delete
     suspend fun deleteAFavorite(favorite: Favorite)

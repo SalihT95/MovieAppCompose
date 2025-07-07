@@ -1,11 +1,11 @@
 package com.turkoglu.moviecomposeapp.presentation.fav
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.data.repo.FavoritesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,8 +21,8 @@ class FavViewModel @Inject constructor(
         }
     }
 
-    fun isAFavorite(mediaId: Int): LiveData<Boolean> {
-        return repo.isFavorite(mediaId)
+    fun getAFavorite(mediaId: Int): Flow<Favorite?> {
+        return repo.getAFavorite(mediaId)
     }
 
     fun deleteOneFavorite(favorite: Favorite) {
@@ -30,10 +30,6 @@ class FavViewModel @Inject constructor(
             repo.deleteOneFavorite(favorite)
         }
     }
-    suspend fun getAFavoriteOnce(mediaId: Int): Favorite? {
-        return repo.getAFavoriteOnce(mediaId)
-    }
-
 
     fun deleteAllFavorites() {
         viewModelScope.launch {
