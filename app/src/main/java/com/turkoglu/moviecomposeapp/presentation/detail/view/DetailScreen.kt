@@ -2,16 +2,10 @@ package com.turkoglu.moviecomposeapp.presentation.detail.view
 
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.turkoglu.moviecomposeapp.presentation.detail.DetailScreenViewModel
@@ -19,41 +13,38 @@ import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
 import com.turkoglu.moviecomposeapp.util.Constants
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-@Composable()
+@Composable
 fun DetailScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: DetailScreenViewModel = hiltViewModel(),
-    viewModelFav : FavViewModel =  hiltViewModel()
-
+    viewModelFav: FavViewModel = hiltViewModel()
 ) {
     val scrollState = rememberLazyListState()
-    val state = viewModel.state.value
-    val castState = viewModel.castState
-    val fragmanState = viewModel.fragmanState
+    val film = viewModel.state.value
+    val castState = viewModel.castState.value
+    val fragmanUrl = viewModel.fragmanState.value.videoUrl
 
-    Column(modifier = modifier.fillMaxSize()) {
-        Text(text = state.title)
-        Spacer(modifier = modifier.padding(20.dp))
-        Text(text = state.overview)
-    }
-    Box {
+    Box(modifier = modifier.fillMaxSize()) {
+
         FilmInfo(
             scrollState = scrollState,
-            overview = state.overview,
-            releaseDate = state.releaseDate,
-            state = castState.value
+            overview = film.overview,
+            releaseDate = film.releaseDate,
+            state = castState
         )
-        FilmImageBanner(
-            rating = state.voteAverage.toFloat(),
-            key= fragmanState.value.videoUrl!!,
-            viewModel = viewModel,
-            navController = navController,
-            viewModelFav = viewModelFav,
-            posterUrl = "${Constants.IMAGE_BASE_URL}/${viewModel.state.value.posterPath}",
-            filmName = viewModel.state.value.title,
-            filmId = viewModel.state.value.imdbId,
-            releaseDate = viewModel.state.value.releaseDate
-        )
+        fragmanUrl?.let { url ->
+            FilmImageBanner(
+                rating = film.voteAverage.toFloat(),
+                key = url,
+                viewModel = viewModel,
+                navController = navController,
+                viewModelFav = viewModelFav,
+                posterUrl = "${Constants.IMAGE_BASE_URL}/${film.safePosterPath}",
+                filmName = film.title,
+                filmId = film.imdbId,
+                releaseDate = film.safeReleaseDate
+            )
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.turkoglu.moviecomposeapp.presentation.detail.view
 
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -15,24 +14,17 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CircularFavoriteButtons(
     isLiked: Boolean,
-    onClick: (isFav: Boolean) -> Unit = {}
+    onClick: (isFav: Boolean) -> Unit
 ) {
     IconButton(
         onClick = {
             onClick(isLiked)
         }) {
-
         Icon(
-            modifier = Modifier
-                .width(38.dp)
-                .height(38.dp),
+            modifier = Modifier.size(40.dp),
             imageVector = Icons.Filled.Favorite,
-            tint = if (isLiked) {
-                Color.Red
-            } else {
-                Color.LightGray
-            },
-            contentDescription = null
+            tint = if (isLiked) Color.Red else Color.LightGray,
+            contentDescription = if (isLiked) "Favorilerden kaldır" else "Favorilere ekle",
         )
     }
 }

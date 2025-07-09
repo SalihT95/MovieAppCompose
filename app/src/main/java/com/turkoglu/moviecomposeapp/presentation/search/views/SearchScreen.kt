@@ -1,12 +1,10 @@
 package com.turkoglu.moviecomposeapp.presentation.search.views
 
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
@@ -31,6 +27,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -55,7 +52,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberImagePainter
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
-import com.turkoglu.moviecomposeapp.presentation.home.HomeViewModel
 import com.turkoglu.moviecomposeapp.presentation.search.SearchViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryDarkVariant
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryGray
@@ -65,55 +61,46 @@ import retrofit2.HttpException
 import java.io.IOException
 
 @OptIn(ExperimentalComposeUiApi::class)
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun SearchScreen(
     navController: NavController,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-
-    val searchResult = viewModel.searchSearch.value.collectAsLazyPagingItems()
+    val searchResults = viewModel.searchResults.value.collectAsLazyPagingItems()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(
-        Modifier.fillMaxSize()
-    ) {
+    Column(Modifier.fillMaxSize()) {
         SearchBar(
-            viewModel = viewModel,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(67.dp)
-                .padding(8.dp),
-            onSearch = { searchParam ->
-                viewModel.searchAll(searchParam)
+            searchTerm = viewModel.searchTerm.value,
+            onSearchChanged = viewModel::setSearchTerm,
+            onSearch = {
+                viewModel.searchAll(it)
                 keyboardController?.hide()
             }
         )
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-
+        Box(Modifier.fillMaxSize()) {
             LazyColumn(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.Top
             ) {
-                itemsIndexed(items = searchResult.itemSnapshotList.items, key = { _, movie ->
-                    movie.id ?: -1
-                }) { _, search ->
-                    SearchItem(
-                        search,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(130.dp)
-                            .padding(4.dp),
-                        onClick = {
-                            navController.navigate(route = "Detail/${search.id}")
-                        }
-                    )
+                itemsIndexed(
+                    items = searchResults.itemSnapshotList.items,
+                    key = { _, item -> item.id ?: -1 }
+                ) { _, search ->
+                    if (search != null) {
+                        SearchItem(
+                            search = search,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(130.dp)
+                                .padding(4.dp),
+                            onClick = { navController.navigate("Detail/${search.id}") }
+                        )
+                    }
                 }
 
-                if (searchResult.loadState.append == LoadState.Loading) {
+                if (searchResults.loadState.append == LoadState.Loading) {
                     item {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -124,55 +111,38 @@ fun SearchScreen(
                 }
             }
 
-            searchResult.apply {
-                when (loadState.refresh) {
-                    is LoadState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
-                            color = primaryPink,
-                            strokeWidth = 2.dp
-                        )
+            when (val state = searchResults.loadState.refresh) {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = primaryPink,
+                        strokeWidth = 2.dp
+                    )
+                }
+
+                is LoadState.Error -> {
+                    val message = when (state.error) {
+                        is HttpException -> "Oops, something went wrong!"
+                        is IOException -> "Check your internet connection!"
+                        else -> "Unknown error occurred"
                     }
+                    Text(
+                        text = message,
+                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                        color = primaryPink,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
-                    is LoadState.Error -> {
-                        val e = searchResult.loadState.refresh as LoadState.Error
-                        Text(
-                            text = when (e.error) {
-                                is HttpException -> {
-                                    "Oops, something went wrong!"
-                                }
-
-                                is IOException -> {
-                                    "Couldn't reach server, check your internet connection!"
-                                }
-
-                                else -> {
-                                    "Unknown error occurred"
-                                }
-                            },
+                is LoadState.NotLoading -> {
+                    if (searchResults.itemCount == 0) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_empty_cuate),
+                            contentDescription = null,
                             modifier = Modifier
-                                .align(alignment = Alignment.Center)
-                                .padding(12.dp),
-                            textAlign = TextAlign.Center,
-                            color = primaryPink
+                                .align(Alignment.Center)
+                                .size(250.dp)
                         )
-                    }
-
-                    is LoadState.NotLoading -> {
-                        if (searchResult.itemCount <= 0) {
-                            Column(
-                                Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    modifier = Modifier
-                                        .size(250.dp),
-                                    painter = painterResource(id = R.drawable.ic_empty_cuate),
-                                    contentDescription = null
-                                )
-                            }
-                        }
                     }
                 }
             }
@@ -182,42 +152,24 @@ fun SearchScreen(
 
 @Composable
 fun SearchBar(
-    viewModel: SearchViewModel,
-    modifier: Modifier = Modifier,
-    hint: String = "Search...",
-    onSearch: (String) -> Unit = {}
+    searchTerm: String,
+    onSearchChanged: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    hint: String = "Search..."
 ) {
-
-    val searchTerm = viewModel.searchTerm.value
-
     TextField(
         value = searchTerm,
-        onValueChange = {
-            viewModel.setSearchTerm(it)
-        },
-        placeholder = {
-            Text(
-                text = hint,
-                color = primaryGray
-            )
-        },
-        modifier = modifier
+        onValueChange = onSearchChanged,
+        placeholder = { Text(text = hint, color = primaryGray) },
+        modifier = Modifier
             .fillMaxWidth()
-            .shadow(4.dp, CircleShape)
-            .background(Color.Transparent, CircleShape),
-        shape = RoundedCornerShape(25.dp),//MaterialTheme.shapes.medium,
-        keyboardOptions = KeyboardOptions(
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .shadow(2.dp, shape = RoundedCornerShape(25.dp)),
+        shape = RoundedCornerShape(25.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(
             capitalization = KeyboardCapitalization.Words,
             autoCorrect = true,
-            keyboardType = KeyboardType.Text,
-        ),
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.White,
-            disabledTextColor = Color.Transparent,
-            backgroundColor = primaryDarkVariant,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
+            keyboardType = KeyboardType.Text
         ),
         textStyle = TextStyle(color = Color.White),
         maxLines = 1,
@@ -226,85 +178,75 @@ fun SearchBar(
             IconButton(onClick = { onSearch(searchTerm) }) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    tint = primaryGray,
-                    contentDescription = null
+                    contentDescription = "Search",
+                    tint = primaryGray
                 )
             }
         },
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.White,
+            backgroundColor = primaryDarkVariant,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
     )
-
 }
 
 @Composable
 fun SearchItem(
-    search: Search?,
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    search: Search,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
-            .clickable {
-                onClick()
-            },
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
         elevation = 5.dp
     ) {
         Row {
             Image(
                 painter = rememberImagePainter(
-                    data = "${Constants.IMAGE_BASE_URL}/${search?.posterPath}",
+                    data = "${Constants.IMAGE_BASE_URL}/${search.posterPath}",
                     builder = {
                         placeholder(R.drawable.ic_placeholder)
                         crossfade(true)
                     }
                 ),
-                modifier = Modifier
-                    .fillMaxWidth(0.3f),
-                contentScale = ContentScale.Crop,
-                contentDescription = null
+                contentDescription = "Poster",
+                modifier = Modifier.fillMaxWidth(0.3f),
+                contentScale = ContentScale.Crop
             )
 
             Column(
-                modifier = modifier
-                    .fillMaxWidth(0.7f)
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(8.dp)
             ) {
-
                 Text(
-                    text = (search?.name ?: search?.originalName ?: search?.originalTitle
-                    ?: "No title provided"),
-                    color = Color.White,
+                    text = search.name ?: search.originalTitle ?: "No title",
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontSize = 14.sp
                 )
-
-
                 Spacer(modifier = Modifier.height(5.dp))
-
-                (search?.firstAirDate ?: search?.releaseDate)?.let {
+                search.firstAirDate?.let {
                     Text(
+                        text = it,
+                        fontSize = 10.sp,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Right,
-                        text = it,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 10.sp
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = search?.overview ?: "No description",
-                    color = Color.White,
-                    fontWeight = FontWeight.Light,
+                    text = search.overview ?: "No description",
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 11.sp
                 )
             }
         }
     }
 }
-

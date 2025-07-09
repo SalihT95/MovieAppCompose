@@ -1,50 +1,40 @@
 package com.turkoglu.moviecomposeapp.presentation.detail.view
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.MaterialTheme
 
 @Composable
 fun FragmanButton(
-    color: Color = Color.Gray,
-    elevation: ButtonElevation? = ButtonDefaults.elevation(),
-    onClick: () -> Unit = {}
+    backgroundColor: Color = Color.Red.copy(alpha = 0.7f),
+    iconTint: Color = MaterialTheme.colors.onBackground,
+    onClick: () -> Unit
 ) {
-    Button(
-        onClick = { onClick() },
-        contentPadding = PaddingValues(),
-        shape = CircleShape,
-        elevation = elevation,
+    Surface(
         modifier = Modifier
-            .width(80.dp)
-            .height(38.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Red.copy(alpha = 0.7f),
-            contentColor = color
-        )
+            .width(70.dp)
+            .height(40.dp),
+        shape = CircleShape,
+        color = backgroundColor,
+        elevation = 4.dp
     ) {
-        IconButton(onClick = {
-            onClick()
-        }) {
+        IconButton(onClick = onClick) {
             Icon(
-                imageVector = Icons.Filled.Share,
-                contentDescription = null,
-                tint = MaterialTheme.colors.onBackground
+                imageVector = Icons.Default.Share,
+                contentDescription = "Share Trailer",
+                tint = iconTint
             )
-
         }
     }
 }

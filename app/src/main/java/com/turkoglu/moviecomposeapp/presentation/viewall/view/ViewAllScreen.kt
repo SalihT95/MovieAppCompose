@@ -1,6 +1,5 @@
 package com.turkoglu.moviecomposeapp.presentation.viewall.view
 
-import CircularBackButtons
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.turkoglu.moviecomposeapp.domain.model.Movie
+import com.turkoglu.moviecomposeapp.presentation.detail.view.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.home.MovieListItem
 import com.turkoglu.moviecomposeapp.presentation.viewall.ViewAllScreenViewModel
 

@@ -28,29 +28,17 @@ class SearchViewModel @Inject constructor(
         _searchTerm.value = term
     }
 
-    private val _searchResult = mutableStateOf<Flow<PagingData<Search>>>(emptyFlow())
-    val searchSearch: State<Flow<PagingData<Search>>> = _searchResult
+    private val _searchResults = mutableStateOf<Flow<PagingData<Search>>>(emptyFlow())
+    val searchResults: State<Flow<PagingData<Search>>> = _searchResults
 
     fun searchAll(searchParam: String) {
         viewModelScope.launch {
-            _searchResult.value = repository.multiSearch(searchParam).map { pagingData ->
-                pagingData.filter {
-                    ((it.title != null || it.originalName != null || it.originalTitle != null))
-                }
-            }.cachedIn(viewModelScope)
+            _searchResults.value = repository.multiSearch(searchParam)
+                .map { pagingData ->
+                    pagingData.filter {
+                        it.title != null || it.originalName != null || it.originalTitle != null
+                    }
+                }.cachedIn(viewModelScope)
         }
     }
-
-
-
-
-
-    /*
-    fun getSearch(search : String){
-        viewModelScope.launch {
-            val x = repositoryImpl.multiSearch(search)
-        }
-    }
-
-     */
 }
