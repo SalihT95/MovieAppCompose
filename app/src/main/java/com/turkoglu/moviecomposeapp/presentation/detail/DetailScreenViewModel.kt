@@ -1,5 +1,6 @@
 package com.turkoglu.moviecomposeapp.presentation.detail
 
+import DetailState
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.State
@@ -20,76 +21,88 @@ import javax.inject.Inject
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
-    private val getDetailUseCase : GetMovieDetailUseCase,
-    private val repo : MovieRepositoryImpl ,
+    private val getDetailUseCase: GetMovieDetailUseCase,
+    private val repo: MovieRepositoryImpl,
     private val getVideoUrlUseCase: GetVideoUrlUseCase,
     private val savedStateHandle: SavedStateHandle
-):ViewModel(){
+) : ViewModel() {
+
     private val _state = mutableStateOf(DetailState())
     val state: State<DetailState> = _state
+
     private val _castState = mutableStateOf(CastState())
-    val castState : State<CastState> = _castState
+    val castState: State<CastState> = _castState
+
     private val _fragmanState = mutableStateOf(FragmanState())
     val fragmanState: State<FragmanState> = _fragmanState
+
+    private val movieId: Int
+        get() = savedStateHandle["movieId"] ?: 0
 
     init {
         getMovie()
         getCast()
         getVideoUrl()
-
-    }
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    private fun getMovie(){
-        val movieId = savedStateHandle.get<Int>("movieId") ?: 0
-        getDetailUseCase.executeGetMovieDetail(movieId = movieId).onEach {  
-            when (it) {
-                is Resource.Success -> {
-                    _state.value= DetailState(title = it.data!!.title, overview = it.data.overview, genres = it.data.genres,
-                        imdbId = it.data.id, popularity = it.data.popularity, posterPath = it.data
-                            .posterPath, releaseDate = it.data.releaseDate, revenue = it.data.revenue, voteAverage = it.data.voteAverage)
-
-                }
-
-                is Resource.Error -> {
-                    println("Err")
-                    //_state.value = HomeScreenState(errorMessage = it.message ?: "Error!")
-                }
-
-                is Resource.Loading -> {
-                    //_state.value = HomeScreenState(loading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
     }
 
-   private fun getCast(){
-       val movieId = savedStateHandle.get<Int>("movieId") ?: 0
-       viewModelScope.launch {
-           val dto=repo.getMovieCasts(movieId).data
-           _castState.value = CastState(dto!!.cast,dto.id)
-       }
-    }
-    private fun getVideoUrl() {
-        val movieId = savedStateHandle.get<Int>("movieId") ?: 0
-
-        getVideoUrlUseCase.executeGetMovieVideo(movieId = movieId).onEach {result->
-            println("getVideoUrl = ${result.data!!.firstOrNull()?.url}")
-            val url = "https://www.youtube.com/watch?v=" +result.data.firstOrNull()?.url
+    private fun getMovie() {
+        getDetailUseCase.executeGetMovieDetail(movieId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _fragmanState.value = FragmanState(videoUrl = url)
+                    result.data?.let { movie ->
+                        _state.value = DetailState(
+                            title = movie.title,
+                            overview = movie.overview,
+                            genres = movie.genres,
+                            imdbId = movie.id ,
+                            popularity = movie.popularity,
+                            posterPath = movie.posterPath,
+                            releaseDate = movie.releaseDate,
+                            revenue = movie.revenue,
+                            voteAverage = movie.voteAverage
+                        )
+                    }
                 }
 
                 is Resource.Error -> {
-                    println("Err")
-                    //_state.value = HomeScreenState(errorMessage = it.message ?: "Error!")
+                    println("getMovie Error: ${result.message}")
                 }
 
                 is Resource.Loading -> {
-                    //_state.value = HomeScreenState(loading = true)
+
                 }
             }
         }.launchIn(viewModelScope)
     }
 
+    private fun getCast() {
+        viewModelScope.launch {
+            val result = repo.getMovieCasts(movieId)
+            result.data?.let { dto ->
+                _castState.value = CastState(cast = dto.cast, id = dto.id)
+            }
+        }
+    }
+
+    private fun getVideoUrl() {
+        getVideoUrlUseCase.executeGetMovieVideo(movieId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    val videoKey = result.data?.firstOrNull()?.url
+                    val videoUrl = videoKey?.let { "https://www.youtube.com/watch?v=$it" }
+                    if (videoUrl != null) {
+                        _fragmanState.value = FragmanState(videoUrl = videoUrl)
+                    }
+                }
+
+                is Resource.Error -> {
+                    println("getVideoUrl Error: ${result.message}")
+                }
+
+                is Resource.Loading -> {
+
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
 }

@@ -125,7 +125,6 @@ fun ExpandableText(
     val seeMoreSizeState = remember { mutableStateOf<IntSize?>(null) }
     val seeMoreOffsetState = remember { mutableStateOf<Offset?>(null) }
 
-    // getting raw values for smart cast
     val textLayoutResult = textLayoutResultState.value
     val seeMoreSize = seeMoreSizeState.value
     val seeMoreOffset = seeMoreOffsetState.value
@@ -168,7 +167,6 @@ fun ExpandableText(
         if (!expanded) {
             val density = LocalDensity.current
             Text(
-                // Fixme: Use your app theme color
                 color = Color.Magenta,
                 text = "... See more",
                 fontWeight = FontWeight.Bold,
