@@ -42,6 +42,7 @@ fun DetailScreen(
             scrollState = scrollState,
             overview = state.overview,
             releaseDate = state.releaseDate,
+            genrelist = state.genres,
             state = castState.value
         )
         FilmImageBanner(

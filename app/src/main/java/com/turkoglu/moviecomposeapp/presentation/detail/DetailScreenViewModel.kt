@@ -36,7 +36,6 @@ class DetailScreenViewModel @Inject constructor(
         getMovie()
         getCast()
         getVideoUrl()
-
     }
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun getMovie(){
