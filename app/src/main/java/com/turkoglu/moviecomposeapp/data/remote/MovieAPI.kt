@@ -32,7 +32,6 @@ interface MovieAPI {
         @Query("api_key") apiKey: String = API_KEY
     ): MoviesDto
 
-
     @GET("movie/top_rated")
     suspend fun getTopRatedMovies(
         @Query("page") page: Int = DEFAULT_PAGE,
@@ -77,8 +76,6 @@ interface MovieAPI {
         @Query("api_key") apiKey: String = API_KEY
     ) : MovieVideoDto
 
-
-
     @GET("authentication/token/new")
     suspend fun createRequestToken(@Query("api_key") apiKey: String = API_KEY): CreateRequestToken?
 
@@ -99,10 +96,4 @@ interface MovieAPI {
         @Query("api_key") apiKey: String = API_KEY,
         @Body requestCreateSession: RequestCreateSession
     ): CreateSession
-
-
-
-
-
-
 }

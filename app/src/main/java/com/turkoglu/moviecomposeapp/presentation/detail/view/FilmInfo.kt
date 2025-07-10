@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.turkoglu.moviecomposeapp.data.remote.dto.Cast
+import com.turkoglu.moviecomposeapp.data.remote.dto.Genre
 import com.turkoglu.moviecomposeapp.presentation.detail.CastState
 import com.turkoglu.moviecomposeapp.util.Constants
 
@@ -46,61 +44,70 @@ fun FilmInfo(
     scrollState: LazyListState,
     releaseDate: String,
     overview: String,
-    state : CastState
+    genrelist: List<Genre>,
+    state: CastState
 ) {
-    println()
-
-    Spacer(modifier = Modifier.height(10.dp))
-
     LazyColumn(contentPadding = PaddingValues(top = 425.dp), state = scrollState) {
         item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp)
-            ) {
-                Text(
-                    text = "Release date",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = releaseDate,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.DarkGray
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ExpandableText(text = overview)
-
-            }
-        }
-        item {
-            Column {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Cast",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .padding(
-                                start = 8.dp
-                            )
+                        text = "Release date",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Genres",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = releaseDate,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.DarkGray,
+                        modifier = Modifier.alignByBaseline()
+                    )
+                    Text(
+                        text = genrelist.joinToString(", ") { it.name },
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.DarkGray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .alignByBaseline()
+                    )
+                }
+
+                ExpandableText(text = overview)
+            }
+        }
+        item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Cast",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
                 LazyRow {
-                    itemsIndexed(state.cast, key = {_: Int ,cast : Cast -> cast.id}) { _, cast->
+                    itemsIndexed(state.cast, key = { _, cast -> cast.id }) { _, cast ->
                         CastItem(
                             modifier = Modifier,
                             castImageUrl = "${Constants.IMAGE_BASE_URL}/${cast.profile_path}",

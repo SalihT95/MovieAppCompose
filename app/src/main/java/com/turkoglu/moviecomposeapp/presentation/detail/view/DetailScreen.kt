@@ -31,8 +31,10 @@ fun DetailScreen(
             scrollState = scrollState,
             overview = film.overview,
             releaseDate = film.releaseDate,
+            genrelist = film.genres,
             state = castState
         )
+
         fragmanUrl?.let { url ->
             FilmImageBanner(
                 rating = film.voteAverage.toFloat(),
@@ -40,11 +42,12 @@ fun DetailScreen(
                 viewModel = viewModel,
                 navController = navController,
                 viewModelFav = viewModelFav,
-                posterUrl = "${Constants.IMAGE_BASE_URL}/${film.safePosterPath}",
+                posterUrl = "${Constants.IMAGE_BASE_URL}/${film.posterPath}",
                 filmName = film.title,
                 filmId = film.imdbId,
-                releaseDate = film.safeReleaseDate
+                releaseDate = film.releaseDate
             )
         }
+
     }
 }
