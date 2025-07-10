@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -49,7 +50,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
 import com.turkoglu.moviecomposeapp.presentation.search.SearchViewModel
@@ -203,12 +205,12 @@ fun SearchItem(
     ) {
         Row {
             Image(
-                painter = rememberImagePainter(
-                    data = "${Constants.IMAGE_BASE_URL}/${search.posterPath}",
-                    builder = {
-                        placeholder(R.drawable.ic_placeholder)
-                        crossfade(true)
-                    }
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(data = "${Constants.IMAGE_BASE_URL}/${search.posterPath}").apply(block = fun ImageRequest.Builder.() {
+                            placeholder(R.drawable.ic_placeholder)
+                            crossfade(true)
+                        }).build()
                 ),
                 contentDescription = "Poster",
                 modifier = Modifier.fillMaxWidth(0.3f),

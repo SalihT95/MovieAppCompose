@@ -2,7 +2,8 @@ package com.turkoglu.moviecomposeapp.presentation.detail.view
 
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

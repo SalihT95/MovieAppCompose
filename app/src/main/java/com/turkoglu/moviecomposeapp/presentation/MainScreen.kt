@@ -4,11 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.navigation.NavHostController
 import com.turkoglu.moviecomposeapp.presentation.detail.view.DetailScreen
 import com.turkoglu.moviecomposeapp.presentation.fav.view.FavScreen
 import com.turkoglu.moviecomposeapp.presentation.home.view.HomeScreen
