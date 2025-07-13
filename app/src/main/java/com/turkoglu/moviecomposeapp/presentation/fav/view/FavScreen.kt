@@ -54,7 +54,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.data.local.Favorite
-import com.turkoglu.moviecomposeapp.presentation.detail.view.VoteAverageRatingIndicator
+import com.turkoglu.moviecomposeapp.presentation.component.VoteAverageRatingIndicator
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.Transparent
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryDark

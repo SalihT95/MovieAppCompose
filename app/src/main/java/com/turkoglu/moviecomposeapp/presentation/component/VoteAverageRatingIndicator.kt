@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.detail.view
+package com.turkoglu.moviecomposeapp.presentation.component
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState

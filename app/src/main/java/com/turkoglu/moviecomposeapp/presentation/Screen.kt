@@ -9,13 +9,20 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class Screen(var route: String, val icon: ImageVector?, var title: String) {
+sealed class Screen(
+    val route: String,
+    val icon: ImageVector? = null,
+    val title: String = "",
+    val isBottomBarVisible: Boolean = false
+) {
+    val baseRoute: String
+        get() = route.substringBefore("/{")
 
-    object LoginScreen : Screen("Login",Icons.Rounded.AccountCircle,"Login")
-    object HomeScreen : Screen("Home", Icons.Rounded.Home, "Home")
-    object Detail : Screen("Detail/{movieId}",Icons.Rounded.Info,"Detail")
-    object ViewAll : Screen("ViewAll/{selectedType}",Icons.Rounded.Info,"ViewAll")
-    object SearchScreen : Screen("Search", Icons.Rounded.Search, "Search")
-    object FavScreen : Screen("Fav", Icons.Rounded.Favorite, "Fav")
-    object SettingsScreen : Screen("Settings", Icons.Rounded.Settings, "Settings")
+    object Login : Screen("Login", Icons.Rounded.AccountCircle, "Login", false)
+    object Home : Screen("Home", Icons.Rounded.Home, "Home", true)
+    object Fav : Screen("Fav", Icons.Rounded.Favorite, "Favorites", true)
+    object Settings : Screen("Settings", Icons.Rounded.Settings, "Settings", true)
+    object Search : Screen("Search", Icons.Rounded.Search, "Search", false)
+    object Detail : Screen("Detail/{movieId}", Icons.Rounded.Info, "Detail", false)
+    object ViewAll : Screen("ViewAll/{selectedType}", Icons.Rounded.Info, "View All", false)
 }

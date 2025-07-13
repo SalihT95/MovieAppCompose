@@ -14,7 +14,7 @@ data class MoviesDto(
 )
 fun MoviesDto.toMovieList() : List<Movie> {
     return results.map{
-        Movie(it.id,it.title,it.overview, getImageUrl(it.posterPath),it.releaseDate) }
+        Movie(it.id,it.title,it.overview, getImageUrl(it.posterPath),it.releaseDate,it.voteAverage) }
 }
 private fun getImageUrl(posterImage : String)=IMAGE_BASE_URL+posterImage
 

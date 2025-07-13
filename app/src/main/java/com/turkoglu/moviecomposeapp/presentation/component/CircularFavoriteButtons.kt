@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.detail.view
+package com.turkoglu.moviecomposeapp.presentation.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon

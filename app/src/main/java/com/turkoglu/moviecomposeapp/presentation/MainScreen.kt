@@ -26,41 +26,41 @@ fun MainScreen(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = if (isUserLoggedIn) Screen.HomeScreen.route else Screen.LoginScreen.route
+        startDestination = if (isUserLoggedIn) Screen.Home.route else Screen.Login.route
     ) {
-        composable(Screen.LoginScreen.route) {
-            AppScaffold(navController, showBottomBar = false) {
+        composable(Screen.Login.route) {
+            AppScaffold(navController, showBottomBar = Screen.Login.isBottomBarVisible) {
                 LoginScreen(navController = navController) {
-                    navController.navigate(Screen.HomeScreen.route) {
-                        popUpTo(Screen.LoginScreen.route) { inclusive = true }
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
             }
         }
 
-        composable(Screen.HomeScreen.route) {
-            AppScaffold(navController) {
-                HomeScreen(navController = navController) { movie ->
-                    navController.navigate("Detail/${movie.id}")
+        composable(Screen.Home.route) {
+            AppScaffold(navController, showBottomBar = Screen.Home.isBottomBarVisible) {
+                HomeScreen(navController) { movie ->
+                    navController.navigate(Screen.Detail.route.replace("{movieId}", movie.id.toString()))
                 }
             }
         }
 
-        composable(Screen.SearchScreen.route) {
-            AppScaffold(navController) {
-                SearchScreen(navController)
-            }
-        }
-
-        composable(Screen.FavScreen.route) {
-            AppScaffold(navController) {
+        composable(Screen.Fav.route) {
+            AppScaffold(navController, showBottomBar = Screen.Fav.isBottomBarVisible) {
                 FavScreen(navController)
             }
         }
 
-        composable(Screen.SettingsScreen.route) {
-            AppScaffold(navController) {
+        composable(Screen.Settings.route) {
+            AppScaffold(navController, showBottomBar = Screen.Settings.isBottomBarVisible) {
                 SettingsScreen(navController)
+            }
+        }
+
+        composable(Screen.Search.route) {
+            AppScaffold(navController, showBottomBar = Screen.Search.isBottomBarVisible) {
+                SearchScreen(navController)
             }
         }
 
@@ -68,7 +68,7 @@ fun MainScreen(navController: NavHostController) {
             route = Screen.Detail.route,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) {
-            AppScaffold(navController) {
+            AppScaffold(navController, showBottomBar = Screen.Detail.isBottomBarVisible) {
                 DetailScreen(navController)
             }
         }
@@ -77,9 +77,9 @@ fun MainScreen(navController: NavHostController) {
             route = Screen.ViewAll.route,
             arguments = listOf(navArgument("selectedType") { type = NavType.StringType })
         ) {
-            AppScaffold(navController) {
+            AppScaffold(navController, showBottomBar = Screen.ViewAll.isBottomBarVisible) {
                 ViewAllScreen(navController) { movie ->
-                    navController.navigate("Detail/${movie.id}")
+                    navController.navigate(Screen.Detail.route.replace("{movieId}", movie.id.toString()))
                 }
             }
         }

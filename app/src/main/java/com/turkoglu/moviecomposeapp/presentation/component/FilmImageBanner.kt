@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.detail.view
+package com.turkoglu.moviecomposeapp.presentation.component
 
 import android.content.Intent
 import android.os.Build

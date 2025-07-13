@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation
+package com.turkoglu.moviecomposeapp.presentation.component
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -10,14 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.turkoglu.moviecomposeapp.presentation.Screen
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        Screen.HomeScreen,
-        Screen.SearchScreen,
-        Screen.FavScreen,
-        Screen.SettingsScreen,
+        Screen.Home,
+        Screen.Fav,
+        Screen.Settings
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -26,18 +26,21 @@ fun BottomNavigationBar(navController: NavController) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface
     ) {
-        items.forEach { item ->
+        items.forEach { screen ->
+            val isSelected = currentRoute == screen.baseRoute
+
             NavigationBarItem(
                 icon = {
-                    Icon(item.icon!!, contentDescription = item.title)
+                    Icon(
+                        imageVector = screen.icon!!,
+                        contentDescription = screen.title
+                    )
                 },
-                label = {
-                    Text(text = item.title)
-                },
-                selected = currentRoute == item.route,
+                label = { Text(text = screen.title) },
+                selected = isSelected,
                 onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
+                    if (!isSelected) {
+                        navController.navigate(screen.baseRoute) {
                             popUpTo(navController.graph.startDestinationRoute!!) {
                                 saveState = true
                             }

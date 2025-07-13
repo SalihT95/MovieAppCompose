@@ -54,6 +54,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
+import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.search.SearchViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryDarkVariant
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryGray
@@ -72,15 +73,22 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(Modifier.fillMaxSize()) {
-        SearchBar(
-            searchTerm = viewModel.searchTerm.value,
-            onSearchChanged = viewModel::setSearchTerm,
-            onSearch = {
-                viewModel.searchAll(it)
-                keyboardController?.hide()
+        Row (Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            Alignment.CenterVertically){
+            CircularBackButtons {
+                navController.popBackStack()
             }
-        )
-
+            SearchBar(
+                searchTerm = viewModel.searchTerm.value,
+                onSearchChanged = viewModel::setSearchTerm,
+                onSearch = {
+                    viewModel.searchAll(it)
+                    keyboardController?.hide()
+                }
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Box(Modifier.fillMaxSize()) {
             LazyColumn(
                 contentPadding = PaddingValues(8.dp),
