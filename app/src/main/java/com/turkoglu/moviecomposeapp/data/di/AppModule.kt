@@ -19,7 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Interceptor'ı ekleyen OkHttpClient
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
@@ -28,7 +27,6 @@ object AppModule {
             .build()
     }
 
-    // OkHttpClient kullanan Retrofit + API
     @Provides
     @Singleton
     fun provideMovieApi(client: OkHttpClient): MovieAPI {

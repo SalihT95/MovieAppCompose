@@ -56,6 +56,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.presentation.component.CastItem
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
@@ -88,7 +90,12 @@ fun DetailScreen(
 
         // Blurred background image
         AsyncImage(
-            model = viewModel.state.value.posterPath,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(viewModel.state.value.posterPath)
+                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
+                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                .crossfade(true)
+                .build(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -106,13 +113,6 @@ fun DetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-//                    IconButton(onClick = { navController.popBackStack() }) {
-//                    Icon(
-//                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                        contentDescription = "Back",
-//                        tint = Color.White
-//                    )
-//                }
                 CircularBackButtons {
                     navController.popBackStack()
                 }
@@ -152,7 +152,12 @@ fun DetailScreen(
                     .verticalScroll(rememberScrollState())  // Scrollable içerik
             ) {
                 AsyncImage(
-                    model = viewModel.state.value.posterPath,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(viewModel.state.value.posterPath)
+                        .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
+                        .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                        .crossfade(true)
+                        .build(),
                     contentDescription = viewModel.state.value.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -181,13 +186,6 @@ fun DetailScreen(
                 GenreChipsRow(textColor = MaterialTheme.colorScheme.onPrimary,genreList = viewModel.state.value.genres.map { it.name }) {
                     navController.navigate("ViewAll/$it")
                 }
-
-//                Text(
-//                    text = "Genres: ${viewModel.state.value.genres.joinToString(", ") { it.name }}",
-//                    color = Color.LightGray,
-//                    fontSize = 14.sp
-//                )
-//                Spacer(modifier = Modifier.height(8.dp))
 
                 ExpandableText(
                     text = viewModel.state.value.overview,
@@ -289,7 +287,7 @@ fun ExpandableText(
 
     Box(modifier) {
         Text(
-            color = Color.DarkGray,
+            color = Color.White,
             text = cutText ?: text,
             fontSize = 13.sp,
             modifier = Modifier
@@ -306,7 +304,7 @@ fun ExpandableText(
         if (!expanded) {
             val density = LocalDensity.current
             Text(
-                color = Color.Magenta,
+                color = Color.LightGray,
                 text = "... See more",
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,

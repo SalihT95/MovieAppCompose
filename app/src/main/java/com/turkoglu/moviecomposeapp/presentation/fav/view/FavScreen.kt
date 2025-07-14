@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,13 +27,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.presentation.component.VoteAverageRatingIndicator
@@ -60,7 +65,7 @@ import com.turkoglu.moviecomposeapp.presentation.ui.Transparent
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryDark
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryPink
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FavScreen(
     navController: NavController,
@@ -69,131 +74,150 @@ fun FavScreen(
     val openDialog = remember { mutableStateOf(false) }
     val favoriteFilms by viewModel.favorites.collectAsStateWithLifecycle(emptyList())
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Favorites",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 28.sp
-            )
-            IconButton(onClick = { openDialog.value = true }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete All",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        }
-
-        if (favoriteFilms.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    modifier = Modifier.size(250.dp),
-                    painter = painterResource(id = R.drawable.ic_empty_cuate),
-                    contentDescription = "Empty State"
-                )
-            }
-        } else {
-            LazyColumn {
-                itemsIndexed(
-                    items = favoriteFilms,
-                    key = { _, favorite -> favorite.mediaId }
-                ) { _, favorite ->
-                    val dismissState = rememberDismissState()
-
-                    if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-                        LaunchedEffect(favorite) {
-                            viewModel.deleteOneFavorite(favorite)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Favorites",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                actions = {
+                    if (favoriteFilms.isNotEmpty()) {
+                        IconButton(onClick = { openDialog.value = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete All",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
 
-                    SwipeToDismiss(
-                        state = dismissState,
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        directions = setOf(DismissDirection.EndToStart),
-                        dismissThresholds = { direction ->
-                            FractionalThreshold(if (direction == DismissDirection.EndToStart) 0.1f else 0.05f)
-                        },
-                        background = {
-                            val color by animateColorAsState(
-                                if (dismissState.targetValue == DismissValue.Default) primaryDark else primaryPink,
-                                label = ""
-                            )
-                            val scale by animateFloatAsState(
-                                if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f,
-                                label = ""
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(color)
-                                    .padding(horizontal = 20.dp),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete Icon",
-                                    modifier = Modifier.scale(scale)
-                                )
-                            }
-                        },
-                        dismissContent = {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(230.dp)
-                                    .clickable {
-                                        navController.navigate("Detail/${favorite.mediaId}")
-                                    },
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                FilmItem(favorite)
-                            }
-                        }
+        Box(modifier = Modifier.padding(paddingValues)) {
+            if (favoriteFilms.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(250.dp),
+                        painter = painterResource(id = R.drawable.ic_placeholder),
+                        contentDescription = "Empty State"
                     )
                 }
-            }
-        }
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(
+                        items = favoriteFilms,
+                        key = { _, favorite -> favorite.mediaId }
+                    ) { _, favorite ->
+                        val dismissState = rememberDismissState()
 
-        if (openDialog.value) {
-            AlertDialog(
-                onDismissRequest = { openDialog.value = false },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            viewModel.deleteAllFavorites()
-                            openDialog.value = false
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryPink)
-                    ) {
-                        Text("Yes")
+                        if (dismissState.isDismissed(DismissDirection.EndToStart)) {
+                            LaunchedEffect(favorite) {
+                                viewModel.deleteOneFavorite(favorite)
+                            }
+                        }
+
+                        SwipeToDismiss(
+                            state = dismissState,
+                            directions = setOf(DismissDirection.EndToStart),
+                            dismissThresholds = {
+                                FractionalThreshold(0.25f)
+                            },
+                            background = {
+                                val color by animateColorAsState(
+                                    if (dismissState.targetValue == DismissValue.Default)
+                                        primaryDark else primaryPink,
+                                    label = ""
+                                )
+                                val scale by animateFloatAsState(
+                                    if (dismissState.targetValue == DismissValue.Default)
+                                        0.75f else 1f,
+                                    label = ""
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(color)
+                                        .padding(horizontal = 20.dp),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete Icon",
+                                        tint = Color.White,
+                                        modifier = Modifier.scale(scale)
+                                    )
+                                }
+                            },
+                            dismissContent = {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(230.dp)
+                                        .clickable {
+                                            navController.navigate("Detail/${favorite.mediaId}")
+                                        },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                                ) {
+                                    FilmItem(favorite)
+                                }
+                            }
+                        )
                     }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = { openDialog.value = false },
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryPink)
-                    ) {
-                        Text("No")
-                    }
-                },
-                title = { Text("Delete all favorites") },
-                text = { Text("Are you sure you want to delete all?") },
-                containerColor = Color.White,
-                textContentColor = Color.Black,
-                shape = RoundedCornerShape(12.dp)
-            )
+                }
+            }
+
+            if (openDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { openDialog.value = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                viewModel.deleteAllFavorites()
+                                openDialog.value = false
+                            }
+                        ) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { openDialog.value = false }
+                        ) {
+                            Text("No")
+                        }
+                    },
+                    title = {
+                        Text("Delete all favorites")
+                    },
+                    text = {
+                        Text("Are you sure you want to delete all?")
+                    },
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    textContentColor = MaterialTheme.colorScheme.onSurface,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
         }
     }
 }
@@ -201,21 +225,19 @@ fun FavScreen(
 @Composable
 fun FilmItem(filmItem: Favorite) {
     Box {
-        Image(
-            painter = rememberAsyncImagePainter(
-                model = filmItem.image,
-                placeholder = painterResource(R.drawable.ic_placeholder)
-            ),
-            modifier = Modifier.fillMaxSize(),
+        AsyncImage(
+            model = filmItem.image,
+            placeholder = painterResource(R.drawable.ic_placeholder),
+            contentDescription = "Movie Banner",
             contentScale = ContentScale.Crop,
-            contentDescription = "Movie Banner"
+            modifier = Modifier.fillMaxSize()
         )
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0.0f to Transparent,
+                        0f to Transparent,
                         1f to primaryDark
                     )
                 )

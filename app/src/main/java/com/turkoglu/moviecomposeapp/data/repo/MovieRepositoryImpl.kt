@@ -94,17 +94,6 @@ class MovieRepositoryImpl @Inject constructor(private val api : MovieAPI){
         }
         return Resource.Success(response)
     }
-    /*
-    suspend fun getSearch(search : String) : Resource<List<Movie>>{
-        val response = try {
-            api.getSearchMovies(query = search)
-        }catch (e : Exception){
-            return Resource.Error(message = "Unknown error occurred")
-        }
-        return Resource.Success(response).data
-    }
-
-     */
 
     fun multiSearch(queryParam: String): Flow<PagingData<Search>> {
         return Pager(
@@ -114,7 +103,6 @@ class MovieRepositoryImpl @Inject constructor(private val api : MovieAPI){
             }
         ).flow
     }
-
 
     fun getActionMovies(useIncreasingPage: Boolean): Flow<PagingData<Movie>> {
         return Pager(
@@ -192,8 +180,4 @@ class MovieRepositoryImpl @Inject constructor(private val api : MovieAPI){
             }
         ).flow
     }
-
-
-
-
 }

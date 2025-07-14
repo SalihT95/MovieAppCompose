@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
@@ -30,7 +29,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -50,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
@@ -63,7 +61,6 @@ import com.turkoglu.moviecomposeapp.util.Constants
 import retrofit2.HttpException
 import java.io.IOException
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(
     navController: NavController,
@@ -94,18 +91,18 @@ fun SearchScreen(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.Top
             ) {
-                itemsIndexed(
-                    items = searchResults.itemSnapshotList.items,
-                    key = { _, item -> item.id ?: -1 }
-                ) { _, search ->
-                    SearchItem(
-                        search = search,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(130.dp)
-                            .padding(4.dp),
-                        onClick = { navController.navigate("Detail/${search.id}") }
-                    )
+                items(count = searchResults.itemCount) { index ->
+                    val search = searchResults[index]
+                    if (search != null) {
+                        SearchItem(
+                            search = search,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(130.dp)
+                                .padding(4.dp),
+                            onClick = { navController.navigate("Detail/${search.id}") }
+                        )
+                    }
                 }
 
                 if (searchResults.loadState.append == LoadState.Loading) {
@@ -136,7 +133,9 @@ fun SearchScreen(
                     }
                     Text(
                         text = message,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
                         color = primaryPink,
                         textAlign = TextAlign.Center
                     )
@@ -212,17 +211,17 @@ fun SearchItem(
         elevation = 5.dp
     ) {
         Row {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(data = "${Constants.IMAGE_BASE_URL}/${search.posterPath}").apply(block = fun ImageRequest.Builder.() {
-                            placeholder(R.drawable.ic_placeholder)
-                            crossfade(true)
-                        }).build()
-                ),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("${Constants.IMAGE_BASE_URL}/${search.posterPath}")
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_placeholder)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Poster",
-                modifier = Modifier.fillMaxWidth(0.3f),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth(0.3f)
             )
 
             Column(

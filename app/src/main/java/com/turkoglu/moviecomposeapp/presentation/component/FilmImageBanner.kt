@@ -25,6 +25,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.presentation.detail.DetailScreenViewModel
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
@@ -60,7 +62,12 @@ fun FilmImageBanner(
     ) {
         // Poster Görseli
         AsyncImage(
-            model = state.posterPath,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(state.posterPath)
+                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
+                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                .crossfade(true)
+                .build(),
             contentDescription = "Movie Banner",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()

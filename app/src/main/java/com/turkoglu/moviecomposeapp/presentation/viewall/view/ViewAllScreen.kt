@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -70,14 +69,17 @@ fun ViewAllScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            items(movies.itemSnapshotList.items, key = { it.id ?: it.hashCode() }) { movie ->
-                MovieListItem(
-                    modifier = Modifier
-                        .height(200.dp)
-                        .width(160.dp),
-                    movie = movie,
-                    onItemClick = { navigateToDetail(movie) }
-                )
+            items(movies.itemCount) { index ->
+                val movie = movies[index]
+                if (movie != null) {
+                    MovieListItem(
+                        modifier = Modifier
+                            .height(200.dp)
+                            .width(160.dp),
+                        movie = movie,
+                        onItemClick = { navigateToDetail(movie) }
+                    )
+                }
             }
         }
     }

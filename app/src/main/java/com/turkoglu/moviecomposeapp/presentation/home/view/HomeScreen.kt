@@ -28,12 +28,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.presentation.Screen
 import com.turkoglu.moviecomposeapp.presentation.component.GenreChipsRow
@@ -121,7 +124,7 @@ fun HomeTopBar(navController: NavController) {
             text = "Movie",
             modifier = Modifier
                 .weight(1f)
-            .padding(end = 16.dp),
+                .padding(end = 16.dp),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -129,7 +132,12 @@ fun HomeTopBar(navController: NavController) {
             navController.navigate("Search")
         })
         AsyncImage(
-            model = "https://i.pravatar.cc/150?img=3",
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https://i.pravatar.cc/150?img=3")
+                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
+                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                .crossfade(true)
+                .build(),
             contentDescription = "Profile",
             modifier = Modifier
                 .size(70.dp)
@@ -161,7 +169,12 @@ fun FeaturedMovieSection(movie: Movie, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         AsyncImage(
-            model = movie.posterPath,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(movie.posterPath)
+                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
+                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                .crossfade(true)
+                .build(),
             contentDescription = movie.title,
             modifier = Modifier
                 .fillMaxWidth()
