@@ -1,7 +1,5 @@
 package com.turkoglu.moviecomposeapp.domain.model
 
-import com.turkoglu.moviecomposeapp.data.remote.dto.Genre
-
 data class MovieDetail(
     val adult: Boolean,
     val backdropPath: String?,

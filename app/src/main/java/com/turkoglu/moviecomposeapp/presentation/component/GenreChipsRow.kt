@@ -14,8 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GenreChipsRow(textColor: Color,genreList: List<String>? = emptyList<String>()  ,onGenreClick: (String) -> Unit) {
-    val genres = if(genreList.isNullOrEmpty()) listOf("Action", "Comedy", "Drama", "Fantasy", "Horror") else genreList
+fun GenreChipsRow(textColor: Color, genreList: List<String>, onGenreClick: (String) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -23,7 +22,7 @@ fun GenreChipsRow(textColor: Color,genreList: List<String>? = emptyList<String>(
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        genres.forEach { genre ->
+        genreList.forEach { genre ->
             AssistChip(
                 onClick = { onGenreClick(genre) },
                 label = { Text(text = genre, color = textColor) }

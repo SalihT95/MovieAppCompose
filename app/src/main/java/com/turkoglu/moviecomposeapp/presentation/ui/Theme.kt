@@ -2,7 +2,6 @@ package com.turkoglu.moviecomposeapp.presentation.ui
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -17,36 +16,37 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = primaryPink,
-    onPrimary = primaryDark,
-    primaryContainer = primaryDarkVariant,
-    onPrimaryContainer = lightGray,
+    primary = AccentRed,
+    onPrimary = Color.White,
+    primaryContainer = DarkSurface,
+    onPrimaryContainer = Color.White,
 
-    secondary = primaryGray,
+    secondary = GrayTextSecondary,
     onSecondary = Color.White,
-    background = primaryDark,
-    onBackground = lightGray,
-    surface = primaryDarkVariant,
-    onSurface = lightGray
+    background = DarkBackground,
+    onBackground = GrayTextPrimary,
+    surface = DarkSurface,
+    onSurface = GrayTextPrimary
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = primaryPink,
+    primary = AccentRed,
     onPrimary = Color.White,
-    primaryContainer = lightGray,
-    onPrimaryContainer = primaryDark,
+    primaryContainer = LightSurface,
+    onPrimaryContainer = Color.Black,
 
-    secondary = primaryGray,
+    secondary = LightTextSecondary,
     onSecondary = Color.Black,
-    background = lightGray,
-    onBackground = primaryDark,
-    surface = Color.White,
-    onSurface = primaryDark
+    background = LightBackground,
+    onBackground = LightTextPrimary,
+    surface = LightSurface,
+    onSurface = LightTextPrimary
 )
+
 
 @Composable
 fun MovieComposeAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true/*isSystemInDarkTheme()*/,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

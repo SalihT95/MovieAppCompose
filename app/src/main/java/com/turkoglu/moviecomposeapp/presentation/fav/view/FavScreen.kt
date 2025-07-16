@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -105,6 +106,14 @@ fun FavScreen(
     ) { paddingValues ->
 
         Box(modifier = Modifier.padding(paddingValues)) {
+            Image(
+                painter = painterResource(id = R.drawable.backend),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .blur(24.dp)
+            )
             if (favoriteFilms.isEmpty()) {
                 Box(
                     modifier = Modifier

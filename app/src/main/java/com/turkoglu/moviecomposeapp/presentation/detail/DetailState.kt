@@ -1,5 +1,5 @@
 import com.turkoglu.moviecomposeapp.R
-import com.turkoglu.moviecomposeapp.data.remote.dto.Genre
+import com.turkoglu.moviecomposeapp.domain.model.Genre
 
 import com.turkoglu.moviecomposeapp.util.Constants
 

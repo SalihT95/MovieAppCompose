@@ -8,8 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.turkoglu.moviecomposeapp.data.remote.dto.Genre
+import com.turkoglu.moviecomposeapp.data.repo.GenreRepository
 import com.turkoglu.moviecomposeapp.data.repo.MovieRepositoryImpl
+import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val movieRepository: MovieRepositoryImpl
+    private val movieRepository: MovieRepositoryImpl,
+    private val genreRepository: GenreRepository
 ) : ViewModel() {
 
     private val useIncreasingPage = true
@@ -36,6 +38,9 @@ class HomeViewModel @Inject constructor(
 
     private val _upComingState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val upComingState: State<Flow<PagingData<Movie>>> = _upComingState
+
+    private val _genres = mutableStateOf<List<Genre>>(emptyList())
+    val genres: State<List<Genre>> = _genres
 
     private val _actionState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val actionState: State<Flow<PagingData<Movie>>> = _actionState
@@ -58,8 +63,42 @@ class HomeViewModel @Inject constructor(
     private val _warState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val warState: State<Flow<PagingData<Movie>>> = _warState
 
-    private val _moviesGenres = mutableStateOf<List<Genre>>(emptyList())
-    val moviesGenres: State<List<Genre>> = _moviesGenres
+    private val _adventureState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val adventureState: State<Flow<PagingData<Movie>>> = _adventureState
+
+    private val _crimeState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val crimeState: State<Flow<PagingData<Movie>>> = _crimeState
+
+    private val _documentaryState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val documentaryState: State<Flow<PagingData<Movie>>> = _documentaryState
+
+    private val _familyState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val familyState: State<Flow<PagingData<Movie>>> = _familyState
+
+    private val _horrorState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val horrorState: State<Flow<PagingData<Movie>>> = _horrorState
+
+    private val _musicState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val musicState: State<Flow<PagingData<Movie>>> = _musicState
+
+    private val _mysteryState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val mysteryState: State<Flow<PagingData<Movie>>> = _mysteryState
+
+    private val _romanceState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val romanceState: State<Flow<PagingData<Movie>>> = _romanceState
+
+    private val _scienceFictionState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val scienceFictionState: State<Flow<PagingData<Movie>>> = _scienceFictionState
+
+    private val _tvMovieState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val tvMovieState: State<Flow<PagingData<Movie>>> = _tvMovieState
+
+    private val _thrillerState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val thrillerState: State<Flow<PagingData<Movie>>> = _thrillerState
+
+    private val _westernState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
+    val westernState: State<Flow<PagingData<Movie>>> = _westernState
+
 
     init {
         loadMovies()
@@ -71,14 +110,35 @@ class HomeViewModel @Inject constructor(
         getNowPlayingMovies()
         getUpcomingMovies()
         getActionMovies()
+        getAdventureMovies()
         getAnimationMovies()
         getComedyMovies()
+        getCrimeMovies()
+        getDocumentaryMovies()
         getDramaMovies()
+        getFamilyMovies()
         getFantasyMovies()
         getHistoryMovies()
+        getHorrorMovies()
+        getMusicMovies()
+        getMysteryMovies()
+        getRomanceMovies()
+        getScienceFictionMovies()
+        getTvMovieMovies()
+        getThrillerMovies()
         getWarMovies()
+        getWesternMovies()
+        getGenres()
     }
 
+    private fun getGenres() {
+        viewModelScope.launch {
+            genreRepository.getGenres().collect { result ->
+                result.onSuccess { list -> _genres.value = list }
+                    .onFailure { error -> /* Hata logla veya göster */ }
+            }
+        }
+    }
     private fun getPopularMovies() = viewModelScope.launch {
         _popularState.value = movieRepository.getMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
@@ -122,5 +182,65 @@ class HomeViewModel @Inject constructor(
     private fun getWarMovies() = viewModelScope.launch {
         _warState.value = movieRepository.getWarMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
+    private fun getAdventureMovies() = viewModelScope.launch {
+        _adventureState.value =
+            movieRepository.getAdventureMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getCrimeMovies() = viewModelScope.launch {
+        _crimeState.value =
+            movieRepository.getCrimeMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getDocumentaryMovies() = viewModelScope.launch {
+        _documentaryState.value =
+            movieRepository.getDocumentaryMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getFamilyMovies() = viewModelScope.launch {
+        _familyState.value =
+            movieRepository.getFamilyMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getHorrorMovies() = viewModelScope.launch {
+        _horrorState.value =
+            movieRepository.getHorrorMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getMusicMovies() = viewModelScope.launch {
+        _musicState.value =
+            movieRepository.getMusicMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getMysteryMovies() = viewModelScope.launch {
+        _mysteryState.value =
+            movieRepository.getMysteryMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getRomanceMovies() = viewModelScope.launch {
+        _romanceState.value =
+            movieRepository.getRomanceMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getScienceFictionMovies() = viewModelScope.launch {
+        _scienceFictionState.value =
+            movieRepository.getScienceFictionMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getTvMovieMovies() = viewModelScope.launch {
+        _tvMovieState.value =
+            movieRepository.getTvMovieMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getThrillerMovies() = viewModelScope.launch {
+        _thrillerState.value =
+            movieRepository.getThrillerMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
+    private fun getWesternMovies() = viewModelScope.launch {
+        _westernState.value =
+            movieRepository.getWesternMovies(useIncreasingPage).cachedIn(viewModelScope)
+    }
+
 }
 

@@ -2,22 +2,18 @@ package com.turkoglu.moviecomposeapp.presentation.home.view
 
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,10 +21,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -37,6 +34,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
+import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.presentation.Screen
 import com.turkoglu.moviecomposeapp.presentation.component.GenreChipsRow
@@ -56,16 +54,23 @@ fun HomeScreen(
     val topRatedMovies = viewModel.topRatedState.value.collectAsLazyPagingItems()
     val nowPlayingMovies = viewModel.nowPlayingState.value.collectAsLazyPagingItems()
     val upComingMovies = viewModel.upComingState.value.collectAsLazyPagingItems()
-
+    val genreList = viewModel.genres.value
     Scaffold(
-        topBar = { HomeScreenHeader(navController) },
+        topBar = { HomeScreenHeader(navController, genreList) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
+        Image(
+            painter = painterResource(id = R.drawable.backend),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(24.dp)
+        )
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
+                .padding(innerPadding),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             item {
@@ -117,14 +122,13 @@ fun HomeTopBar(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "Movie",
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 16.dp),
+                .weight(1f),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -134,87 +138,28 @@ fun HomeTopBar(navController: NavController) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data("https://i.pravatar.cc/150?img=3")
-                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
-                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .crossfade(true)
                 .build(),
             contentDescription = "Profile",
             modifier = Modifier
                 .size(70.dp)
-                .padding(start = 16.dp)
+                .padding(start = 12.dp)
                 .clip(MaterialTheme.shapes.large)
         )
     }
 }
 
-
-
 @Composable
-fun HomeScreenHeader(navController: NavController) {
-    Column {
+fun HomeScreenHeader(navController: NavController, genreList: List<Genre>) {
+    Column(modifier = Modifier.padding(top = 8.dp)) {
         HomeTopBar(navController)
-        Spacer(modifier = Modifier.height(8.dp))
-        GenreChipsRow (textColor = Color.Black, genreList = null){ genre ->
+        GenreChipsRow(
+            textColor = MaterialTheme.colorScheme.onSurface,
+            genreList = genreList.map { it.name },
+        ) { genre ->
             navController.navigate("ViewAll/$genre")
-        }
-    }
-}
-
-@Composable
-fun FeaturedMovieSection(movie: Movie, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .padding(16.dp)
-            .clip(MaterialTheme.shapes.large)
-            .clickable { onClick() }
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(movie.posterPath)
-                .placeholder(R.drawable.ic_placeholder) // Yüklenene kadar gösterilecek
-                .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
-                .crossfade(true)
-                .build(),
-            contentDescription = movie.title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
-                    )
-                )
-        )
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-        ) {
-            Text(text = movie.title, color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Text(
-                text = movie.description.take(60) + "...",
-                color = Color.White.copy(alpha = 0.8f),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun HorizontalMovieList(movies: List<Movie>, onMovieClick: (Movie) -> Unit) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(movies) { movie ->
-            MovieListItem(movie = movie, onItemClick = { onMovieClick(movie) })
         }
     }
 }
@@ -234,7 +179,8 @@ fun MovieSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
@@ -249,33 +195,28 @@ fun MovieSection(
             )
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            LazyRow(content = {
-                itemsIndexed(
-                    type.itemSnapshotList.items,
-                    key = { index, movie ->
-                        val id = movie.id ?: -1
-                        if (uniqueIds.contains(id)) {
-                            val previousMovie = uniqueIds.find { it == id }
-                            uniqueIds.remove(previousMovie)
-                        } else {
-                            uniqueIds.add(id)
-                        }
-                        val key = "${movie.id?.toString()}_${index}"
-                        key
+            itemsIndexed(
+                type.itemSnapshotList.items,
+                key = { index, movie ->
+                    val id = movie.id ?: -1
+                    if (uniqueIds.contains(id)) {
+                        val previousMovie = uniqueIds.find { it == id }
+                        uniqueIds.remove(previousMovie)
+                    } else {
+                        uniqueIds.add(id)
                     }
-                ) { _, movie ->
-                    MovieListItem(
-                        movie = movie,
-                        onItemClick = {onMovieClick(movie)}
-                    )
+                    "${movie.id?.toString()}_${index}"
                 }
-            })
+            ) { _, movie ->
+                MovieListItem(
+                    movie = movie,
+                    onItemClick = { onMovieClick(movie) }
+                )
+            }
         }
     }
 }

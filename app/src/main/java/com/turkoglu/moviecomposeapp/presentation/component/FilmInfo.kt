@@ -1,5 +1,6 @@
 package com.turkoglu.moviecomposeapp.presentation.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.turkoglu.moviecomposeapp.data.remote.dto.Genre
+import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.presentation.detail.CastState
 import com.turkoglu.moviecomposeapp.util.Constants
 
@@ -49,9 +50,13 @@ fun FilmInfo(
 ) {
     LazyColumn(contentPadding = PaddingValues(top = 425.dp), state = scrollState) {
         item {
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -70,7 +75,9 @@ fun FilmInfo(
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -120,6 +127,7 @@ fun FilmInfo(
     }
 }
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun ExpandableText(
     text: String,
@@ -157,7 +165,7 @@ fun ExpandableText(
 
     Box(modifier) {
         Text(
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onBackground,
             text = cutText ?: text,
             fontSize = 13.sp,
             modifier = Modifier

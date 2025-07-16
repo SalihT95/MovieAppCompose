@@ -1,6 +1,7 @@
 package com.turkoglu.moviecomposeapp.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ fun CircularBackButtons(
         onClick = onClick,
         modifier = Modifier
             .size(40.dp)
+            .padding(start = 8.dp)
             .clip(CircleShape)
             .background(Color.White.copy(alpha = 0.3f))
     ) {

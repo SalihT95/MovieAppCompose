@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -54,8 +55,6 @@ import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.search.SearchViewModel
-import com.turkoglu.moviecomposeapp.presentation.ui.primaryDarkVariant
-import com.turkoglu.moviecomposeapp.presentation.ui.primaryGray
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryPink
 import com.turkoglu.moviecomposeapp.util.Constants
 import retrofit2.HttpException
@@ -69,6 +68,16 @@ fun SearchScreen(
     val searchResults = viewModel.searchResults.value.collectAsLazyPagingItems()
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.backend),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(24.dp),
+            contentScale = ContentScale.Crop
+        )
+    }
     Column(Modifier.fillMaxSize()) {
         Row (Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -167,7 +176,7 @@ fun SearchBar(
     TextField(
         value = searchTerm,
         onValueChange = onSearchChanged,
-        placeholder = { Text(text = hint, color = primaryGray) },
+        placeholder = { Text(text = hint, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -178,7 +187,7 @@ fun SearchBar(
             autoCorrect = true,
             keyboardType = KeyboardType.Text
         ),
-        textStyle = TextStyle(color = Color.White),
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
         maxLines = 1,
         singleLine = true,
         trailingIcon = {
@@ -186,13 +195,13 @@ fun SearchBar(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = primaryGray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
         colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.White,
-            backgroundColor = primaryDarkVariant,
+            textColor = MaterialTheme.colorScheme.onSurface,
+            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
@@ -208,7 +217,8 @@ fun SearchItem(
     Card(
         modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
-        elevation = 5.dp
+        elevation = 5.dp,
+        backgroundColor = MaterialTheme.colorScheme.surface
     ) {
         Row {
             AsyncImage(
@@ -220,8 +230,7 @@ fun SearchItem(
                     .build(),
                 contentDescription = "Poster",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth(0.3f)
+                modifier = Modifier.fillMaxWidth(0.3f)
             )
 
             Column(
@@ -231,7 +240,7 @@ fun SearchItem(
             ) {
                 Text(
                     text = search.name ?: search.originalTitle ?: "No title",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
@@ -242,16 +251,24 @@ fun SearchItem(
                         fontSize = 10.sp,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Right,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = search.overview ?: "No description",
-                    maxLines = 3,
+                    maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Release Date: ${search.releaseDate ?: "N/A"}",
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }

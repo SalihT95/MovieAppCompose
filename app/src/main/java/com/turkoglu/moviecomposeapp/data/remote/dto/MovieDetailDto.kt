@@ -1,5 +1,6 @@
 package com.turkoglu.moviecomposeapp.data.remote.dto
 
+import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.MovieDetail
 import com.turkoglu.moviecomposeapp.util.Constants
 

@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.data.remote.dto
+package com.turkoglu.moviecomposeapp.domain.model
 
 data class Genre(
     val id: Int,

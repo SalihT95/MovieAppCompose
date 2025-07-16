@@ -4,6 +4,7 @@ import com.turkoglu.moviecomposeapp.data.remote.dto.AccountDetails
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreateRequestToken
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreateSession
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreditsDto
+import com.turkoglu.moviecomposeapp.data.remote.dto.GenreListDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieDetailDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieVideoDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MoviesDto
@@ -75,6 +76,9 @@ interface MovieAPI {
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String = API_KEY
     ) : MovieVideoDto
+
+    @GET("genre/movie/list")
+    suspend fun getGenreList(): GenreListDto
 
     @GET("authentication/token/new")
     suspend fun createRequestToken(@Query("api_key") apiKey: String = API_KEY): CreateRequestToken?
