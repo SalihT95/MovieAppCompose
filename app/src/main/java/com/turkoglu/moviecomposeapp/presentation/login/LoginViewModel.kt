@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.turkoglu.moviecomposeapp.data.repo.Login
+import com.turkoglu.moviecomposeapp.data.repo.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -12,15 +12,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepo : Login,
+    private val loginRepositoryRepo : LoginRepository,
     @ApplicationContext private val context: Context) : ViewModel() {
-
-    //private val _state = mutableStateOf(LoginState())
-    //val state: State<LoginState> = _state
-
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
@@ -53,38 +50,38 @@ class LoginViewModel @Inject constructor(
 
     fun saveRememberMeStatus(rememberMe: Boolean) {
         // SharedPreferences üzerinde hatırlama durumunu kaydet
-        sharedPreferences.edit().putBoolean("remember_me", rememberMe).apply()
+        sharedPreferences.edit { putBoolean("remember_me", rememberMe) }
         println("kayıt edildi rememberMe : $rememberMe")
         //_state.value.isRemember = rememberMe
     }
 
     fun getRememberMeStatus(): Boolean {
-        // SharedPreferences üzerinden hatırlama durumunu al
         return sharedPreferences.getBoolean("remember_me", true)
     }
 
-    fun saveCredentials(username: String, password: String) {
+    fun saveCredentials(username: String, password: String, rememberMe: Boolean) {
         // Kullanıcı adı ve şifreyi SharedPreferences'e kaydet
-        sharedPreferences.edit()
-            .putString("username", username)
-            .putString("password", password)
-            .apply()
+        sharedPreferences.edit {
+            putString("username", username)
+                .putString("password", password)
+                .putBoolean("remember_me", rememberMe)
+        }
     }
 
 
 
 
     private fun getReququestToken(){
-        viewModelScope.launch { loginRepo.getCreateRequestToken() }
+        viewModelScope.launch { loginRepositoryRepo.getCreateRequestToken() }
     }
     private fun getCreateSession(){
-        viewModelScope.launch { loginRepo.createSession() }
+        viewModelScope.launch { loginRepositoryRepo.createSession() }
     }
     private fun getCreateSessionWL(username : String , password : String){
-        viewModelScope.launch{ loginRepo.createSessionWithLogin(username , password )}
+        viewModelScope.launch{ loginRepositoryRepo.createSessionWithLogin(username , password )}
     }
 
     private fun getAccountDetail(){
-        viewModelScope.launch { loginRepo.getAccountDetail() }
+        viewModelScope.launch { loginRepositoryRepo.getAccountDetail() }
     }
 }

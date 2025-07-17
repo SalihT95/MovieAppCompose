@@ -6,45 +6,34 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.presentation.login.LoginViewModel
+
 
 @Composable
 fun LoginScreen(
@@ -52,131 +41,141 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit
 ) {
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var rememberMe by rememberSaveable { mutableStateOf(viewModel.getRememberMeStatus()) }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    //val state = viewModel.state.value
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(viewModel.getRememberMeStatus()) }
-    var passwordVisibility by remember { mutableStateOf(false) }
-    var loginButton by remember { mutableStateOf(rememberMe) }
+    val signupIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.themoviedb.org/signup"))
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
-
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.themoviedb.org/signup"))
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ -> }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo",
+            painter = painterResource(id = R.drawable.backend),
+            contentDescription = null,
             modifier = Modifier
-                .size(240.dp)
-                .clip(MaterialTheme.shapes.medium)
+                .fillMaxSize()
+                .blur(24.dp),
+            contentScale = ContentScale.Crop
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Person, contentDescription = "Username")
-            },
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Lock, contentDescription = "Password")
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = if (passwordVisibility) "Hide Password" else "Show Password",
-                    modifier = Modifier.clickable { passwordVisibility = !passwordVisibility }
-                )
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.the_movie_logo),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(180.dp)
+                    .clip(MaterialTheme.shapes.medium)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Username
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Kullanıcı Adı") },
+                leadingIcon = {
+                    Icon(Icons.Default.Person, contentDescription = null)
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Password
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Şifre") },
+                leadingIcon = {
+                    Icon(Icons.Default.Lock, contentDescription = null)
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            passwordVisible = !passwordVisible
+                        }
+                    )
+                },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Remember Me
             Row(
-                modifier = Modifier.clickable {
-                    rememberMe = !rememberMe
-                    viewModel.saveRememberMeStatus(rememberMe)
-                    println(rememberMe)
-                }
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        rememberMe = !rememberMe
+                        viewModel.saveRememberMeStatus(rememberMe)
+                    }
             ) {
                 Checkbox(
                     checked = rememberMe,
-                    onCheckedChange = { checked ->
-                        rememberMe = checked
+                    onCheckedChange = {
+                        rememberMe = it
+                        viewModel.saveRememberMeStatus(it)
                     },
-                    modifier = Modifier.padding(end = 8.dp)
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary
+                    )
                 )
                 Text(
                     "Beni Hatırla",
-                    color = Color.LightGray,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(top = 10.dp)
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                if (username == "user1" && password == "123456") {
-                    loginButton = true
-                    viewModel.login(username = username, password = password)
-                    viewModel.saveCredentials(username, password)
-                    viewModel.saveRememberMeStatus(rememberMe)
-                    onLoginSuccess()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Login", color = Color.White)
-        }
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Don't have an account? Sign up",
-            color = Color.LightGray,
-            modifier = Modifier.clickable {
-                //https://www.themoviedb.org/signup
-                launcher.launch(intent)
+            // Login Button
+            Button(
+                onClick = {
+                    if (username == "user1" && password == "123456") {
+                        viewModel.login(username, password)
+                        viewModel.saveCredentials(username, password, rememberMe)
+                        viewModel.saveRememberMeStatus(rememberMe)
+                        onLoginSuccess()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Giriş Yap", style = MaterialTheme.typography.labelLarge)
             }
-        )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Signup
+            Text(
+                text = "Hesabın yok mu? Kayıt ol",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.clickable {
+                    launcher.launch(signupIntent)
+                }
+            )
+        }
     }
-
-
 }

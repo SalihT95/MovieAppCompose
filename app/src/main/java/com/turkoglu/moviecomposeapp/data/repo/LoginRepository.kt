@@ -11,7 +11,7 @@ import com.turkoglu.moviecomposeapp.util.Resource
 import java.io.IOException
 import javax.inject.Inject
 
-class Login @Inject constructor(private val api: MovieAPI) {
+class LoginRepository @Inject constructor(private val api: MovieAPI) {
 
     suspend fun getCreateRequestToken() : Resource<CreateRequestToken>{
         val response = try {
