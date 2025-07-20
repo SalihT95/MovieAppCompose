@@ -1,14 +1,17 @@
 package com.turkoglu.moviecomposeapp.data.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
-import com.turkoglu.moviecomposeapp.data.local.FavoriteDB
+import com.turkoglu.moviecomposeapp.data.local.AppDatabase
+import com.turkoglu.moviecomposeapp.data.local.UserPreferenceManager
 import com.turkoglu.moviecomposeapp.data.remote.AuthLanguageInterceptor
 import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -40,11 +43,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFavoritesDatabase(application: Application): FavoriteDB {
+    fun provideAppDatabase(application: Application): AppDatabase {
         return Room.databaseBuilder(
             application.applicationContext,
-            FavoriteDB::class.java,
-            "favorites_database"
+            AppDatabase::class.java,
+            "app_database"
         ).fallbackToDestructiveMigration().build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferenceManager(@ApplicationContext context: Context): UserPreferenceManager {
+        return UserPreferenceManager(context)
     }
 }

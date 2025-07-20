@@ -2,8 +2,8 @@ package com.turkoglu.moviecomposeapp.presentation.fav
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.turkoglu.moviecomposeapp.data.local.Favorite
 import com.turkoglu.moviecomposeapp.data.repo.FavoritesRepo
+import com.turkoglu.moviecomposeapp.domain.model.Favorite
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch

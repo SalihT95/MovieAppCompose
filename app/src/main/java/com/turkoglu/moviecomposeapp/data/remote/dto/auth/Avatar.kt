@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.data.remote.dto
+package com.turkoglu.moviecomposeapp.data.remote.dto.auth
 
 data class Avatar(
     val gravatar: Gravatar,

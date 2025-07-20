@@ -1,9 +1,9 @@
-package com.turkoglu.moviecomposeapp.data.local
+package com.turkoglu.moviecomposeapp.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "favoritestable")
+@Entity(tableName = "favorites_table")
 data class Favorite(
     val favorite: Boolean,
     @PrimaryKey val mediaId: Int,

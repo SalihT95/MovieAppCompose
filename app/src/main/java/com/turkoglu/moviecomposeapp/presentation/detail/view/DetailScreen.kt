@@ -42,7 +42,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
-import com.turkoglu.moviecomposeapp.data.local.Favorite
+import com.turkoglu.moviecomposeapp.domain.model.Favorite
 import com.turkoglu.moviecomposeapp.presentation.component.CastItem
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.component.CircularFavoriteButtons

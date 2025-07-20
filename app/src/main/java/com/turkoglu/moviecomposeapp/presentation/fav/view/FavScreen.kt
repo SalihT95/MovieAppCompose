@@ -59,7 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.turkoglu.moviecomposeapp.R
-import com.turkoglu.moviecomposeapp.data.local.Favorite
+import com.turkoglu.moviecomposeapp.domain.model.Favorite
 import com.turkoglu.moviecomposeapp.presentation.component.VoteAverageRatingIndicator
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.Transparent

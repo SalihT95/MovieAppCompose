@@ -1,16 +1,16 @@
 package com.turkoglu.moviecomposeapp.data.remote
 
-import com.turkoglu.moviecomposeapp.data.remote.dto.AccountDetails
-import com.turkoglu.moviecomposeapp.data.remote.dto.CreateRequestToken
-import com.turkoglu.moviecomposeapp.data.remote.dto.CreateSession
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreditsDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.GenreListDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieDetailDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieVideoDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MoviesDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MultiSearchDto
-import com.turkoglu.moviecomposeapp.data.remote.dto.RequestCreateSession
-import com.turkoglu.moviecomposeapp.data.remote.dto.RequestCreateSessionWL
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.AccountDetails
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateRequestToken
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateSession
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSession
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSessionWL
 import com.turkoglu.moviecomposeapp.util.Constants.API_KEY
 import com.turkoglu.moviecomposeapp.util.Constants.DEFAULT_PAGE
 import retrofit2.http.Body

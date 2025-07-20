@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.turkoglu.moviecomposeapp.presentation.detail.view.DetailScreen
 import com.turkoglu.moviecomposeapp.presentation.fav.view.FavScreen
 import com.turkoglu.moviecomposeapp.presentation.home.view.HomeScreen
-import com.turkoglu.moviecomposeapp.presentation.login.LoginViewModel
+import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.login.views.LoginScreen
 import com.turkoglu.moviecomposeapp.presentation.search.views.SearchScreen
 import com.turkoglu.moviecomposeapp.presentation.settings.view.SettingsScreen
@@ -21,8 +21,8 @@ import com.turkoglu.moviecomposeapp.presentation.viewall.view.ViewAllScreen
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val viewModel: LoginViewModel = hiltViewModel()
-    val isUserLoggedIn = viewModel.getRememberMeStatus()
+    val viewModel: AuthViewModel = hiltViewModel()
+    val isUserLoggedIn = viewModel.rememberMe
 
     NavHost(
         navController = navController,

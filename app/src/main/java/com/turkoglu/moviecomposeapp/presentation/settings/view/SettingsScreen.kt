@@ -21,12 +21,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.turkoglu.moviecomposeapp.R
-import com.turkoglu.moviecomposeapp.presentation.login.LoginViewModel
+import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     Box(
         modifier = Modifier
@@ -50,9 +50,9 @@ fun SettingsScreen(
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .clickable {
-                        viewModel.saveRememberMeStatus(rememberMe = false)
+                        viewModel.clearCredentials()
                         navController.navigate("Login") {
-                            popUpTo(0) { inclusive = true } // tüm geçmişi sil
+                            popUpTo(0) { inclusive = true }
                         }
                     }
             )

@@ -1,29 +1,29 @@
 package com.turkoglu.moviecomposeapp.data.repo
 
-import com.turkoglu.moviecomposeapp.data.local.Favorite
-import com.turkoglu.moviecomposeapp.data.local.FavoriteDB
+import com.turkoglu.moviecomposeapp.data.local.AppDatabase
+import com.turkoglu.moviecomposeapp.domain.model.Favorite
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class FavoritesRepo @Inject constructor(private val database: FavoriteDB) {
+class FavoritesRepo @Inject constructor(private val database: AppDatabase) {
 
     fun getFavorites(): Flow<List<Favorite>> {
-        return database.dao.getAllFavorites()
+        return database.favoriteDao.getAllFavorites()
     }
 
     fun getAFavorite(mediaId: Int): Flow<Favorite?> {
-        return database.dao.getAFavorite(mediaId)
+        return database.favoriteDao.getAFavorite(mediaId)
     }
 
     suspend fun insertFavorite(favorite: Favorite) {
-        database.dao.insertFavorite(favorite)
+        database.favoriteDao.insertFavorite(favorite)
     }
 
     suspend fun deleteOneFavorite(favorite: Favorite) {
-        database.dao.deleteAFavorite(favorite)
+        database.favoriteDao.deleteAFavorite(favorite)
     }
 
     suspend fun deleteAllFavorites() {
-        database.dao.deleteAllFavorites()
+        database.favoriteDao.deleteAllFavorites()
     }
 }
