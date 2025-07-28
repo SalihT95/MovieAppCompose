@@ -4,14 +4,17 @@ import com.turkoglu.moviecomposeapp.util.Constants
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthLanguageInterceptor : Interceptor {
+class AuthLanguageInterceptor(
+    private val languageProvider: () -> String
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val originalUrl = originalRequest.url
 
+
         val newUrl = originalUrl.newBuilder()
             .addQueryParameter("api_key", Constants.API_KEY)
-            .addQueryParameter("language", "tr-TR")
+            .addQueryParameter("language", languageProvider())
             .build()
 
         val newRequest = originalRequest.newBuilder()

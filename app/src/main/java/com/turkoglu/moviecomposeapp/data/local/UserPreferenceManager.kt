@@ -23,6 +23,7 @@ class UserPreferenceManager(context: Context) {
         private const val KEY_PASSWORD = "password"
         private const val KEY_REMEMBER_ME = "remember_me"
         private const val KEY_REQUEST_TOKEN = "request_token"
+        private const val KEY_LANGUAGE = "selected_language"
     }
 
     fun saveSessionId(sessionId: String) = prefs.edit { putString(KEY_SESSION_ID, sessionId) }
@@ -39,6 +40,11 @@ class UserPreferenceManager(context: Context) {
 
     fun saveRequestToken(token: String) = prefs.edit { putString(KEY_REQUEST_TOKEN, token) }
     fun getRequestToken(): String? = prefs.getString(KEY_REQUEST_TOKEN, null)
+
+    fun saveLanguage(languageCode: String) =
+        prefs.edit { putString("selected_language", languageCode) }
+
+    fun getLanguage(): String? = prefs.getString(KEY_LANGUAGE, null)
 
     fun clearAll() = prefs.edit { clear() }
 }

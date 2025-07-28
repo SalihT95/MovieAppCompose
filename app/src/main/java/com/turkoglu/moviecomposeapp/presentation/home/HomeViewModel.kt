@@ -39,8 +39,8 @@ class HomeViewModel @Inject constructor(
     private val _upComingState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val upComingState: State<Flow<PagingData<Movie>>> = _upComingState
 
-    private val _genres = mutableStateOf<List<Genre>>(emptyList())
-    val genres: State<List<Genre>> = _genres
+    private val _genres = mutableStateOf<Flow<List<Genre>>>(emptyFlow())
+    val genres: State<Flow<List<Genre>>> = _genres
 
     private val _actionState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val actionState: State<Flow<PagingData<Movie>>> = _actionState
@@ -105,6 +105,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadMovies() {
+        getGenres()
         getPopularMovies()
         getTopRatedMovies()
         getNowPlayingMovies()
@@ -128,16 +129,10 @@ class HomeViewModel @Inject constructor(
         getThrillerMovies()
         getWarMovies()
         getWesternMovies()
-        getGenres()
     }
 
-    private fun getGenres() {
-        viewModelScope.launch {
-            genreRepository.getGenres().collect { result ->
-                result.onSuccess { list -> _genres.value = list }
-                    .onFailure { error -> /* Hata logla veya göster */ }
-            }
-        }
+    private fun getGenres() = viewModelScope.launch {
+        _genres.value = genreRepository.getGenres()
     }
     private fun getPopularMovies() = viewModelScope.launch {
         _popularState.value = movieRepository.getMovies(useIncreasingPage).cachedIn(viewModelScope)

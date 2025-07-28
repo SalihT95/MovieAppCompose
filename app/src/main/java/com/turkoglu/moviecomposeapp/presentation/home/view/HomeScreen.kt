@@ -61,7 +61,7 @@ fun HomeScreen(
     val topRatedMovies = viewModel.topRatedState.value.collectAsLazyPagingItems()
     val nowPlayingMovies = viewModel.nowPlayingState.value.collectAsLazyPagingItems()
     val upComingMovies = viewModel.upComingState.value.collectAsLazyPagingItems()
-    val genreList = viewModel.genres.value
+    val genreList = viewModel.genres.value.collectAsState(initial = emptyList()).value
     val currentUser by userViewModel.currentUser.collectAsState()
 
     Scaffold(

@@ -8,6 +8,7 @@ import com.turkoglu.moviecomposeapp.data.local.UserPreferenceManager
 import com.turkoglu.moviecomposeapp.data.remote.AuthLanguageInterceptor
 import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.util.Constants.BASE_URL
+import com.turkoglu.moviecomposeapp.util.LanguagePreference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +27,7 @@ object AppModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthLanguageInterceptor())
+            .addInterceptor(AuthLanguageInterceptor { LanguagePreference.selectedLanguage })
             .build()
     }
 

@@ -11,9 +11,7 @@ class GenreRepository @Inject constructor(
     private val api: MovieAPI
 ) {
 
-    fun getGenres(): Flow<Result<List<Genre>>> = flow {
-        emit(runCatching {
-            api.getGenreList().genres.map { it.toGenre() }
-        })
+    fun getGenres(): Flow<List<Genre>> = flow {
+        emit(api.getGenreList().genres.map { it.toGenre() })
     }
 }

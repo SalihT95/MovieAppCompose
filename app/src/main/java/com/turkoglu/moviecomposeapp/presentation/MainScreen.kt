@@ -15,6 +15,7 @@ import com.turkoglu.moviecomposeapp.presentation.home.view.HomeScreen
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.login.views.LoginScreen
 import com.turkoglu.moviecomposeapp.presentation.search.views.SearchScreen
+import com.turkoglu.moviecomposeapp.presentation.settings.view.AboutScreen
 import com.turkoglu.moviecomposeapp.presentation.settings.view.SettingsScreen
 import com.turkoglu.moviecomposeapp.presentation.viewall.view.ViewAllScreen
 
@@ -83,5 +84,11 @@ fun MainScreen(navController: NavHostController) {
                 }
             }
         }
+        composable("About") {
+            AppScaffold(navController, showBottomBar = false) {
+                AboutScreen(onBack = { navController.popBackStack() })
+            }
+        }
+
     }
 }
