@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.util.Constants.IMAGE_BASE_URL
 
-data class MoviesDto(
+data class MovieListResponseDto (
     val page: Int,
     val results: List<Result>,
     @SerializedName("total_pages")
@@ -12,7 +12,7 @@ data class MoviesDto(
     @SerializedName("total_results")
     val totalResults: Int
 )
-fun MoviesDto.toMovieList() : List<Movie> {
+fun MovieListResponseDto.toMovieList() : List<Movie> {
     return results.map{
         Movie(it.id,it.title,it.overview, getImageUrl(it.posterPath),it.releaseDate,it.voteAverage) }
 }

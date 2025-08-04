@@ -88,7 +88,6 @@ class ViewAllScreenViewModel @Inject constructor(
         "Vahşi Batı" to 37
     )
 
-
     init {
         val selectedType = savedStateHandle["selectedType"] ?: ""
         _screenTitle.value = ViewAllState(movies = selectedType)
@@ -97,7 +96,7 @@ class ViewAllScreenViewModel @Inject constructor(
 
     private fun fetchMovies(type: String) {
         val fetcher = when (type) {
-            "Popular" -> movieRepository.getMovies(useIncreasingPage)
+            "Popular" -> movieRepository.getPopularMovies(useIncreasingPage)
             "Top Rated" -> movieRepository.getTopRatedMovies(useIncreasingPage)
             "Now Playing" -> movieRepository.getNowPlayingMovies(useIncreasingPage)
             "Upcoming" -> movieRepository.getUpcomingMovies(useIncreasingPage)
@@ -110,37 +109,4 @@ class ViewAllScreenViewModel @Inject constructor(
             _moviesFlow.value = fetcher.cachedIn(viewModelScope)
         }
     }
-
-
-//        val fetcher: suspend () -> Flow<PagingData<Movie>> = when (type) {
-//            "Popular" -> { { movieRepository.getMovies(useIncreasingPage) } }
-//            "Top Rated" -> { { movieRepository.getTopRatedMovies(useIncreasingPage) } }
-//            "Now Playing" -> { { movieRepository.getNowPlayingMovies(useIncreasingPage) } }
-//            "Upcoming" -> { { movieRepository.getUpcomingMovies(useIncreasingPage) } }
-//            "Action" -> { { movieRepository.getActionMovies(useIncreasingPage) } }
-//            "Adventure" -> { { movieRepository.getAdventureMovies(useIncreasingPage) } }
-//            "Animation" -> { { movieRepository.getAnimationMovies(useIncreasingPage) } }
-//            "Comedy" -> { { movieRepository.getComedyMovies(useIncreasingPage) } }
-//            "Crime" -> { { movieRepository.getCrimeMovies(useIncreasingPage) } }
-//            "Documentary" -> { { movieRepository.getDocumentaryMovies(useIncreasingPage) } }
-//            "Drama" -> { { movieRepository.getDramaMovies(useIncreasingPage) } }
-//            "Family" -> { { movieRepository.getFamilyMovies(useIncreasingPage) } }
-//            "Fantasy" -> { { movieRepository.getFantasyMovies(useIncreasingPage) } }
-//            "History" -> { { movieRepository.getHistoryMovies(useIncreasingPage) } }
-//            "Horror" -> { { movieRepository.getHorrorMovies(useIncreasingPage) } }
-//            "Music" -> { { movieRepository.getMusicMovies(useIncreasingPage) } }
-//            "Mystery" -> { { movieRepository.getMysteryMovies(useIncreasingPage) } }
-//            "Romance" -> { { movieRepository.getRomanceMovies(useIncreasingPage) } }
-//            "Science Fiction" -> { { movieRepository.getScienceFictionMovies(useIncreasingPage) } }
-//            "TV Movie" -> { { movieRepository.getTvMovieMovies(useIncreasingPage) } }
-//            "Thriller" -> { { movieRepository.getThrillerMovies(useIncreasingPage) } }
-//            "War" -> { { movieRepository.getWarMovies(useIncreasingPage) } }
-//            "Western" -> { { movieRepository.getWesternMovies(useIncreasingPage) } }
-//            else -> { { emptyFlow() } }
-//        }
-
-//        viewModelScope.launch {
-//            _moviesFlow.value = fetcher().cachedIn(viewModelScope)
-//        }
-//    }
 }

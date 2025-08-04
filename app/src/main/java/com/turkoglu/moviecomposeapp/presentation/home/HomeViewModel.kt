@@ -43,62 +43,42 @@ class HomeViewModel @Inject constructor(
     val genres: State<Flow<List<Genre>>> = _genres
 
     private val _actionState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val actionState: State<Flow<PagingData<Movie>>> = _actionState
 
     private val _animationState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val animationState: State<Flow<PagingData<Movie>>> = _animationState
 
     private val _comedyState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val comedyState: State<Flow<PagingData<Movie>>> = _comedyState
 
     private val _dramaState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val dramaState: State<Flow<PagingData<Movie>>> = _dramaState
 
     private val _fantasyState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val fantasyState: State<Flow<PagingData<Movie>>> = _fantasyState
 
     private val _historyState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val historyState: State<Flow<PagingData<Movie>>> = _historyState
 
     private val _warState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val warState: State<Flow<PagingData<Movie>>> = _warState
 
     private val _adventureState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val adventureState: State<Flow<PagingData<Movie>>> = _adventureState
 
     private val _crimeState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val crimeState: State<Flow<PagingData<Movie>>> = _crimeState
 
     private val _documentaryState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val documentaryState: State<Flow<PagingData<Movie>>> = _documentaryState
 
     private val _familyState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val familyState: State<Flow<PagingData<Movie>>> = _familyState
 
     private val _horrorState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val horrorState: State<Flow<PagingData<Movie>>> = _horrorState
 
     private val _musicState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val musicState: State<Flow<PagingData<Movie>>> = _musicState
 
     private val _mysteryState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val mysteryState: State<Flow<PagingData<Movie>>> = _mysteryState
 
     private val _romanceState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val romanceState: State<Flow<PagingData<Movie>>> = _romanceState
 
     private val _scienceFictionState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val scienceFictionState: State<Flow<PagingData<Movie>>> = _scienceFictionState
 
     private val _tvMovieState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val tvMovieState: State<Flow<PagingData<Movie>>> = _tvMovieState
 
     private val _thrillerState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val thrillerState: State<Flow<PagingData<Movie>>> = _thrillerState
 
     private val _westernState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
-    val westernState: State<Flow<PagingData<Movie>>> = _westernState
-
 
     init {
         loadMovies()
@@ -135,7 +115,7 @@ class HomeViewModel @Inject constructor(
         _genres.value = genreRepository.getGenres()
     }
     private fun getPopularMovies() = viewModelScope.launch {
-        _popularState.value = movieRepository.getMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _popularState.value = movieRepository.getPopularMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getTopRatedMovies() = viewModelScope.launch {
@@ -236,6 +216,4 @@ class HomeViewModel @Inject constructor(
         _westernState.value =
             movieRepository.getWesternMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
-
 }
-

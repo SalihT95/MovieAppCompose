@@ -4,14 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.turkoglu.moviecomposeapp.data.paging.GenrePagingSource
-import com.turkoglu.moviecomposeapp.data.paging.PagingNowPlaying
-import com.turkoglu.moviecomposeapp.data.paging.PagingNowPlayingHome
-import com.turkoglu.moviecomposeapp.data.paging.PagingPopularMovies
-import com.turkoglu.moviecomposeapp.data.paging.PagingPopularMoviesHome
-import com.turkoglu.moviecomposeapp.data.paging.PagingTopRatedMovies
-import com.turkoglu.moviecomposeapp.data.paging.PagingTopRatedMoviesHome
-import com.turkoglu.moviecomposeapp.data.paging.PagingUpComingMovies
-import com.turkoglu.moviecomposeapp.data.paging.PagingUpComingMoviesHome
+import com.turkoglu.moviecomposeapp.data.paging.MovieListPagingSource
 import com.turkoglu.moviecomposeapp.data.paging.SearchPagingSource
 import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreditsDto
@@ -25,37 +18,32 @@ import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(private val api: MovieAPI) {
 
-    internal fun genrePager(genreId: Int, useIncreasingPage: Boolean): Flow<PagingData<Movie>> {
+    internal fun genrePager(genreId: Int, useSinglePage: Boolean): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(enablePlaceholders = false, pageSize = 100),
             pagingSourceFactory = {
-                GenrePagingSource(api, genreId, isPaginated = useIncreasingPage)
+                GenrePagingSource(api, genreId, isSinglePage = useSinglePage)
             }
         ).flow
     }
-
-    fun getMovies(useIncreasingPage: Boolean): Flow<PagingData<Movie>> =
+    fun getPopularMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         Pager(PagingConfig(enablePlaceholders = false, pageSize = 100)) {
-            if (useIncreasingPage) PagingPopularMoviesHome(api)
-            else PagingPopularMovies(api)
+            MovieListPagingSource(api::getPopularMovies, isSinglePage = useSinglePage)
         }.flow
 
-    fun getTopRatedMovies(useIncreasingPage: Boolean): Flow<PagingData<Movie>> =
+    fun getTopRatedMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         Pager(PagingConfig(enablePlaceholders = false, pageSize = 100)) {
-            if (useIncreasingPage) PagingTopRatedMoviesHome(api)
-            else PagingTopRatedMovies(api)
+            MovieListPagingSource(api::getTopRatedMovies, isSinglePage = useSinglePage)
         }.flow
 
-    fun getNowPlayingMovies(useIncreasingPage: Boolean): Flow<PagingData<Movie>> =
+    fun getNowPlayingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         Pager(PagingConfig(enablePlaceholders = false, pageSize = 100)) {
-            if (useIncreasingPage) PagingNowPlayingHome(api)
-            else PagingNowPlaying(api)
+            MovieListPagingSource(api::getNowPlayingMovies, isSinglePage = useSinglePage)
         }.flow
 
-    fun getUpcomingMovies(useIncreasingPage: Boolean): Flow<PagingData<Movie>> =
+    fun getUpcomingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         Pager(PagingConfig(enablePlaceholders = false, pageSize = 100)) {
-            if (useIncreasingPage) PagingUpComingMoviesHome(api)
-            else PagingUpComingMovies(api)
+            MovieListPagingSource(api::getUpcomingMovies, isSinglePage = useSinglePage)
         }.flow
 
     suspend fun getMovieDetail(movieId: Int): MovieDetailDto = api.getMovieDetail(movieId)
@@ -71,24 +59,24 @@ class MovieRepositoryImpl @Inject constructor(private val api: MovieAPI) {
             SearchPagingSource(api, queryParam)
         }.flow
 
-    fun getActionMovies(useIncreasingPage: Boolean) = genrePager(28, useIncreasingPage)
-    fun getAdventureMovies(useIncreasingPage: Boolean) = genrePager(12, useIncreasingPage)
-    fun getAnimationMovies(useIncreasingPage: Boolean) = genrePager(16, useIncreasingPage)
-    fun getComedyMovies(useIncreasingPage: Boolean) = genrePager(35, useIncreasingPage)
-    fun getCrimeMovies(useIncreasingPage: Boolean) = genrePager(80, useIncreasingPage)
-    fun getDocumentaryMovies(useIncreasingPage: Boolean) = genrePager(99, useIncreasingPage)
-    fun getDramaMovies(useIncreasingPage: Boolean) = genrePager(18, useIncreasingPage)
-    fun getFamilyMovies(useIncreasingPage: Boolean) = genrePager(10751, useIncreasingPage)
-    fun getFantasyMovies(useIncreasingPage: Boolean) = genrePager(14, useIncreasingPage)
-    fun getHistoryMovies(useIncreasingPage: Boolean) = genrePager(36, useIncreasingPage)
-    fun getHorrorMovies(useIncreasingPage: Boolean) = genrePager(27, useIncreasingPage)
-    fun getMusicMovies(useIncreasingPage: Boolean) = genrePager(10402, useIncreasingPage)
-    fun getMysteryMovies(useIncreasingPage: Boolean) = genrePager(9648, useIncreasingPage)
-    fun getRomanceMovies(useIncreasingPage: Boolean) = genrePager(10749, useIncreasingPage)
-    fun getScienceFictionMovies(useIncreasingPage: Boolean) = genrePager(878, useIncreasingPage)
-    fun getTvMovieMovies(useIncreasingPage: Boolean) = genrePager(10770, useIncreasingPage)
-    fun getThrillerMovies(useIncreasingPage: Boolean) = genrePager(53, useIncreasingPage)
-    fun getWarMovies(useIncreasingPage: Boolean) = genrePager(10752, useIncreasingPage)
-    fun getWesternMovies(useIncreasingPage: Boolean) = genrePager(37, useIncreasingPage)
+    fun getActionMovies(useSinglePage: Boolean) = genrePager(28, useSinglePage)
+    fun getAdventureMovies(useSinglePage: Boolean) = genrePager(12, useSinglePage)
+    fun getAnimationMovies(useSinglePage: Boolean) = genrePager(16, useSinglePage)
+    fun getComedyMovies(useSinglePage: Boolean) = genrePager(35, useSinglePage)
+    fun getCrimeMovies(useSinglePage: Boolean) = genrePager(80, useSinglePage)
+    fun getDocumentaryMovies(useSinglePage: Boolean) = genrePager(99, useSinglePage)
+    fun getDramaMovies(useSinglePage: Boolean) = genrePager(18, useSinglePage)
+    fun getFamilyMovies(useSinglePage: Boolean) = genrePager(10751, useSinglePage)
+    fun getFantasyMovies(useSinglePage: Boolean) = genrePager(14, useSinglePage)
+    fun getHistoryMovies(useSinglePage: Boolean) = genrePager(36, useSinglePage)
+    fun getHorrorMovies(useSinglePage: Boolean) = genrePager(27, useSinglePage)
+    fun getMusicMovies(useSinglePage: Boolean) = genrePager(10402, useSinglePage)
+    fun getMysteryMovies(useSinglePage: Boolean) = genrePager(9648, useSinglePage)
+    fun getRomanceMovies(useSinglePage: Boolean) = genrePager(10749, useSinglePage)
+    fun getScienceFictionMovies(useSinglePage: Boolean) = genrePager(878, useSinglePage)
+    fun getTvMovieMovies(useSinglePage: Boolean) = genrePager(10770, useSinglePage)
+    fun getThrillerMovies(useSinglePage: Boolean) = genrePager(53, useSinglePage)
+    fun getWarMovies(useSinglePage: Boolean) = genrePager(10752, useSinglePage)
+    fun getWesternMovies(useSinglePage: Boolean) = genrePager(37, useSinglePage)
 
 }

@@ -2,14 +2,13 @@ package com.turkoglu.moviecomposeapp.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
+import com.turkoglu.moviecomposeapp.data.remote.dto.MovieListResponseDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.toMovieList
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import java.io.IOException
 
-class GenrePagingSource(
-    private val api: MovieAPI,
-    private val genreId: Int,
+class MovieListPagingSource(
+    private val apiCall: suspend (page: Int) -> MovieListResponseDto ,
     private val isSinglePage: Boolean = false
 ) : PagingSource<Int, Movie>() {
 
@@ -18,7 +17,7 @@ class GenrePagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         return try {
             val nextPage = if (isSinglePage) 1 else params.key ?: 1
-            val response = api.getGenresMovies(page = nextPage, genre = genreId)
+            val response = apiCall(nextPage)
             val movieList = response.toMovieList()
 
             LoadResult.Page(

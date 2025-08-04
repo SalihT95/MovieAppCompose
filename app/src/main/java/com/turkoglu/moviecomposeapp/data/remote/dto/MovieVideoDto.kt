@@ -26,6 +26,6 @@ data class Video(
 
 fun MovieVideoDto.toVideo() : List<VideoModel> {
     return results.map {
-        VideoModel(it.key) // video model içinde list<video> var göndermeme gerek yok knk
+        VideoModel(it.key)
     }
 }
