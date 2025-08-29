@@ -2,7 +2,7 @@ package com.turkoglu.moviecomposeapp.presentation.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.turkoglu.moviecomposeapp.data.local.UserPreferenceManager
+import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.data.repo.UserRepository
 import com.turkoglu.moviecomposeapp.domain.model.UserAccount
 import com.turkoglu.moviecomposeapp.util.LanguagePreference
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val userPrefs: UserPreferenceManager
+    private val userPrefs: UserPrefs
 ) : ViewModel() {
 
     // AccountDetails flow
@@ -39,37 +39,35 @@ class UserViewModel @Inject constructor(
     }
 
     private fun loadLanguagePreference() {
-        val savedLang = userPrefs.getLanguage() ?: "tr"
-        _selectedLanguage.value = savedLang
-        LanguagePreference.selectedLanguage = savedLang
+        viewModelScope.launch {
+            userPrefs.getLanguage().collect { savedLang ->
+                _selectedLanguage.value = savedLang
+                LanguagePreference.selectedLanguage = savedLang
+            }
+        }
     }
 
     fun updateLanguage(lang: String) {
-        _selectedLanguage.value = lang
-        LanguagePreference.selectedLanguage = lang
-        userPrefs.saveLanguage(lang)
-
         viewModelScope.launch {
-            userRepository.saveUser(
-                UserAccount(
-                    id = currentUser.value?.id ?: 0,
-                    username = currentUser.value?.username ?: "",
-                    name = currentUser.value?.name,
-                    avatarUrl = currentUser.value?.avatarUrl,
-                    includeAdult = currentUser.value?.includeAdult ?: false,
-                    iso31661 = lang,
-                    iso6391 = lang
-                )
-            )
+            // StateFlow güncellemesi
+            _selectedLanguage.value = lang
+            LanguagePreference.selectedLanguage = lang
+            userPrefs.saveLanguage(lang)
+
+            // UserAccount güncellemesi
             _currentUser.value = currentUser.value?.copy(
                 iso31661 = lang,
                 iso6391 = lang
             )
+
+            // DB kaydı
+            currentUser.value?.let { user ->
+                userRepository.saveUser(user.copy(iso31661 = lang, iso6391 = lang))
+            }
         }
     }
 
-
-    fun loadUser() {
+    private fun loadUser() {
         viewModelScope.launch {
             userRepository.getUserFlow().collect { user ->
                 _currentUser.value = user

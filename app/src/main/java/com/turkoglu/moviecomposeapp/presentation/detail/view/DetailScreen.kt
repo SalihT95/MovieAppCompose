@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Favorite
+import com.turkoglu.moviecomposeapp.presentation.Screen
 import com.turkoglu.moviecomposeapp.presentation.component.CastItem
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.component.CircularFavoriteButtons
@@ -183,7 +185,14 @@ fun DetailScreen(
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     itemsIndexed(castState.cast, key = { _, cast -> cast.id }) { _, cast ->
                         CastItem(
-                            modifier = Modifier,
+                            modifier = Modifier.clickable {
+                                navController.navigate(
+                                    Screen.Cast.route.replace(
+                                        "{personId}",
+                                        cast.id.toString()
+                                    )
+                                )
+                            },
                             castImageUrl = "${Constants.IMAGE_BASE_URL}/${cast.profile_path}",
                             castName = cast.name
                         )

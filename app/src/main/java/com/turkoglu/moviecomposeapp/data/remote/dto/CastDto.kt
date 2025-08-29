@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Cast(
+data class CastDto(
     val adult: Boolean,
     val gender: Int,
     val id: Int,

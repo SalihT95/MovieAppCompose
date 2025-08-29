@@ -15,8 +15,10 @@ sealed class Screen(
     val title: String = "",
     val isBottomBarVisible: Boolean = false
 ) {
-    val baseRoute: String
-        get() = route.substringBefore("/{")
+    val baseRoute: String get() = route.substringBefore("/{")
+
+    object Splash : Screen("Splash", null, "Splash", false)
+    object Onboarding : Screen("Onboarding", null, "Onboarding", false)
 
     object Login : Screen("Login", Icons.Rounded.AccountCircle, "Login", false)
     object Home : Screen("Home", Icons.Rounded.Home, "Home", true)
@@ -25,4 +27,6 @@ sealed class Screen(
     object Search : Screen("Search", Icons.Rounded.Search, "Search", false)
     object Detail : Screen("Detail/{movieId}", Icons.Rounded.Info, "Detail", false)
     object ViewAll : Screen("ViewAll/{selectedType}", Icons.Rounded.Info, "View All", false)
+
+    object Cast : Screen("Cast/{personId}", null, "Cast", false)
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.turkoglu.moviecomposeapp.data.remote.dto.toCastList
 import com.turkoglu.moviecomposeapp.data.repo.MovieRepositoryImpl
 import com.turkoglu.moviecomposeapp.domain.use_case.GetMovieDetailUseCase
 import com.turkoglu.moviecomposeapp.domain.use_case.GetVideoUrlUseCase
@@ -79,7 +80,7 @@ class DetailScreenViewModel @Inject constructor(
         viewModelScope.launch {
             val result = repo.getMovieCasts(movieId)
             result.data?.let { dto ->
-                _castState.value = CastState(cast = dto.cast, id = dto.id)
+                _castState.value = CastState(cast = dto.toCastList(), id = dto.id)
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.turkoglu.moviecomposeapp.presentation.login.views
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,11 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,13 +50,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.login.LoginUiState
 import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -63,10 +64,14 @@ fun LoginScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit
 ) {
+    // EncryptedSharedPreferences kaynaklı başlangıç değerleri
     var username by rememberSaveable { mutableStateOf(viewModel.savedUsername) }
     var password by rememberSaveable { mutableStateOf(viewModel.savedPassword) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    var rememberMe by rememberSaveable { mutableStateOf(viewModel.rememberMe) }
+
+    // 🔹 rememberMe artık StateFlow<Boolean> → Compose state’e çevir
+    val rememberMe by viewModel.rememberMe.collectAsStateWithLifecycle()
+
     val loginState = viewModel.loginState
 
     LaunchedEffect(Unit) {
@@ -113,7 +118,8 @@ fun LoginScreen(
                 label = { Text("Kullanıcı Adı") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -127,16 +133,21 @@ fun LoginScreen(
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            passwordVisible = !passwordVisible
-                        }
+                        contentDescription = if (passwordVisible) "Şifreyi Gizle" else "Şifreyi Göster",
+                        modifier = Modifier.clickable { passwordVisible = !passwordVisible }
                     )
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (username.isNotBlank() && password.isNotBlank() && loginState !is LoginUiState.Loading) {
+                            viewModel.login(username.trim(), password)
+                        }
+                    }
                 ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -149,16 +160,13 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        rememberMe = !rememberMe
-                        viewModel.updateRememberMe(rememberMe)
+                        // Satıra tıklayınca toggle
+                        viewModel.updateRememberMe(!rememberMe)
                     }
             ) {
                 Checkbox(
                     checked = rememberMe,
-                    onCheckedChange = {
-                        rememberMe = it
-                        viewModel.updateRememberMe(it)
-                    },
+                    onCheckedChange = { checked -> viewModel.updateRememberMe(checked) },
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -169,9 +177,7 @@ fun LoginScreen(
 
             // Login button
             Button(
-                onClick = {
-                    viewModel.login(username.trim(), password)
-                },
+                onClick = { viewModel.login(username.trim(), password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -196,12 +202,25 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.primary
                 ),
-                modifier = Modifier.clickable {
-                    launcher.launch(signupIntent)
-                }
+                modifier = Modifier.clickable { launcher.launch(signupIntent) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Üye olmadan devam et
+            Button(
+                onClick = {
+                    // Direkt success tetikle
+                    onLoginSuccess()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text("Üye Olmadan Devam Et", style = MaterialTheme.typography.labelLarge)
+            }
 
             when (loginState) {
                 is LoginUiState.Error -> {
@@ -211,15 +230,12 @@ fun LoginScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-
                 is LoginUiState.Success -> {
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(loginState.sessionId) {
                         userViewModel.setAccount(loginState.account)
                         userViewModel.saveUser(loginState.account)
-                        println("Login başarılı: Account: ${loginState.account}")
                         onLoginSuccess()
                     }
-
                     Text(
                         text = "Hoş Geldin ${loginState.account.username}",
                         style = MaterialTheme.typography.headlineMedium,
@@ -227,7 +243,7 @@ fun LoginScreen(
                     )
                 }
 
-                else -> {}
+                else -> Unit
             }
         }
     }

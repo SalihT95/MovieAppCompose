@@ -1,6 +1,5 @@
 package com.turkoglu.moviecomposeapp.presentation.home.view
 
-import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
@@ -9,13 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,7 +47,6 @@ import com.turkoglu.moviecomposeapp.presentation.home.HomeViewModel
 import com.turkoglu.moviecomposeapp.presentation.home.MovieListItem
 import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun HomeScreen(
@@ -80,7 +79,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = 20.dp)
         ) {
             item {
                 MovieSection(
@@ -112,7 +111,7 @@ fun HomeScreen(
                     onMovieClick = navigateToDetail
                 )
             }
-            item{
+            item {
                 MovieSection(
                     title = "Now Playing",
                     type = nowPlayingMovies,
@@ -123,6 +122,48 @@ fun HomeScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun MovieSection(
+    type: LazyPagingItems<Movie>,
+    title: String,
+    onClickViewAll: () -> Unit,
+    onMovieClick: (Movie) -> Unit
+) {
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = "View All",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable { onClickViewAll() }
+            )
+        }
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(type.itemCount, key = { index -> type[index]?.id ?: index }) { index ->
+                type[index]?.let { movie ->
+                    MovieListItem(movie = movie, onItemClick = { onMovieClick(movie) })
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -139,7 +180,7 @@ fun HomeTopBar(navController: NavController, account: UserAccount?) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = account?.username ?: "The Movie",
+            text = account?.username ?: "Guest",
             modifier = Modifier
                 .weight(1f),
             style = MaterialTheme.typography.headlineMedium,
@@ -173,63 +214,6 @@ fun HomeScreenHeader(navController: NavController, genreList: List<Genre>, accou
             genreList = genreList.map { it.name },
         ) { genre ->
             navController.navigate("ViewAll/$genre")
-        }
-    }
-}
-
-@Composable
-fun MovieSection(
-    type : LazyPagingItems<Movie>,
-    title: String,
-    onClickViewAll: () -> Unit,
-    onMovieClick: (Movie) -> Unit
-) {
-    val uniqueIds = mutableSetOf<Int>()
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "View All",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onClickViewAll() }
-            )
-        }
-
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(
-                type.itemSnapshotList.items,
-                key = { index, movie ->
-                    val id = movie.id ?: -1
-                    if (uniqueIds.contains(id)) {
-                        val previousMovie = uniqueIds.find { it == id }
-                        uniqueIds.remove(previousMovie)
-                    } else {
-                        uniqueIds.add(id)
-                    }
-                    "${movie.id?.toString()}_${index}"
-                }
-            ) { _, movie ->
-                MovieListItem(
-                    movie = movie,
-                    onItemClick = { onMovieClick(movie) }
-                )
-            }
         }
     }
 }

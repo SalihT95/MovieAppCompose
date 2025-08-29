@@ -7,13 +7,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -33,27 +38,34 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
+import com.turkoglu.moviecomposeapp.presentation.ui.ThemeMode
+import com.turkoglu.moviecomposeapp.presentation.ui.ThemeViewModel
 import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
-import androidx.core.net.toUri
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel(),
-    userViewModel: UserViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
+    themeViewModel: ThemeViewModel = hiltViewModel()
 ) {
     val currentUser by userViewModel.currentUser.collectAsState()
     val avatarUrl = currentUser?.avatarUrl
-    val fullAvatarUrl = avatarUrl?.let { path ->
-        if (path.startsWith("/")) "https://image.tmdb.org/t/p/w500$path" else null
-    }
+    val fullAvatarUrl =
+        avatarUrl?.let { path -> if (path.startsWith("/")) "https://image.tmdb.org/t/p/w500$path" else null }
+
     val selectedLang by userViewModel.selectedLanguage.collectAsState()
+    val themeMode by themeViewModel.theme.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -76,6 +88,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(fullAvatarUrl ?: "https://i.pravatar.cc/150?img=3")
@@ -97,33 +110,77 @@ fun SettingsScreen(
                 modifier = Modifier.padding(top = 12.dp)
             )
 
-            Spacer(modifier = Modifier.padding(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // Dil seçimi
             LanguageSettingSection(
                 selectedLanguage = selectedLang,
-                onLanguageSelected = {
-                    userViewModel.updateLanguage(it)
-                    navController.navigate("Settings") {
-                        popUpTo(0) { inclusive = true }
+                onLanguageSelected = { lang ->
+                    coroutineScope.launch {
+                        userViewModel.updateLanguage(lang)
+                        navController.navigate("Settings") {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
             )
 
-            Spacer(modifier = Modifier.padding(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            SettingsItem("About", onClick = {
-                navController.navigate("About")
-            }, isDestructive = false)
+            // Tema / Görünüm
+            Text(
+                "Görünüm",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(8.dp))
 
-
-            SettingsItem("Log Out", isDestructive = true, onClick = {
-                viewModel.clearCredentials()
-                navController.navigate("Login") {
-                    popUpTo(0) { inclusive = true }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ThemeChoiceChip("Açık", themeMode == ThemeMode.LIGHT) {
+                    themeViewModel.setTheme(ThemeMode.LIGHT)
                 }
-            })
+                ThemeChoiceChip("Koyu", themeMode == ThemeMode.DARK) {
+                    themeViewModel.setTheme(ThemeMode.DARK)
+                }
+                ThemeChoiceChip("Sistem", themeMode == ThemeMode.SYSTEM) {
+                    themeViewModel.setTheme(ThemeMode.SYSTEM)
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // About
+            SettingsItem(
+                "About",
+                onClick = { navController.navigate("About") },
+                isDestructive = false
+            )
+
+            // Log Out
+            SettingsItem(
+                "Log Out",
+                onClick = {
+                    authViewModel.clearCredentials()
+                    navController.navigate("Login") { popUpTo(0) { inclusive = true } }
+                },
+                isDestructive = true
+            )
         }
     }
+}
+
+@Composable
+private fun ThemeChoiceChip(text: String, selected: Boolean, onClick: () -> Unit) {
+    AssistChip(
+        onClick = onClick,
+        label = { Text(text) },
+        leadingIcon = {},
+        colors = AssistChipDefaults.assistChipColors(
+            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+            labelColor = MaterialTheme.colorScheme.onSurface
+        )
+    )
 }
 
 @Composable

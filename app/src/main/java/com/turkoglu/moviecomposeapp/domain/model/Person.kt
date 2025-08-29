@@ -1,6 +1,6 @@
 package com.turkoglu.moviecomposeapp.domain.model
 
-data class CastModel(
+data class Person(
     val id: Int,
     val name: String,
     val original_name: String,

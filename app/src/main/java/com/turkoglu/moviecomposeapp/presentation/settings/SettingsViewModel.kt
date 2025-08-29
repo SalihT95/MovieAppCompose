@@ -2,18 +2,18 @@ package com.turkoglu.moviecomposeapp.presentation.settings
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.turkoglu.moviecomposeapp.data.local.UserPreferenceManager
+import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPrefs: UserPreferenceManager
+    private val userPrefs: UserPrefs
 ) : ViewModel() {
     private val _languageChanged = mutableStateOf(false)
     val languageChanged = _languageChanged
 
-    fun changeLanguage(lang: String) {
+    suspend fun changeLanguage(lang: String) {
         userPrefs.saveLanguage(lang)
         _languageChanged.value = true
     }

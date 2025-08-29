@@ -1,11 +1,8 @@
 package com.turkoglu.moviecomposeapp.presentation.detail
 
-import android.os.Parcelable
-import com.turkoglu.moviecomposeapp.data.remote.dto.Cast
-import kotlinx.parcelize.Parcelize
+import com.turkoglu.moviecomposeapp.domain.model.Person
 
-@Parcelize
 data class CastState(
-    val cast: List<Cast> = emptyList(),
+    val cast: List<Person> = emptyList(),
     val id: Int = 0
-) : Parcelable
+)

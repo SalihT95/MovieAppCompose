@@ -3,9 +3,11 @@ package com.turkoglu.moviecomposeapp.data.remote
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreditsDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.GenreListDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieDetailDto
-import com.turkoglu.moviecomposeapp.data.remote.dto.MovieVideoDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieListResponseDto
+import com.turkoglu.moviecomposeapp.data.remote.dto.MovieVideoDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MultiSearchDto
+import com.turkoglu.moviecomposeapp.data.remote.dto.PersonCreditsDto
+import com.turkoglu.moviecomposeapp.data.remote.dto.PersonDetailDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.AccountDetails
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateRequestToken
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateSession
@@ -51,10 +53,20 @@ interface MovieAPI {
         @Query("page") page: Int = DEFAULT_PAGE
     ): MovieListResponseDto
 
-    @GET("movie/{movie_id}/credits")
-    suspend fun getMovieCredits(
+    @GET("movie/{movie_id}/credits")          //   filmdeki oyuncular
+    suspend fun getMovieCredits(              //   detay ekranı için lazım
         @Path("movie_id") movieId: Int
     ): CreditsDto
+
+    @GET("person/{person_id}")               //   oyuncu detayları
+    suspend fun getPersonDetail(            // cast ekranı için oyuncu bilgileri
+        @Path("person_id") personId: Int
+    ): PersonDetailDto
+
+    @GET("person/{person_id}/movie_credits") //   oyuncu hangi filmlerde oynadı
+    suspend fun getPersonMovieCredits(       //   cast ekranı için filmlerin listesi
+        @Path("person_id") personId: Int
+    ): PersonCreditsDto
 
     @GET("search/movie")
     suspend fun getSearchMovies(
