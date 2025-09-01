@@ -73,7 +73,7 @@ fun SettingsScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.backend),
+            painter = painterResource(id = R.drawable.dark_background),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()

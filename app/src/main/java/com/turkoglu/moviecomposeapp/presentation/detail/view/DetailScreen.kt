@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -53,16 +54,18 @@ import com.turkoglu.moviecomposeapp.presentation.component.FragmanButton
 import com.turkoglu.moviecomposeapp.presentation.component.GenreChipsRow
 import com.turkoglu.moviecomposeapp.presentation.detail.DetailScreenViewModel
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
+import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 import com.turkoglu.moviecomposeapp.util.Constants
 import kotlinx.coroutines.launch
 
-@SuppressLint("SupportAnnotationUsage")
+@SuppressLint("SupportAnnotationUsage", "StateFlowValueCalledInComposition")
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun DetailScreen(
     navController: NavController,
     viewModel: DetailScreenViewModel = hiltViewModel(),
     viewModelFav: FavViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -72,10 +75,12 @@ fun DetailScreen(
     val favorite = viewModelFav.getAFavorite(film.imdbId).collectAsStateWithLifecycle(null).value
     val isFavorite = favorite != null
     val castState = viewModel.castState.value
+    val currentUser = userViewModel.currentUser.collectAsState().value
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.backend),
+            painter = painterResource(id = R.drawable.dark_background),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
@@ -96,6 +101,13 @@ fun DetailScreen(
                     isLiked = isFavorite,
                     onClick = { isFav ->
                         coroutineScope.launch {
+                            if (currentUser == null || currentUser.isGuest) {
+                                // Guest ise favori ekleyemesin
+                                Toast.makeText(context, "Favorilere eklemek için giriş yapmalısınız", Toast.LENGTH_SHORT).show()
+                                navController.navigate(Screen.Login.route) // Login ekranına yönlendir
+                                return@launch
+                            }
+
                             if (isFav) {
                                 favorite?.let {
                                     viewModelFav.deleteOneFavorite(it)

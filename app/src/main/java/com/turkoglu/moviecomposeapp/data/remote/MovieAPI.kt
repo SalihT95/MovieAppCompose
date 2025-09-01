@@ -11,6 +11,7 @@ import com.turkoglu.moviecomposeapp.data.remote.dto.PersonDetailDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.AccountDetails
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateRequestToken
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateSession
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.GuestSessionResponse
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSession
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSessionWL
 import com.turkoglu.moviecomposeapp.util.Constants.DEFAULT_PAGE
@@ -99,4 +100,7 @@ interface MovieAPI {
     suspend fun createSession(
         @Body requestCreateSession: RequestCreateSession
     ): CreateSession
+
+    @GET("authentication/guest_session/new")
+    suspend fun createGuestSession(): GuestSessionResponse
 }

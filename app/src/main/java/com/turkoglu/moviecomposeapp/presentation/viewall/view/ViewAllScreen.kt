@@ -64,7 +64,7 @@ fun ViewAllScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Image(
-            painter = painterResource(id = R.drawable.backend),
+            painter = painterResource(id = R.drawable.dark_background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

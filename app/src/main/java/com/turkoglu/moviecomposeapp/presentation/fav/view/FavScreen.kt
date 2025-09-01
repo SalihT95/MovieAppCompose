@@ -107,7 +107,7 @@ fun FavScreen(
 
         Box(modifier = Modifier.padding(paddingValues)) {
             Image(
-                painter = painterResource(id = R.drawable.backend),
+                painter = painterResource(id = R.drawable.dark_background),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

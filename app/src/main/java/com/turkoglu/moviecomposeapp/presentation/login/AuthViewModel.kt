@@ -86,6 +86,35 @@ class AuthViewModel @Inject constructor(
             loginState = LoginUiState.Error(e.localizedMessage ?: "Hata oluştu")
         }
     }
+    fun loginAsGuest() = viewModelScope.launch {
+        try {
+            loginState = LoginUiState.Loading
+
+            // Guest session oluştur
+            val guestSessionResponse = repository.createGuestSession()
+            val guestSessionId = guestSessionResponse.guestSessionId
+                ?: throw Exception("Guest session alınamadı")
+
+            userPrefs.saveSessionId(guestSessionId)
+
+            // Guest UserAccount oluştur
+            val guestAccount = UserAccount(
+                id = -1, // DB için unique, normal userId yerine -1 veya random koyabilirsin
+                username = "Guest",
+                name = null,
+                avatarUrl = null,
+                includeAdult = false,
+                iso31661 = "TR",
+                iso6391 = "tr",
+                isGuest = true
+            )
+
+            loginState = LoginUiState.Success(guestSessionId, guestAccount)
+        } catch (e: Exception) {
+            loginState = LoginUiState.Error(e.localizedMessage ?: "Guest login başarısız")
+        }
+    }
+
 }
 
 sealed class LoginUiState {
