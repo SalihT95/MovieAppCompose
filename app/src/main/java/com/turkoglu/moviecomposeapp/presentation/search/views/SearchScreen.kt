@@ -70,7 +70,7 @@ fun SearchScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.backend),
+            painter = painterResource(id = R.drawable.background),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
