@@ -19,3 +19,4 @@ local.properties
 /app/src/main/java/com/turkoglu/moviecomposeapp/data/paging/PagingSourceBase.kt
 /.idea/codeStyles/Project.xml
 /.idea/runConfigurations.xml
+/.idea/deviceManager.xml

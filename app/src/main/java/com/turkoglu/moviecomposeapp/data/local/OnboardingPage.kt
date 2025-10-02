@@ -1,7 +1,7 @@
 package com.turkoglu.moviecomposeapp.data.local
 
-import com.turkoglu.moviecomposeapp.domain.model.OnboardingPage
 import com.turkoglu.moviecomposeapp.R
+import com.turkoglu.moviecomposeapp.domain.model.OnboardingPage
 
 
 object OnboardingData {

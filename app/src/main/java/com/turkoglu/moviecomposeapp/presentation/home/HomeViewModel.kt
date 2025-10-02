@@ -114,49 +114,61 @@ class HomeViewModel @Inject constructor(
     private fun getGenres() = viewModelScope.launch {
         _genres.value = genreRepository.getGenres()
     }
+
     private fun getPopularMovies() = viewModelScope.launch {
-        _popularState.value = movieRepository.getPopularMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _popularState.value =
+            movieRepository.getPopularMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getTopRatedMovies() = viewModelScope.launch {
-        _topRatedState.value = movieRepository.getTopRatedMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _topRatedState.value =
+            movieRepository.getTopRatedMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getNowPlayingMovies() = viewModelScope.launch {
-        _nowPlayingState.value = movieRepository.getNowPlayingMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _nowPlayingState.value =
+            movieRepository.getNowPlayingMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getUpcomingMovies() = viewModelScope.launch {
-        _upComingState.value = movieRepository.getUpcomingMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _upComingState.value =
+            movieRepository.getUpcomingMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getActionMovies() = viewModelScope.launch {
-        _actionState.value = movieRepository.getActionMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _actionState.value =
+            movieRepository.getActionMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getAnimationMovies() = viewModelScope.launch {
-        _animationState.value = movieRepository.getAnimationMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _animationState.value =
+            movieRepository.getAnimationMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getComedyMovies() = viewModelScope.launch {
-        _comedyState.value = movieRepository.getComedyMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _comedyState.value =
+            movieRepository.getComedyMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getDramaMovies() = viewModelScope.launch {
-        _dramaState.value = movieRepository.getDramaMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _dramaState.value =
+            movieRepository.getDramaMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getFantasyMovies() = viewModelScope.launch {
-        _fantasyState.value = movieRepository.getFantasyMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _fantasyState.value =
+            movieRepository.getFantasyMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getHistoryMovies() = viewModelScope.launch {
-        _historyState.value = movieRepository.getHistoryMovies(useIncreasingPage).cachedIn(viewModelScope)
+        _historyState.value =
+            movieRepository.getHistoryMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
 
     private fun getWarMovies() = viewModelScope.launch {
         _warState.value = movieRepository.getWarMovies(useIncreasingPage).cachedIn(viewModelScope)
     }
+
     private fun getAdventureMovies() = viewModelScope.launch {
         _adventureState.value =
             movieRepository.getAdventureMovies(useIncreasingPage).cachedIn(viewModelScope)

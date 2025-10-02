@@ -7,7 +7,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,14 +26,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -43,6 +43,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Favorite
+import com.turkoglu.moviecomposeapp.presentation.Screen
 import com.turkoglu.moviecomposeapp.presentation.component.CastItem
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.component.CircularFavoriteButtons
@@ -51,39 +52,40 @@ import com.turkoglu.moviecomposeapp.presentation.component.FragmanButton
 import com.turkoglu.moviecomposeapp.presentation.component.GenreChipsRow
 import com.turkoglu.moviecomposeapp.presentation.detail.DetailScreenViewModel
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
+import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 import com.turkoglu.moviecomposeapp.util.Constants
 import kotlinx.coroutines.launch
 
-@SuppressLint("SupportAnnotationUsage")
+@SuppressLint("SupportAnnotationUsage", "StateFlowValueCalledInComposition")
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun DetailScreen(
     navController: NavController,
     viewModel: DetailScreenViewModel = hiltViewModel(),
     viewModelFav: FavViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val film = viewModel.state.value
     val intent = Intent(Intent.ACTION_VIEW, viewModel.fragmanState.value.videoUrl!!.toUri())
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
     val favorite = viewModelFav.getAFavorite(film.imdbId).collectAsStateWithLifecycle(null).value
     val isFavorite = favorite != null
     val castState = viewModel.castState.value
+    val currentUser = userViewModel.currentUser.collectAsState().value
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.background),
-            contentDescription = null,
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(AppBackgroundGradient)) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .blur(24.dp),
-            contentScale = ContentScale.Crop
-        )
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)) {
+                .padding(16.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -94,10 +96,25 @@ fun DetailScreen(
                     isLiked = isFavorite,
                     onClick = { isFav ->
                         coroutineScope.launch {
+                            if (currentUser == null || currentUser.isGuest) {
+                                // Guest ise favori ekleyemesin
+                                Toast.makeText(
+                                    context,
+                                    "Favorilere eklemek için giriş yapmalısınız",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate(Screen.Login.route) // Login ekranına yönlendir
+                                return@launch
+                            }
+
                             if (isFav) {
                                 favorite?.let {
                                     viewModelFav.deleteOneFavorite(it)
-                                    Toast.makeText(context, "Favorilerden kaldırıldı", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Favorilerden kaldırıldı",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } else {
                                 viewModelFav.insertFavorite(
@@ -110,7 +127,8 @@ fun DetailScreen(
                                         rating = film.voteAverage.toFloat()
                                     )
                                 )
-                                Toast.makeText(context, "Favorilere eklendi", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Favorilere eklendi", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                     }
@@ -183,7 +201,14 @@ fun DetailScreen(
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     itemsIndexed(castState.cast, key = { _, cast -> cast.id }) { _, cast ->
                         CastItem(
-                            modifier = Modifier,
+                            modifier = Modifier.clickable {
+                                navController.navigate(
+                                    Screen.Cast.route.replace(
+                                        "{personId}",
+                                        cast.id.toString()
+                                    )
+                                )
+                            },
                             castImageUrl = "${Constants.IMAGE_BASE_URL}/${cast.profile_path}",
                             castName = cast.name
                         )

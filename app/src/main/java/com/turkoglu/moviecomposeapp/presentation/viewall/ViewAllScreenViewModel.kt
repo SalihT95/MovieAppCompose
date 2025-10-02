@@ -101,7 +101,7 @@ class ViewAllScreenViewModel @Inject constructor(
             "Now Playing" -> movieRepository.getNowPlayingMovies(useIncreasingPage)
             "Upcoming" -> movieRepository.getUpcomingMovies(useIncreasingPage)
             else -> genreMap[type]?.let { genreId ->
-                movieRepository.genrePager(genreId, useIncreasingPage)
+                movieRepository.getMoviesByGenre(genreId, useIncreasingPage)
             } ?: emptyFlow()
         }
 

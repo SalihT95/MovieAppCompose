@@ -45,7 +45,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -62,6 +61,7 @@ import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Favorite
 import com.turkoglu.moviecomposeapp.presentation.component.VoteAverageRatingIndicator
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 import com.turkoglu.moviecomposeapp.presentation.ui.Transparent
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryDark
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryPink
@@ -105,15 +105,9 @@ fun FavScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
 
-        Box(modifier = Modifier.padding(paddingValues)) {
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(24.dp)
-            )
+        Box(modifier = Modifier
+            .padding(paddingValues)
+            .background(AppBackgroundGradient)) {
             if (favoriteFilms.isEmpty()) {
                 Box(
                     modifier = Modifier

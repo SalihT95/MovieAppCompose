@@ -2,7 +2,7 @@ package com.turkoglu.moviecomposeapp.presentation.viewall.view
 
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.home.MovieListItem
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 import com.turkoglu.moviecomposeapp.presentation.viewall.ViewAllScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +41,7 @@ fun ViewAllScreen(
     val title = viewModel.screenTitle.value.movies
 
     Scaffold(
+        modifier.background(AppBackgroundGradient),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -63,14 +61,6 @@ fun ViewAllScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        Image(
-            painter = painterResource(id = R.drawable.background),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(24.dp)
-        )
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = PaddingValues(
@@ -81,7 +71,9 @@ fun ViewAllScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppBackgroundGradient)
         ) {
             items(movies.itemCount) { index ->
                 val movie = movies[index]

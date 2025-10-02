@@ -50,7 +50,8 @@ fun FilmImageBanner(
     val context = LocalContext.current
     val state = viewModel.state.value
     val intent = Intent(Intent.ACTION_VIEW, key.toUri())
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     val favorite = viewModelFav.getAFavorite(filmId).collectAsStateWithLifecycle(null).value
     val isFavorite = favorite != null
@@ -95,7 +96,11 @@ fun FilmImageBanner(
                         if (isFav) {
                             favorite?.let {
                                 viewModelFav.deleteOneFavorite(it)
-                                Toast.makeText(context, "Favorilerden kaldırıldı", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Favorilerden kaldırıldı",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
                             viewModelFav.insertFavorite(

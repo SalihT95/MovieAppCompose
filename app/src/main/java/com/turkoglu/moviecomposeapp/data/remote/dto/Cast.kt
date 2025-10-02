@@ -17,4 +17,4 @@ data class Cast(
     val character: String,
     val credit_id: String,
     val order: Int
-): Parcelable
+) : Parcelable

@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.turkoglu.moviecomposeapp.data.local.AppDatabase
-import com.turkoglu.moviecomposeapp.data.local.UserPreferenceManager
+import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.data.remote.AuthLanguageInterceptor
 import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.util.Constants.BASE_URL
@@ -54,7 +54,5 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferenceManager(@ApplicationContext context: Context): UserPreferenceManager {
-        return UserPreferenceManager(context)
-    }
+    fun provideUserPrefs(@ApplicationContext context: Context): UserPrefs = UserPrefs(context)
 }

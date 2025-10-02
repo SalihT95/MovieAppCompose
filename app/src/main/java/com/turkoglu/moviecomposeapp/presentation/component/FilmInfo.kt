@@ -50,9 +50,11 @@ fun FilmInfo(
 ) {
     LazyColumn(contentPadding = PaddingValues(top = 425.dp), state = scrollState) {
         item {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

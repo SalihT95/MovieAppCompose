@@ -9,7 +9,7 @@ interface Destination {
     val routeWithArgs: String
 }
 
-object Home: Destination{
+object Home : Destination {
     override val title: String
         get() = "Movies"
 
@@ -20,7 +20,7 @@ object Home: Destination{
         get() = route
 }
 
-object Detail: Destination{
+object Detail : Destination {
     override val title: String
         get() = "Movie details"
 
@@ -31,7 +31,7 @@ object Detail: Destination{
         get() = "$route/{movieId}"
 
     val arguments = listOf(
-        navArgument(name = "movieId"){type = NavType.IntType}
+        navArgument(name = "movieId") { type = NavType.IntType }
     )
 }
 

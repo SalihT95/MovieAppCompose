@@ -1,6 +1,5 @@
 package com.turkoglu.moviecomposeapp.presentation.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,17 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Movie
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 
 @Composable
 fun MovieListItem(
@@ -39,20 +37,15 @@ fun MovieListItem(
         modifier = modifier
             .width(160.dp)
             .height(240.dp)
+            .background(AppBackgroundGradient)
             .clickable { onItemClick(movie) },
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 3.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(24.dp)
-            )
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackgroundGradient)) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://image.tmdb.org/t/p/w342${movie.posterPath}")

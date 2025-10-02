@@ -8,7 +8,7 @@ import com.turkoglu.moviecomposeapp.domain.model.Movie
 import java.io.IOException
 
 class MovieListPagingSource(
-    private val apiCall: suspend (page: Int) -> MovieListResponseDto ,
+    private val apiCall: suspend (page: Int) -> MovieListResponseDto,
     private val isSinglePage: Boolean = false
 ) : PagingSource<Int, Movie>() {
 

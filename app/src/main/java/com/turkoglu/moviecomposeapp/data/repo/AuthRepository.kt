@@ -4,6 +4,7 @@ import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.AccountDetails
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateRequestToken
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.CreateSession
+import com.turkoglu.moviecomposeapp.data.remote.dto.auth.GuestSessionResponse
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSession
 import com.turkoglu.moviecomposeapp.data.remote.dto.auth.RequestCreateSessionWL
 import javax.inject.Inject
@@ -23,6 +24,9 @@ class AuthRepository @Inject constructor(
         return api.createSession(requestCreateSession = request)
     }
 
+    suspend fun createGuestSession(): GuestSessionResponse {
+        return api.createGuestSession()
+    }
 
     suspend fun getAccountDetail(sessionId: String): AccountDetails {
         return api.getAccountDetail(sessionId = sessionId)

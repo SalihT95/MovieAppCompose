@@ -11,5 +11,6 @@ data class UserAccount(
     val avatarUrl: String?,
     val includeAdult: Boolean,
     val iso31661: String,
-    val iso6391: String
+    val iso6391: String,
+    val isGuest: Boolean = false
 )

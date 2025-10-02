@@ -11,13 +11,13 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetMovieDetailUseCase @Inject constructor(private val repo: MovieRepositoryImpl) {
-    fun executeGetMovieDetail(movieId: Int) : Flow<Resource<MovieDetail>> = flow {
+    fun executeGetMovieDetail(movieId: Int): Flow<Resource<MovieDetail>> = flow {
         try {
             emit(Resource.Loading())
             val movieDetail = repo.getMovieDetail(movieId)
             emit(Resource.Success(movieDetail.toMovie()))
 
-        }catch (e  : IOException){
+        } catch (e: IOException) {
             emit(Resource.Error(message = "No internet connection"))
         }
     }

@@ -1,6 +1,7 @@
 package com.turkoglu.moviecomposeapp.presentation.search.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -55,6 +55,7 @@ import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Search
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.search.SearchViewModel
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 import com.turkoglu.moviecomposeapp.presentation.ui.primaryPink
 import com.turkoglu.moviecomposeapp.util.Constants
 import retrofit2.HttpException
@@ -68,20 +69,14 @@ fun SearchScreen(
     val searchResults = viewModel.searchResults.value.collectAsLazyPagingItems()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.background),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(24.dp),
-            contentScale = ContentScale.Crop
-        )
-    }
-    Column(Modifier.fillMaxSize()) {
-        Row (Modifier.fillMaxWidth(),
+    Column(Modifier
+        .fillMaxSize()
+        .background(AppBackgroundGradient)) {
+        Row(
+            Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            Alignment.CenterVertically){
+            Alignment.CenterVertically
+        ) {
             CircularBackButtons {
                 navController.popBackStack()
             }

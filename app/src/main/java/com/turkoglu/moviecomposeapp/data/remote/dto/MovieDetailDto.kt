@@ -31,8 +31,22 @@ data class MovieDetailDto(
     val vote_average: Double,
     val vote_count: Int
 )
-fun MovieDetailDto.toMovie() :MovieDetail{
-    return MovieDetail(adult,backdrop_path, genres,id,overview,popularity, getImageUrl(poster_path),release_date,revenue,title,vote_average)
+
+fun MovieDetailDto.toMovie(): MovieDetail {
+    return MovieDetail(
+        adult,
+        backdrop_path,
+        genres,
+        id,
+        overview,
+        popularity,
+        getImageUrl(poster_path),
+        release_date,
+        revenue,
+        title,
+        vote_average
+    )
 }
-private fun getImageUrl(posterImage : String)= Constants.IMAGE_BASE_URL +posterImage
+
+private fun getImageUrl(posterImage: String) = Constants.IMAGE_BASE_URL + posterImage
 
