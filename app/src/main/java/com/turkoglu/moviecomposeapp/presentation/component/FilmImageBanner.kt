@@ -83,9 +83,7 @@ fun FilmImageBanner(
                 .statusBarsPadding()
                 .padding(horizontal = 10.dp)
         ) {
-            CircularBackButtons(
-                onClick = { navController.popBackStack() }
-            )
+            CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
             FragmanButton(
                 onClick = { launcher.launch(intent) }
             )

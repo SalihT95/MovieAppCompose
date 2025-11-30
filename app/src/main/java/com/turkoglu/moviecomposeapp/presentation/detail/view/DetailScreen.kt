@@ -90,7 +90,7 @@ fun DetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CircularBackButtons { navController.popBackStack() }
+                CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
                 FragmanButton { launcher.launch(intent) }
                 CircularFavoriteButtons(
                     isLiked = isFavorite,

@@ -77,9 +77,7 @@ fun SearchScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             Alignment.CenterVertically
         ) {
-            CircularBackButtons {
-                navController.popBackStack()
-            }
+            CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
             SearchBar(
                 searchTerm = viewModel.searchTerm.value,
                 onSearchChanged = viewModel::setSearchTerm,

@@ -3,6 +3,7 @@ package com.turkoglu.moviecomposeapp.presentation.cast.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import com.turkoglu.moviecomposeapp.domain.model.PersonDetail
 import com.turkoglu.moviecomposeapp.presentation.cast.CastScreenViewModel
 import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.ui.AccentYellow
+import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 import com.turkoglu.moviecomposeapp.presentation.ui.GrayTextSecondary
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -62,7 +64,7 @@ fun CastScreen(
             CenterAlignedTopAppBar(
                 title = { Text(person?.name ?: "Cast Detail") },
                 navigationIcon = {
-                    CircularBackButtons { navController.popBackStack() }
+                    CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
                 }
             )
         }
@@ -70,6 +72,7 @@ fun CastScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(AppBackgroundGradient)
                 .padding(paddingValues)
         ) {
             when {
@@ -113,7 +116,9 @@ fun CastScreen(
                                 )
                             }
                             items(movies) { movie ->
-                                MovieCastItem(movie)
+                                MovieCastItem(movie, onItemClick = {
+                                    navController.navigate("Detail/${movie.id}")
+                                })
                             }
                         }
                     }
@@ -175,10 +180,11 @@ fun PersonHeader(person: PersonDetail) {
 }
 
 @Composable
-fun MovieCastItem(movie: MovieCast) {
+fun MovieCastItem(movie: MovieCast, onItemClick: (MovieCast) -> Unit ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onItemClick(movie) }
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surface)
             .padding(8.dp),
