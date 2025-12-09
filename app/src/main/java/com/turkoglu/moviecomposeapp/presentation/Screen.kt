@@ -21,6 +21,8 @@ sealed class Screen(
     object Onboarding : Screen("Onboarding", null, "Onboarding", false)
 
     object Login : Screen("Login", Icons.Rounded.AccountCircle, "Login", false)
+
+    object Register : Screen("register_screen", null)
     object Home : Screen("Home", Icons.Rounded.Home, "Home", true)
     object Fav : Screen("Fav", Icons.Rounded.Favorite, "Favorites", true)
     object Settings : Screen("Settings", Icons.Rounded.Settings, "Settings", true)

@@ -47,6 +47,21 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    // UserViewModel.kt içine bu fonksiyonu ekle:
+
+    fun updateUserProfile(userId: String, newUsername: String) {
+        viewModelScope.launch {
+            // 1. Firestore'u güncelle
+            userRepository.updateUserField(userId, "username", newUsername)
+
+            // 2. Local State'i güncelle (Anlık yansıması için)
+            _currentUser.value = _currentUser.value?.copy(username = newUsername)
+
+            // 3. Room DB'yi güncelle
+            _currentUser.value?.let { userRepository.saveUser(it) }
+        }
+    }
+
     fun updateLanguage(lang: String) {
         viewModelScope.launch {
             // StateFlow güncellemesi

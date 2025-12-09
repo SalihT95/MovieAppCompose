@@ -13,6 +13,9 @@ interface UserAccountDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userAccount: UserAccount)
 
+    @Query("SELECT * FROM user_account WHERE id = :id")
+    fun getUserById(id: String): Flow<UserAccount>
+
     @Query("SELECT * FROM user_account LIMIT 1")
     fun getUserAccount(): Flow<UserAccount?>
 

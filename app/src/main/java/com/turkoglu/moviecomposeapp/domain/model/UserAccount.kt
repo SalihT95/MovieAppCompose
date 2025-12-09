@@ -5,12 +5,15 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_account")
 data class UserAccount(
-    @PrimaryKey val id: Int,
-    val username: String,
+    @PrimaryKey
+    val id: String,
+
+    val username: String?,
     val name: String?,
     val avatarUrl: String?,
-    val includeAdult: Boolean,
-    val iso31661: String,
-    val iso6391: String,
+    val includeAdult: Boolean = false,
+    val iso31661: String = "TR",
+    val iso6391: String = "tr",
+
     val isGuest: Boolean = false
 )

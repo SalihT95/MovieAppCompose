@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364855711952",
+    "project_id": "movieappdb-592c2",
+    "storage_bucket": "movieappdb-592c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364855711952:android:98066d103020ca40e466d5",
+        "android_client_info": {
+          "package_name": "com.turkoglu.moviecomposeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5sOTTfrT0WsKOiR6VlYPmaoZlmNjw2-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

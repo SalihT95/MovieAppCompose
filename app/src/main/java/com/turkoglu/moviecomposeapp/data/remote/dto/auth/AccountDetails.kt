@@ -5,7 +5,7 @@ import com.turkoglu.moviecomposeapp.domain.model.UserAccount
 
 data class AccountDetails(
     val avatar: Avatar,
-    val id: Int,
+    val id: String,
     @SerializedName("include_adult")
     val includeAdult: Boolean,
     @SerializedName("iso_3166_1")

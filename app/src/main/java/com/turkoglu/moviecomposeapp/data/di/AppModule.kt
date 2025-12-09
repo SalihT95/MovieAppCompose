@@ -3,6 +3,11 @@ package com.turkoglu.moviecomposeapp.data.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.turkoglu.moviecomposeapp.data.local.AppDatabase
 import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.data.remote.AuthLanguageInterceptor
@@ -23,10 +28,27 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    // --- FIREBASE PROVIDERS (YENİ EKLENENLER) ---
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return Firebase.auth
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return Firebase.firestore
+    }
+
+    // --- MEVCUT PROVIDERS ---
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            // Lambda içinde dinamik olarak o anki dili alıyoruz
             .addInterceptor(AuthLanguageInterceptor { LanguagePreference.selectedLanguage })
             .build()
     }
@@ -49,7 +71,9 @@ object AppModule {
             application.applicationContext,
             AppDatabase::class.java,
             "app_database"
-        ).fallbackToDestructiveMigration().build()
+        )
+            .fallbackToDestructiveMigration() // Şema değişirse veriyi silip yeniden kurar (Geliştirme aşaması için)
+            .build()
     }
 
     @Provides

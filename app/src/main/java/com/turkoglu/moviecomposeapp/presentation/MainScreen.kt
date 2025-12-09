@@ -17,6 +17,7 @@ import com.turkoglu.moviecomposeapp.presentation.fav.view.FavScreen
 import com.turkoglu.moviecomposeapp.presentation.home.view.HomeScreen
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.login.views.LoginScreen
+import com.turkoglu.moviecomposeapp.presentation.login.views.RegisterScreen // Yeni Import
 import com.turkoglu.moviecomposeapp.presentation.onboarding.OnboardingScreen
 import com.turkoglu.moviecomposeapp.presentation.search.views.SearchScreen
 import com.turkoglu.moviecomposeapp.presentation.settings.view.AboutScreen
@@ -33,12 +34,15 @@ fun MainScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val onboardingDone by themeViewModel.onboardingDone.collectAsStateWithLifecycle()
-    val isUserLoggedIn by authViewModel.rememberMe.collectAsStateWithLifecycle()
+    // Not: AuthViewModel'de rememberMe mantığını Firebase'e göre güncellemiştik.
+    // Eğer sadece "Beni Hatırla" seçiliyse direkt Home'a atar.
+    val isRemembered by authViewModel.rememberMe.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
     ) {
+        // --- SPLASH SCREEN ---
         composable(Screen.Splash.route) {
             AppScaffold(navController, showBottomBar = false) {
                 SplashScreen {
@@ -48,8 +52,8 @@ fun MainScreen(
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }
-
-                        isUserLoggedIn -> {
+                        // Eğer beni hatırla aktifse VE Firebase'de oturum açıksa (ViewModel init bloğunda kontrol ediliyor)
+                        isRemembered -> {
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
@@ -65,27 +69,53 @@ fun MainScreen(
             }
         }
 
+        // --- ONBOARDING SCREEN ---
         composable(Screen.Onboarding.route) {
             AppScaffold(navController, showBottomBar = false) {
                 OnboardingScreen({
                     themeViewModel.setOnboardingDone()
-                    navController.navigate(if (isUserLoggedIn) Screen.Home.route else Screen.Login.route) {
+                    navController.navigate(if (isRemembered) Screen.Home.route else Screen.Login.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 })
             }
         }
 
+        // --- LOGIN SCREEN ---
         composable(Screen.Login.route) {
             AppScaffold(navController, showBottomBar = Screen.Login.isBottomBarVisible) {
-                LoginScreen(navController = navController) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+                LoginScreen(
+                    navController = navController,
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    // Yeni eklediğimiz callback: Kayıt ekranına git
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
                     }
-                }
+                )
             }
         }
 
+        // --- REGISTER SCREEN (YENİ EKLENDİ) ---
+        composable(Screen.Register.route) {
+            // Kayıt ekranında BottomBar göstermiyoruz
+            AppScaffold(navController, showBottomBar = false) {
+                RegisterScreen(
+                    navController = navController,
+                    onRegisterSuccess = {
+                        // Başarılı kayıttan sonra Home ekranına at ve geri tuşuna basınca Login'e dönmesin
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+        }
+
+        // --- HOME SCREEN ---
         composable(Screen.Home.route) {
             AppScaffold(navController, showBottomBar = Screen.Home.isBottomBarVisible) {
                 HomeScreen(navController) { movie ->
@@ -99,24 +129,28 @@ fun MainScreen(
             }
         }
 
+        // --- FAV SCREEN ---
         composable(Screen.Fav.route) {
             AppScaffold(navController, showBottomBar = Screen.Fav.isBottomBarVisible) {
                 FavScreen(navController)
             }
         }
 
+        // --- SETTINGS SCREEN ---
         composable(Screen.Settings.route) {
             AppScaffold(navController, showBottomBar = Screen.Settings.isBottomBarVisible) {
                 SettingsScreen(navController)
             }
         }
 
+        // --- SEARCH SCREEN ---
         composable(Screen.Search.route) {
             AppScaffold(navController, showBottomBar = Screen.Search.isBottomBarVisible) {
                 SearchScreen(navController)
             }
         }
 
+        // --- DETAIL SCREEN ---
         composable(
             route = Screen.Detail.route,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
@@ -126,6 +160,7 @@ fun MainScreen(
             }
         }
 
+        // --- VIEW ALL SCREEN ---
         composable(
             route = Screen.ViewAll.route,
             arguments = listOf(navArgument("selectedType") { type = NavType.StringType })
@@ -142,6 +177,7 @@ fun MainScreen(
             }
         }
 
+        // --- CAST SCREEN ---
         composable(
             route = Screen.Cast.route,
             arguments = listOf(navArgument("personId") { type = NavType.IntType })
@@ -151,6 +187,7 @@ fun MainScreen(
             }
         }
 
+        // --- ABOUT SCREEN ---
         composable("About") {
             AppScaffold(navController, showBottomBar = false) {
                 AboutScreen(onBack = { navController.popBackStack() })
