@@ -108,10 +108,11 @@ fun FavScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
 
-        Box(modifier = Modifier
-            .padding(paddingValues)
-            .background(AppBackgroundGradient)
-            .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .background(AppBackgroundGradient)
+                .fillMaxSize()
         ) {
             if (favoriteFilms.isEmpty()) {
                 Box(

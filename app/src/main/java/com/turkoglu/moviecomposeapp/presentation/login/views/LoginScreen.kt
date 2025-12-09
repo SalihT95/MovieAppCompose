@@ -113,7 +113,12 @@ fun LoginScreen(
                 value = email, // Değişken adını 'identifier' veya 'loginInput' yapabilirsin ama 'email' kalsa da çalışır
                 onValueChange = { email = it },
                 label = { Text("Kullanıcı Adı veya E-posta") }, // DEĞİŞTİ
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }, // İkonu Person yaptık
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null
+                    )
+                }, // İkonu Person yaptık
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(

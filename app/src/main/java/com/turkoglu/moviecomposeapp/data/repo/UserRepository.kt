@@ -4,11 +4,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.turkoglu.moviecomposeapp.data.local.AppDatabase
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.domain.model.UserAccount
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 
 class UserRepository @Inject constructor(
     private val database: AppDatabase,
@@ -60,7 +60,9 @@ class UserRepository @Inject constructor(
                 .document(movie.id.toString()) // ID'yi döküman adı yapıyoruz
                 .set(movieMap)
                 .await()
-        } catch (e: Exception) { e.printStackTrace() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // 2. Favoriden Çıkar
@@ -72,7 +74,9 @@ class UserRepository @Inject constructor(
                 .document(movieId.toString())
                 .delete()
                 .await()
-        } catch (e: Exception) { e.printStackTrace() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // 3. Kontrol Et (Kalp dolu mu boş mu?)
@@ -85,7 +89,9 @@ class UserRepository @Inject constructor(
                 .get()
                 .await()
             doc.exists()
-        } catch (e: Exception) { false }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     // 4. Favori Listesini Canlı Çekme (Real-time Flow)
@@ -125,7 +131,8 @@ class UserRepository @Inject constructor(
     // 5. Tüm Favorileri Sil
     suspend fun deleteAllFavorites(userId: String) {
         try {
-            val collectionRef = firestore.collection("users").document(userId).collection("favorites")
+            val collectionRef =
+                firestore.collection("users").document(userId).collection("favorites")
             val snapshot = collectionRef.get().await()
             val batch = firestore.batch()
             for (doc in snapshot.documents) {

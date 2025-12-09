@@ -52,7 +52,9 @@ fun ViewAllScreen(
                     )
                 },
                 navigationIcon = {
-                    CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
+                    CircularBackButtons(
+                        onBackClick = { navController.popBackStack() },
+                        onHomeClick = { navController.navigate("Home") })
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface

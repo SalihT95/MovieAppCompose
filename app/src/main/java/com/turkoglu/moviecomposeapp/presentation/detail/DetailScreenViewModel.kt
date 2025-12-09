@@ -8,8 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.turkoglu.moviecomposeapp.data.remote.dto.toCastList
 import com.turkoglu.moviecomposeapp.data.repo.MovieRepositoryImpl
+import com.turkoglu.moviecomposeapp.data.repo.UserRepository
+import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.domain.use_case.GetMovieDetailUseCase
 import com.turkoglu.moviecomposeapp.domain.use_case.GetVideoUrlUseCase
 import com.turkoglu.moviecomposeapp.util.Resource
@@ -18,9 +21,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.google.firebase.auth.FirebaseAuth
-import com.turkoglu.moviecomposeapp.data.repo.UserRepository
-import com.turkoglu.moviecomposeapp.domain.model.Movie
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @HiltViewModel
@@ -81,7 +81,7 @@ class DetailScreenViewModel @Inject constructor(
                         title = detail.title,
                         description = detail.overview, // API'den gelen 'overview'u senin 'description'a atadık
                         posterPath = detail.posterPath ?: "",
-                        backdropPath = detail.backdropPath ?:"",
+                        backdropPath = detail.backdropPath ?: "",
                         releaseDate = detail.releaseDate,
                         voteAverage = detail.voteAverage
                     )
@@ -92,6 +92,7 @@ class DetailScreenViewModel @Inject constructor(
             }
         }
     }
+
     private fun getMovie() {
         getDetailUseCase.executeGetMovieDetail(movieId).onEach { result ->
             when (result) {

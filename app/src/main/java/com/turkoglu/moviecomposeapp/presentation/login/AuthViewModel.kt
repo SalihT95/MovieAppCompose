@@ -159,7 +159,8 @@ class AuthViewModel @Inject constructor(
 
             if (docSnapshot.exists()) {
                 val username = docSnapshot.getString("username") ?: "Kullanıcı"
-                val profileImage = docSnapshot.getString("avatarUrl") // "avatarUrl" keyini kullanıyoruz
+                val profileImage =
+                    docSnapshot.getString("avatarUrl") // "avatarUrl" keyini kullanıyoruz
 
                 val account = UserAccount(
                     id = uid,

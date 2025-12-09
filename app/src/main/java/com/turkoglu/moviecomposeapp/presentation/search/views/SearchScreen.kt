@@ -69,15 +69,19 @@ fun SearchScreen(
     val searchResults = viewModel.searchResults.value.collectAsLazyPagingItems()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(Modifier
-        .fillMaxSize()
-        .background(AppBackgroundGradient)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(AppBackgroundGradient)
+    ) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             Alignment.CenterVertically
         ) {
-            CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
+            CircularBackButtons(
+                onBackClick = { navController.popBackStack() },
+                onHomeClick = { navController.navigate("Home") })
             SearchBar(
                 searchTerm = viewModel.searchTerm.value,
                 onSearchChanged = viewModel::setSearchTerm,

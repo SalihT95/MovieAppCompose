@@ -78,7 +78,8 @@ fun DetailScreen(
     // Video URL Güvenliği
     val videoUrl = viewModel.fragmanState.value.videoUrl
     val intent = Intent(Intent.ACTION_VIEW, (videoUrl ?: "").toUri())
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     // Kullanıcı ve Favori Durumu
     val currentUser by userViewModel.currentUser.collectAsState()
@@ -93,9 +94,11 @@ fun DetailScreen(
         }
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(AppBackgroundGradient)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackgroundGradient)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,7 +111,9 @@ fun DetailScreen(
                     .padding(16.dp), // Top bar için padding
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
+                CircularBackButtons(
+                    onBackClick = { navController.popBackStack() },
+                    onHomeClick = { navController.navigate("Home") })
 
                 // Video varsa butonu göster
                 if (!videoUrl.isNullOrEmpty()) {
@@ -140,7 +145,8 @@ fun DetailScreen(
                             viewModel.toggleFavorite(film)
 
                             // 3. Kullanıcıya Bilgi Ver (Ters mantık: Şu an favoriyse siliniyordur)
-                            val message = if (isFavorite) "Favorilerden kaldırıldı" else "Favorilere eklendi"
+                            val message =
+                                if (isFavorite) "Favorilerden kaldırıldı" else "Favorilere eklendi"
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -202,7 +208,10 @@ fun DetailScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .align(Alignment.BottomStart) // Sol alta hizala
-                            .padding(start = 16.dp, bottom = 16.dp) // Kenarlardan boşluk bırak (örnekteki gibi biraz içeride)
+                            .padding(
+                                start = 16.dp,
+                                bottom = 16.dp
+                            ) // Kenarlardan boşluk bırak (örnekteki gibi biraz içeride)
                             .width(100.dp) // Poster genişliği
                             .height(150.dp) // Poster yüksekliği
                             .clip(RoundedCornerShape(12.dp)) // Posterin köşelerini yuvarlat

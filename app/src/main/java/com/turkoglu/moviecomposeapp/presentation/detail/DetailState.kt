@@ -9,7 +9,7 @@ data class DetailState(
     val overview: String = "",
     val popularity: Double = 0.0,
     val posterPath: String? = null,
-    val backdropPath: String?= null,
+    val backdropPath: String? = null,
     val releaseDate: String = "",
     val revenue: Int = 0,
     val title: String = "",

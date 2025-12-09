@@ -148,9 +148,13 @@ fun MovieSection(
                 color = MaterialTheme.colorScheme.onBackground
             )
             AssistChip(
-                onClick = {  onClickViewAll() },
-                label = { Text(text = "View All", color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelLarge) }
+                onClick = { onClickViewAll() },
+                label = {
+                    Text(
+                        text = "View All", color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             )
         }
 

@@ -64,7 +64,9 @@ fun CastScreen(
             CenterAlignedTopAppBar(
                 title = { Text(person?.name ?: "Cast Detail") },
                 navigationIcon = {
-                    CircularBackButtons(onBackClick = { navController.popBackStack()}, onHomeClick = { navController.navigate("Home") })
+                    CircularBackButtons(
+                        onBackClick = { navController.popBackStack() },
+                        onHomeClick = { navController.navigate("Home") })
                 }
             )
         }
@@ -180,7 +182,7 @@ fun PersonHeader(person: PersonDetail) {
 }
 
 @Composable
-fun MovieCastItem(movie: MovieCast, onItemClick: (MovieCast) -> Unit ) {
+fun MovieCastItem(movie: MovieCast, onItemClick: (MovieCast) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

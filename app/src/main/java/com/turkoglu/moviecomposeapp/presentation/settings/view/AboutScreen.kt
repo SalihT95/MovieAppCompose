@@ -148,7 +148,11 @@ fun AppInfoSection() {
 @Composable
 fun DeveloperInfoSection(context: Context) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(
+                alpha = 0.5f
+            )
+        ),
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -199,7 +203,10 @@ fun DeveloperInfoSection(context: Context) {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:turkoglusalih00@gmail.com")
                     }
-                    try { context.startActivity(intent) } catch (e: Exception) {}
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                    }
                 }
             )
         }
@@ -258,7 +265,16 @@ fun TechStackSection() {
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        val techs = listOf("Kotlin", "Jetpack Compose", "Hilt", "Retrofit", "Firebase Auth", "Firestore", "Coil", "Room")
+        val techs = listOf(
+            "Kotlin",
+            "Jetpack Compose",
+            "Hilt",
+            "Retrofit",
+            "Firebase Auth",
+            "Firestore",
+            "Coil",
+            "Room"
+        )
 
         FlowRowSimple(
             items = techs,

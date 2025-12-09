@@ -43,9 +43,11 @@ fun MovieListItem(
         tonalElevation = 3.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(AppBackgroundGradient)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppBackgroundGradient)
+        ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("https://image.tmdb.org/t/p/w342${movie.posterPath}")
