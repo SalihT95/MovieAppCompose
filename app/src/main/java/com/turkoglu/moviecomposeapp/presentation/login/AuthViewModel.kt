@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.domain.model.UserAccount
+import com.turkoglu.moviecomposeapp.util.AvatarUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -26,7 +27,6 @@ class AuthViewModel @Inject constructor(
     var loginState by mutableStateOf<LoginUiState>(LoginUiState.Idle)
         private set
 
-    // Firebase için Email
     var savedEmail by mutableStateOf(userPrefs.getUsername() ?: "")
         private set
 
@@ -36,14 +36,12 @@ class AuthViewModel @Inject constructor(
     val rememberMe = userPrefs.getRememberMe()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    // Uygulama açıldığında oturum kontrolü
     init {
         checkCurrentUser()
     }
 
     private fun checkCurrentUser() {
         if (auth.currentUser != null) {
-            // Kullanıcı zaten giriş yapmış
             fetchUserInfo(auth.currentUser!!.uid)
         }
     }
@@ -52,30 +50,29 @@ class AuthViewModel @Inject constructor(
     fun register(email: String, password: String, username: String) = viewModelScope.launch {
         loginState = LoginUiState.Loading
         try {
-            // 1. Auth ile kullanıcı oluştur
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val user = authResult.user ?: throw Exception("Kullanıcı oluşturulamadı")
 
-            // 2. Firestore için kullanıcı objesi hazırla
+            // Rastgele Avatar Seçimi
+            val randomAvatar = AvatarUtils.getRandomAvatar()
+
             val userMap = hashMapOf(
                 "userId" to user.uid,
                 "username" to username,
                 "email" to email,
-                "profileImageUrl" to null,
+                "avatarUrl" to randomAvatar, // ARTIK URL DEĞİL, ID KEY KAYDEDİYORUZ
                 "createdAt" to System.currentTimeMillis()
             )
 
-            // 3. Firestore'a kaydet
             firestore.collection("users").document(user.uid)
                 .set(userMap)
                 .await()
 
-            // 4. Modeli oluştur ve State güncelle
             val newAccount = UserAccount(
-                id = user.uid, // String ID (Firebase UID)
+                id = user.uid,
                 username = username,
                 name = username,
-                avatarUrl = null,
+                avatarUrl = randomAvatar,
                 includeAdult = false,
                 iso31661 = "TR",
                 iso6391 = "tr",
@@ -94,14 +91,31 @@ class AuthViewModel @Inject constructor(
     }
 
     // --- FIREBASE LOGIN ---
-    fun login(email: String, password: String) = viewModelScope.launch {
+    fun login(identifier: String, password: String) = viewModelScope.launch {
         loginState = LoginUiState.Loading
         try {
-            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            var emailToLogin = identifier.trim()
+
+            if (!identifier.contains("@")) {
+                val querySnapshot = firestore.collection("users")
+                    .whereEqualTo("username", identifier.trim())
+                    .limit(1)
+                    .get()
+                    .await()
+
+                if (querySnapshot.isEmpty) {
+                    throw Exception("Bu kullanıcı adı ile bir hesap bulunamadı.")
+                }
+
+                emailToLogin = querySnapshot.documents.first().getString("email")
+                    ?: throw Exception("Bu hesaba bağlı bir e-posta bulunamadı.")
+            }
+
+            val authResult = auth.signInWithEmailAndPassword(emailToLogin, password).await()
             val user = authResult.user ?: throw Exception("Kullanıcı bulunamadı")
 
             if (rememberMe.value) {
-                userPrefs.saveCredentials(email, password)
+                userPrefs.saveCredentials(identifier, password)
             } else {
                 userPrefs.saveCredentials("", "")
             }
@@ -120,12 +134,11 @@ class AuthViewModel @Inject constructor(
             val authResult = auth.signInAnonymously().await()
             val user = authResult.user ?: throw Exception("Misafir girişi yapılamadı")
 
-            // Misafir kullanıcı objesi
             val guestAccount = UserAccount(
-                id = user.uid, // Misafirlerin de benzersiz UID'si vardır
+                id = user.uid,
                 username = "Misafir",
                 name = "Guest User",
-                avatarUrl = null,
+                avatarUrl = AvatarUtils.GUEST_AVATAR_KEY, // "ghost"
                 includeAdult = false,
                 iso31661 = "TR",
                 iso6391 = "tr",
@@ -146,11 +159,10 @@ class AuthViewModel @Inject constructor(
 
             if (docSnapshot.exists()) {
                 val username = docSnapshot.getString("username") ?: "Kullanıcı"
-                val profileImage = docSnapshot.getString("profileImageUrl")
+                val profileImage = docSnapshot.getString("avatarUrl") // "avatarUrl" keyini kullanıyoruz
 
-                // UserAccount modelini Firebase verisiyle doldur
                 val account = UserAccount(
-                    id = uid, // Firebase UID String
+                    id = uid,
                     username = username,
                     name = username,
                     avatarUrl = profileImage,
@@ -161,7 +173,6 @@ class AuthViewModel @Inject constructor(
                 )
                 loginState = LoginUiState.Success(uid, account)
             } else {
-                // Kullanıcı var ama Firestore kaydı yoksa (Eski kullanıcı veya manuel silinmiş)
                 val account = UserAccount(
                     id = uid,
                     username = emailToUsername(auth.currentUser?.email),

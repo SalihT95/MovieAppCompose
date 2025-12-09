@@ -22,11 +22,18 @@ fun PageIndicator(pageSize: Int, currentPage: Int, modifier: Modifier = Modifier
         verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(pageSize) { page ->
+            // Seçili sayfa için Primary, diğerleri için Beyazın biraz şeffaf hali
+            // Çünkü arka planımız artık koyu renkli bir resim/gölge.
+            val color = if (page == currentPage)
+                MaterialTheme.colorScheme.primary
+            else
+                Color.White.copy(alpha = 0.5f)
+
             Box(
                 modifier = Modifier
-                    .size(12.dp)
+                    .size(if (page == currentPage) 14.dp else 10.dp) // Seçili olan biraz daha büyük
                     .clip(CircleShape)
-                    .background(color = if (page == currentPage) MaterialTheme.colorScheme.primary else Color.Gray)
+                    .background(color = color)
             )
         }
     }

@@ -1,26 +1,23 @@
 package com.turkoglu.moviecomposeapp.presentation.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
@@ -29,49 +26,38 @@ import com.turkoglu.moviecomposeapp.R
 fun CastItem(
     castImageUrl: String,
     castName: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .width(130.dp)
-            .height(200.dp)
-            .padding(horizontal = 6.dp, vertical = 8.dp)
+            .width(80.dp)
+            .clickable { onClick() }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(castImageUrl)
-                    .placeholder(R.drawable.user) // Yüklenene kadar gösterilecek
-                    .error(R.drawable.ic_placeholder)       // Hata olursa gösterilecek
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Oyuncu fotoğrafı: $castName",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(castImageUrl)
+                .placeholder(R.drawable.user) // Placeholder (kendi kaynağına göre düzenle)
+                .error(R.drawable.user)
+                .crossfade(true)
+                .build(),
+            contentDescription = "Oyuncu: $castName",
+            contentScale = ContentScale.Crop, // Resmi daireye sığacak şekilde kırpar
+            modifier = Modifier
+                .size(70.dp) // Daire boyutu
+                .clip(CircleShape) // Resmi yuvarlak yapar
+        )
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.Black.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = castName,
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = castName,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center,
+            maxLines = 2, // İsim uzunsa 2 satıra sığsın
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -108,16 +108,16 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // --- EMAIL ALANI ---
+            // --- KULLANICI ADI VEYA EMAIL ALANI ---
             OutlinedTextField(
-                value = email,
+                value = email, // Değişken adını 'identifier' veya 'loginInput' yapabilirsin ama 'email' kalsa da çalışır
                 onValueChange = { email = it },
-                label = { Text("E-posta Adresi") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email Icon") },
+                label = { Text("Kullanıcı Adı veya E-posta") }, // DEĞİŞTİ
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }, // İkonu Person yaptık
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email, // @ işareti içeren klavye
+                    keyboardType = KeyboardType.Text, // DEĞİŞTİ: Email yerine Text
                     imeAction = ImeAction.Next
                 )
             )

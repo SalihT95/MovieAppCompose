@@ -102,7 +102,7 @@ fun CastScreen(
                                 Text(
                                     text = person.biography,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = GrayTextSecondary
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }

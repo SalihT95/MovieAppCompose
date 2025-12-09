@@ -69,7 +69,7 @@ class UserPrefs(private val context: Context) {
         context.dataStore.edit { it[KEY_LANGUAGE] = languageCode }
 
     fun getLanguage(): Flow<String> =
-        context.dataStore.data.map { it[KEY_LANGUAGE] ?: "en" }
+        context.dataStore.data.map { it[KEY_LANGUAGE] ?: "tr" }
 
     suspend fun saveTheme(theme: String) =
         context.dataStore.edit { it[KEY_THEME] = theme }

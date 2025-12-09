@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,8 +58,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.turkoglu.moviecomposeapp.R
-import com.turkoglu.moviecomposeapp.domain.model.Favorite
+import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.presentation.component.VoteAverageRatingIndicator
 import com.turkoglu.moviecomposeapp.presentation.fav.FavViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -73,14 +75,15 @@ fun FavScreen(
     viewModel: FavViewModel = hiltViewModel()
 ) {
     val openDialog = remember { mutableStateOf(false) }
-    val favoriteFilms by viewModel.favorites.collectAsStateWithLifecycle(emptyList())
+    // ViewModel artık List<Movie> döndürüyor
+    val favoriteFilms by viewModel.favorites.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Favorites",
+                        text = "Favoriler",
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.headlineSmall
                     )
@@ -90,7 +93,7 @@ fun FavScreen(
                         IconButton(onClick = { openDialog.value = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete All",
+                                contentDescription = "Tümünü Sil",
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -107,58 +110,55 @@ fun FavScreen(
 
         Box(modifier = Modifier
             .padding(paddingValues)
-            .background(AppBackgroundGradient)) {
+            .background(AppBackgroundGradient)
+            .fillMaxSize()
+        ) {
             if (favoriteFilms.isEmpty()) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         modifier = Modifier.size(250.dp),
-                        painter = painterResource(id = R.drawable.ic_placeholder),
+                        painter = painterResource(id = R.drawable.ic_placeholder), // Drawable'da bu ikonun olduğundan emin ol
                         contentDescription = "Empty State"
                     )
                 }
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     itemsIndexed(
                         items = favoriteFilms,
-                        key = { _, favorite -> favorite.mediaId }
-                    ) { _, favorite ->
+                        key = { _, movie -> movie.id!! } // Key olarak Movie ID
+                    ) { _, movie ->
                         val dismissState = rememberDismissState()
 
                         if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-                            LaunchedEffect(favorite) {
-                                viewModel.deleteOneFavorite(favorite)
+                            LaunchedEffect(movie) {
+                                viewModel.deleteOneFavorite(movie)
                             }
                         }
 
                         SwipeToDismiss(
                             state = dismissState,
                             directions = setOf(DismissDirection.EndToStart),
-                            dismissThresholds = {
-                                FractionalThreshold(0.25f)
-                            },
+                            dismissThresholds = { FractionalThreshold(0.25f) },
                             background = {
                                 val color by animateColorAsState(
-                                    if (dismissState.targetValue == DismissValue.Default)
-                                        primaryDark else primaryPink,
+                                    if (dismissState.targetValue == DismissValue.Default) primaryDark else primaryPink,
                                     label = ""
                                 )
                                 val scale by animateFloatAsState(
-                                    if (dismissState.targetValue == DismissValue.Default)
-                                        0.75f else 1f,
+                                    if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f,
                                     label = ""
                                 )
 
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(color)
+                                        .background(color, RoundedCornerShape(8.dp))
                                         .padding(horizontal = 20.dp),
                                     contentAlignment = Alignment.CenterEnd
                                 ) {
@@ -176,12 +176,12 @@ fun FavScreen(
                                         .fillMaxWidth()
                                         .height(230.dp)
                                         .clickable {
-                                            navController.navigate("Detail/${favorite.mediaId}")
+                                            navController.navigate("Detail/${movie.id}")
                                         },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                                 ) {
-                                    FilmItem(favorite)
+                                    FilmItem(movie)
                                 }
                             }
                         )
@@ -189,6 +189,7 @@ fun FavScreen(
                 }
             }
 
+            // Silme Onay Dialogu
             if (openDialog.value) {
                 AlertDialog(
                     onDismissRequest = { openDialog.value = false },
@@ -198,23 +199,13 @@ fun FavScreen(
                                 viewModel.deleteAllFavorites()
                                 openDialog.value = false
                             }
-                        ) {
-                            Text("Yes")
-                        }
+                        ) { Text("Evet") }
                     },
                     dismissButton = {
-                        TextButton(
-                            onClick = { openDialog.value = false }
-                        ) {
-                            Text("No")
-                        }
+                        TextButton(onClick = { openDialog.value = false }) { Text("Hayır") }
                     },
-                    title = {
-                        Text("Delete all favorites")
-                    },
-                    text = {
-                        Text("Are you sure you want to delete all?")
-                    },
+                    title = { Text("Tümünü Sil") },
+                    text = { Text("Tüm favori filmleri silmek istediğinize emin misiniz?") },
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                     textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -226,15 +217,28 @@ fun FavScreen(
 }
 
 @Composable
-fun FilmItem(filmItem: Favorite) {
+fun FilmItem(movie: Movie) {
+    // Resim URL Kontrolü: HTTP ile başlıyorsa tam linktir, değilse TMDB linkidir
+    val fullPosterUrl = if (movie.posterPath.startsWith("http") == true) {
+        movie.posterPath
+    } else {
+        "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+    }
+
     Box {
         AsyncImage(
-            model = filmItem.image,
-            placeholder = painterResource(R.drawable.ic_placeholder),
-            contentDescription = "Movie Banner",
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(fullPosterUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
+                .crossfade(true)
+                .build(),
+            contentDescription = movie.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
+        // Karartma efekti (Yazının okunması için)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -245,10 +249,11 @@ fun FilmItem(filmItem: Favorite) {
                     )
                 )
         )
+
         FilmDetails(
-            title = filmItem.title,
-            releaseDate = filmItem.releaseDate,
-            rating = filmItem.rating
+            title = movie.title,
+            releaseDate = movie.releaseDate ?: "",
+            rating = movie.voteAverage?.toFloat() ?: 0f
         )
     }
 }
@@ -266,7 +271,7 @@ fun FilmDetails(title: String, releaseDate: String, rating: Float) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     color = Color.White,

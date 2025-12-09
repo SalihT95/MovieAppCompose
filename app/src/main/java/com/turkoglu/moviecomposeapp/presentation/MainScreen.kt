@@ -34,8 +34,6 @@ fun MainScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val onboardingDone by themeViewModel.onboardingDone.collectAsStateWithLifecycle()
-    // Not: AuthViewModel'de rememberMe mantığını Firebase'e göre güncellemiştik.
-    // Eğer sadece "Beni Hatırla" seçiliyse direkt Home'a atar.
     val isRemembered by authViewModel.rememberMe.collectAsStateWithLifecycle()
 
     NavHost(

@@ -4,7 +4,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Text
@@ -18,7 +17,7 @@ fun GenreChipsRow(textColor: Color, genreList: List<String>, onGenreClick: (Stri
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp)
+            //.padding(horizontal = 10.dp)
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

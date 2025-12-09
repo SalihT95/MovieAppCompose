@@ -20,6 +20,7 @@ fun MovieListResponseDto.toMovieList(): List<Movie> {
             it.title,
             it.overview,
             getImageUrl(it.posterPath),
+            getImageUrl(it.backdropPath),
             it.releaseDate,
             it.voteAverage
         )

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,21 +27,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import com.turkoglu.moviecomposeapp.domain.model.UserAccount
 import com.turkoglu.moviecomposeapp.presentation.Screen
 import com.turkoglu.moviecomposeapp.presentation.component.GenreChipsRow
 import com.turkoglu.moviecomposeapp.presentation.component.HomeSearchButton
+import com.turkoglu.moviecomposeapp.presentation.component.ProfileImage
 import com.turkoglu.moviecomposeapp.presentation.home.HomeViewModel
 import com.turkoglu.moviecomposeapp.presentation.home.MovieListItem
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -59,6 +59,8 @@ fun HomeScreen(
     val nowPlayingMovies = viewModel.nowPlayingState.value.collectAsLazyPagingItems()
     val upComingMovies = viewModel.upComingState.value.collectAsLazyPagingItems()
     val genreList = viewModel.genres.value.collectAsState(initial = emptyList()).value
+
+    // UserViewModel'den güncel kullanıcıyı dinliyoruz
     val currentUser by userViewModel.currentUser.collectAsState()
 
     Scaffold(
@@ -79,40 +81,7 @@ fun HomeScreen(
                     type = popularMovies,
                     onClickViewAll = {
                         navController.navigate(
-                            Screen.ViewAll.route.replace(
-                                "{selectedType}",
-                                "Popular"
-                            )
-                        )
-                    },
-                    onMovieClick = navigateToDetail
-                )
-            }
-            item {
-                MovieSection(
-                    title = "Upcoming",
-                    type = upComingMovies,
-                    onClickViewAll = {
-                        navController.navigate(
-                            Screen.ViewAll.route.replace(
-                                "{selectedType}",
-                                "Upcoming"
-                            )
-                        )
-                    },
-                    onMovieClick = navigateToDetail
-                )
-            }
-            item {
-                MovieSection(
-                    title = "Top Rated",
-                    type = topRatedMovies,
-                    onClickViewAll = {
-                        navController.navigate(
-                            Screen.ViewAll.route.replace(
-                                "{selectedType}",
-                                "Top Rated"
-                            )
+                            Screen.ViewAll.route.replace("{selectedType}", "Popular")
                         )
                     },
                     onMovieClick = navigateToDetail
@@ -124,10 +93,31 @@ fun HomeScreen(
                     type = nowPlayingMovies,
                     onClickViewAll = {
                         navController.navigate(
-                            Screen.ViewAll.route.replace(
-                                "{selectedType}",
-                                "Now Playing"
-                            )
+                            Screen.ViewAll.route.replace("{selectedType}", "Now Playing")
+                        )
+                    },
+                    onMovieClick = navigateToDetail
+                )
+            }
+            item {
+                MovieSection(
+                    title = "Upcoming",
+                    type = upComingMovies,
+                    onClickViewAll = {
+                        navController.navigate(
+                            Screen.ViewAll.route.replace("{selectedType}", "Upcoming")
+                        )
+                    },
+                    onMovieClick = navigateToDetail
+                )
+            }
+            item {
+                MovieSection(
+                    title = "Top Rated",
+                    type = topRatedMovies,
+                    onClickViewAll = {
+                        navController.navigate(
+                            Screen.ViewAll.route.replace("{selectedType}", "Top Rated")
                         )
                     },
                     onMovieClick = navigateToDetail
@@ -157,11 +147,10 @@ fun MovieSection(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(
-                text = "View All",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onClickViewAll() }
+            AssistChip(
+                onClick = {  onClickViewAll() },
+                label = { Text(text = "View All", color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.labelLarge) }
             )
         }
 
@@ -181,38 +170,37 @@ fun MovieSection(
 
 @Composable
 fun HomeTopBar(navController: NavController, account: UserAccount?) {
-    val avatarUrl = account?.avatarUrl
-    val fullAvatarUrl = avatarUrl?.let { path ->
-        if (path.startsWith("/")) "https://image.tmdb.org/t/p/w500$path" else null
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = account?.username ?: "Guest",
-            modifier = Modifier
-                .weight(1f),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = account?.username ?: "Misafir",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1
+            )
+        }
+
         HomeSearchButton(onClick = {
             navController.navigate("Search")
         })
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(fullAvatarUrl ?: "https://i.pravatar.cc/150?img=3")
-                .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_placeholder)
-                .crossfade(true)
-                .build(),
-            contentDescription = "Profile",
+
+        ProfileImage(
+            avatarKey = account?.avatarUrl,
             modifier = Modifier
-                .size(70.dp)
+                .size(50.dp)
                 .padding(start = 12.dp)
                 .clip(MaterialTheme.shapes.large)
+                .clickable {
+                    navController.navigate(Screen.Settings.route)
+                }
         )
     }
 }
@@ -221,11 +209,13 @@ fun HomeTopBar(navController: NavController, account: UserAccount?) {
 fun HomeScreenHeader(navController: NavController, genreList: List<Genre>, account: UserAccount?) {
     Column(modifier = Modifier.padding(top = 8.dp)) {
         HomeTopBar(navController, account)
-        GenreChipsRow(
-            textColor = MaterialTheme.colorScheme.onSurface,
-            genreList = genreList.map { it.name },
-        ) { genre ->
-            navController.navigate("ViewAll/$genre")
+        Box(modifier = Modifier.padding(start = 10.dp)) {
+            GenreChipsRow(
+                textColor = MaterialTheme.colorScheme.onSurface,
+                genreList = genreList.map { it.name },
+            ) { genre ->
+                navController.navigate("ViewAll/$genre")
+            }
         }
     }
 }
