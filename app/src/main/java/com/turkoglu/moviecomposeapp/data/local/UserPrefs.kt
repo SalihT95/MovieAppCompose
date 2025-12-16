@@ -30,6 +30,8 @@ class UserPrefs(private val context: Context) {
         private val KEY_LANGUAGE = stringPreferencesKey("selected_language")
         private val KEY_THEME = stringPreferencesKey("app_theme")
         private val KEY_ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
+        private val KEY_GUEST_NAME = stringPreferencesKey("guest_name")
+        private val KEY_GUEST_AVATAR = stringPreferencesKey("guest_avatar")
     }
 
     // 🔹 Onboarding
@@ -38,13 +40,6 @@ class UserPrefs(private val context: Context) {
 
     fun getOnboardingDone(): Flow<Boolean> =
         context.dataStore.data.map { it[KEY_ONBOARDING_DONE] ?: false }
-
-    // 🔹 Hassas veriler (EncryptedSharedPreferences)
-    fun saveSessionId(sessionId: String) = securePrefs.edit { putString("session_id", sessionId) }
-    fun getSessionId(): String? = securePrefs.getString("session_id", null)
-
-    fun saveRequestToken(token: String) = securePrefs.edit { putString("request_token", token) }
-    fun getRequestToken(): String? = securePrefs.getString("request_token", null)
 
     fun saveCredentials(username: String, password: String) {
         securePrefs.edit {
@@ -56,7 +51,6 @@ class UserPrefs(private val context: Context) {
     fun getUsername(): String? = securePrefs.getString("username", null)
     fun getPassword(): String? = securePrefs.getString("password", null)
 
-    fun clearAll() = securePrefs.edit { clear() }
 
     // 🔹 Kullanıcı ayarları (DataStore)
     suspend fun saveRememberMe(value: Boolean) =
@@ -76,4 +70,18 @@ class UserPrefs(private val context: Context) {
 
     fun getTheme(): Flow<String> =
         context.dataStore.data.map { it[KEY_THEME] ?: "system" }
+
+    // 🔹 Misafir Kullanıcı
+    suspend fun saveGuestInfo(name: String, avatar: String) {
+        context.dataStore.edit {
+            it[KEY_GUEST_NAME] = name
+            it[KEY_GUEST_AVATAR] = avatar
+        }
+    }
+
+    fun getGuestName(): Flow<String?> =
+        context.dataStore.data.map { it[KEY_GUEST_NAME] }
+
+    fun getGuestAvatar(): Flow<String?> =
+        context.dataStore.data.map { it[KEY_GUEST_AVATAR] }
 }

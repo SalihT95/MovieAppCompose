@@ -143,5 +143,6 @@ dependencies {
     implementation "eu.bambooapps:compose-material3-pullrefresh:1.0.1"
     implementation "androidx.paging:paging-compose:3.3.6"
     implementation "androidx.datastore:datastore-preferences:1.1.0"
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
 }

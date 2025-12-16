@@ -12,6 +12,7 @@ import com.turkoglu.moviecomposeapp.domain.model.UserAccount
 import com.turkoglu.moviecomposeapp.util.AvatarUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -40,9 +41,28 @@ class AuthViewModel @Inject constructor(
         checkCurrentUser()
     }
 
-    private fun checkCurrentUser() {
-        if (auth.currentUser != null) {
-            fetchUserInfo(auth.currentUser!!.uid)
+    private fun checkCurrentUser() = viewModelScope.launch {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            fetchUserInfo(currentUser.uid)
+        } else {
+            // Kayıtlı misafir kullanıcısını kontrol et
+            val guestName = userPrefs.getGuestName().firstOrNull()
+            val guestAvatar = userPrefs.getGuestAvatar().firstOrNull()
+
+            if (!guestName.isNullOrBlank() && !guestAvatar.isNullOrBlank()) {
+                loginState = LoginUiState.Success(
+                    // Misafir UID'si genellikle null veya boş olur, ancak yine de bir tane oluşturuyoruz
+                    "guest_user",
+                    UserAccount(
+                        id = "guest_user",
+                        username = guestName,
+                        name = guestName,
+                        avatarUrl = guestAvatar,
+                        isGuest = true
+                    )
+                )
+            }
         }
     }
 
@@ -137,13 +157,16 @@ class AuthViewModel @Inject constructor(
             val guestAccount = UserAccount(
                 id = user.uid,
                 username = "Misafir",
-                name = "Guest User",
+                name = "Misafir",
                 avatarUrl = AvatarUtils.GUEST_AVATAR_KEY, // "ghost"
                 includeAdult = false,
                 iso31661 = "TR",
                 iso6391 = "tr",
                 isGuest = true
             )
+
+            // Misafir bilgilerini DataStore'a kaydet
+            guestAccount.name?.let { userPrefs.saveGuestInfo(it, guestAccount.avatarUrl ?: "guest") }
 
             loginState = LoginUiState.Success(user.uid, guestAccount)
 
@@ -174,17 +197,33 @@ class AuthViewModel @Inject constructor(
                 )
                 loginState = LoginUiState.Success(uid, account)
             } else {
-                val account = UserAccount(
-                    id = uid,
-                    username = emailToUsername(auth.currentUser?.email),
-                    name = "",
-                    avatarUrl = null,
-                    includeAdult = false,
-                    iso31661 = "TR",
-                    iso6391 = "tr",
-                    isGuest = false
-                )
-                loginState = LoginUiState.Success(uid, account)
+                // Kullanıcı Firestore'da yoksa, anonim olabilir.
+                // Misafir mi diye kontrol edelim.
+                if (auth.currentUser?.isAnonymous == true) {
+                    val guestName = userPrefs.getGuestName().firstOrNull() ?: "Misafir"
+                    val guestAvatar = userPrefs.getGuestAvatar().firstOrNull() ?: AvatarUtils.GUEST_AVATAR_KEY
+                    val guestAccount = UserAccount(
+                        id = uid,
+                        username = guestName,
+                        name = guestName,
+                        avatarUrl = guestAvatar,
+                        isGuest = true
+                    )
+                    loginState = LoginUiState.Success(uid, guestAccount)
+                } else {
+                    // Normal kullanıcı ama Firestore'da verisi yok (hata durumu)
+                    val account = UserAccount(
+                        id = uid,
+                        username = emailToUsername(auth.currentUser?.email),
+                        name = "",
+                        avatarUrl = null,
+                        includeAdult = false,
+                        iso31661 = "TR",
+                        iso6391 = "tr",
+                        isGuest = false
+                    )
+                    loginState = LoginUiState.Success(uid, account)
+                }
             }
         } catch (e: Exception) {
             loginState = LoginUiState.Error("Kullanıcı verisi alınamadı: ${e.message}")
@@ -195,11 +234,11 @@ class AuthViewModel @Inject constructor(
         return email?.substringBefore("@") ?: "Kullanıcı"
     }
 
-    fun signOut() {
+    fun signOut() = viewModelScope.launch {
         auth.signOut()
-        viewModelScope.launch {
-            userPrefs.saveCredentials("", "")
-        }
+        userPrefs.saveCredentials("", "")
+        // Misafir verilerini de temizle
+        userPrefs.saveGuestInfo("", "")
         loginState = LoginUiState.Idle
     }
 }
