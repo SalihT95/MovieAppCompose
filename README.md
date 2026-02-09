@@ -11,9 +11,13 @@ Uygulamanın %100 Compose ile geliştirilen arayüzünden kareler:
 ### 1. Giriş ve Keşfet
 Kullanıcılar güvenli bir şekilde giriş yapabilir, **Misafir Modu** ile uygulamayı deneyimleyebilir ve türlere göre filtreleme yapabilir.
 
-| Giriş Ekranı | Ana Sayfa | Kategori Filtreleme |
-|:---:|:---:|:---:|
-| <img src="Screenshots/Screenshot_20260209_232914.png" width="250" alt="Login Screen"> | <img src="Screenshots/Screenshot_20260209_233020.png" width="250" alt="Home Screen 1"> | <img src="Screenshots/Screenshot_20260210_012041.png" width="250" alt="Home Screen 2"> | <img src="Screenshots/Screenshot_20260209_233201.png" width="250" alt="Genre List"> | <img src="Screenshots/Screenshot_20260210_011622.png" width="250" alt="Popular List"> | 
+| Giriş Ekranı | Ana Sayfa (Liste) | Ana Sayfa (Detay) | Kategori Filtreleme |
+|:---:|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260209_232914.png" width="200" alt="Login Screen"> | <img src="Screenshots/Screenshot_20260209_233020.png" width="200" alt="Home Screen 1"> | <img src="Screenshots/Screenshot_20260210_012041.png" width="200" alt="Home Screen 2"> | <img src="Screenshots/Screenshot_20260209_233201.png" width="200" alt="Genre List"> |
+
+| Popüler Listesi | | | |
+|:---:|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260210_011622.png" width="200" alt="Popular List"> | | | |
 
 ### 2. Film ve Oyuncu Detayları
 Film hakkında özet, puan ve oyuncu kadrosu bilgileri. Oyuncuların üzerine tıklandığında detaylı **Biyografi ve Filmografi** sayfaları açılır.
@@ -22,7 +26,7 @@ Film hakkında özet, puan ve oyuncu kadrosu bilgileri. Oyuncuların üzerine t�
 |:---:|:---:|:---:|
 | <img src="Screenshots/Screenshot_20260209_233153.png" width="250" alt="Movie Detail Avatar"> | <img src="Screenshots/Screenshot_20260209_233220.png" width="250" alt="Actor Sam"> | <img src="Screenshots/Screenshot_20260209_233516.png" width="250" alt="Actor Chris"> |
 
-| Film Detayı (Komedi) |  |  |
+| Film Detayı (Komedi) | | |
 |:---:|:---:|:---:|
 | <img src="Screenshots/Screenshot_20260209_233311.png" width="250" alt="Movie Detail Comedy"> | | |
 
