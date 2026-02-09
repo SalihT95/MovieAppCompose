@@ -1,12 +1,12 @@
-# 🎬 The Movie App
+# 🎬 MovieAppCompose
 
-**The Movie App**, kullanıcıların popüler filmleri keşfetmesini, detaylarını incelemesini ve favorilerini yönetmesini sağlayan, **Clean Architecture** ve **MVVM** prensiplerine sadık kalınarak geliştirilmiş modern bir Android uygulamasıdır.
+**MovieAppCompose**, Android dünyasının en güncel teknolojisi olan **Jetpack Compose** ile geliştirilmiş, **Clean Architecture** ve **MVVM** prensiplerine tam uyumlu modern bir film keşif uygulamasıdır.
 
-Bu proje, **TMDB (The Movie Database) API** verilerini kullanarak dinamik ve akıcı bir kullanıcı deneyimi sunar.
+XML kullanılmadan tamamen **Declarative UI** yaklaşımıyla yazılan bu proje, **TMDB (The Movie Database) API** verilerini kullanarak kullanıcılara zengin bir içerik sunar.
 
-## 📱 Ekran Görüntüleri ve Demo
+## 📱 Ekran Görüntüleri ve Özellikler
 
-Uygulamanın arayüzünden kareler ve özellikler:
+Uygulamanın %100 Compose ile geliştirilen arayüzünden kareler:
 
 | Giriş / Splash | Ana Sayfa | Film Detayı |
 |:---:|:---:|:---:|
@@ -18,26 +18,37 @@ Uygulamanın arayüzünden kareler ve özellikler:
 
 ## ✨ Temel Özellikler
 
-* **Firebase Authentication:** Email/Şifre ile güvenli giriş ve kayıt.
-* **Misafir Girişi (Guest User):** Kayıt olmadan uygulamayı keşfetme imkanı (Son güncelleme ile eklendi).
-* **Film Keşfi:** Popüler, vizyondaki ve yüksek puanlı filmleri listeleme.
-* **Detaylı Görünüm:** Oyuncular, özet, yayın tarihi ve puan bilgileri.
-* **Özel Animasyonlar:** Kullanıcı deneyimini artıran özel yükleme (loading) animasyonları.
-* **Arama Modülü:** Geniş veritabanında film arama.
+* **Modern UI:** Tamamen **Jetpack Compose** (Material 3) ile geliştirilmiş akıcı ve reaktif arayüzler.
+* **Oyuncu Detayları:** Aktörlerin biyografileri, doğum tarihleri ve rol aldıkları diğer yapımlar (Filmografi).
+* **Gelişmiş Arama:** TMDB veritabanında film ve oyuncu arama.
+* **Firebase Entegrasyonu:**
+    * **Auth:** Email/Şifre ile güvenli kullanıcı girişi ve kaydı.
+    * **Firestore:** Favori filmleri buluta kaydetme ve senkronizasyon.
+* **Misafir Girişi (Guest User):** Kayıt zorunluluğu olmadan uygulamayı deneyimleme imkanı.
+* **Dinamik Animasyonlar:** Compose Animation API ile zengin geçiş efektleri.
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 
 Proje, modern Android geliştirme standartlarına uygun olarak inşa edilmiştir:
 
-* **Dil:** Kotlin
-* **Mimari:** MVVM (Model-View-ViewModel) & Clean Architecture
-* **UI:** XML / ViewBinding
-* **Ağ (Network):** Retrofit & OkHttp
+* **Dil:** Kotlin (%100)
+* **UI Toolkit:** **Jetpack Compose** (No XML)
+* **Mimari:** Clean Architecture & MVVM (Model-View-ViewModel)
 * **Asenkron İşlemler:** Coroutines & Flow
-* **Veri Yönetimi:** Firebase (Auth & Firestore)
-* **Görsel Yükleme:** Glide / Coil
-* **Dependency Injection:** Hilt (veya Koin - *kullandığına göre düzenleyebilirsin*)
-* **Navigasyon:** Android Navigation Component
+* **Ağ (Network):** Retrofit & OkHttp
+* **Görsel Yükleme:** Coil (Compose-first image loading)
+* **Dependency Injection:** Hilt
+* **Navigasyon:** Jetpack Navigation Compose
+* **Veri Tabanı (Local):** Room Database (Önbellekleme için)
+* **Diğer:** Accompanist (Pager vb. için), Serialization
+
+## 📂 Proje Mimarisi
+
+Uygulama, sorumlulukların ayrılması (Separation of Concerns) ilkesine dayanan katmanlı bir yapıya sahiptir:
+
+* **Domain Layer:** İş mantığı (Use Cases), Repository arayüzleri ve Model sınıfları. (Platform bağımsız)
+* **Data Layer:** API çağrıları, Veritabanı işlemleri ve Repository implementasyonları.
+* **Presentation Layer:** UI (Composables) ve ViewModel (State Management).
 
 ## 🚀 Kurulum
 
@@ -45,12 +56,15 @@ Projeyi yerel ortamınızda çalıştırmak için:
 
 1.  Repoyu klonlayın:
     ```bash
-    git clone [https://github.com/SalihT95/The-Movie-App.git](https://github.com/SalihT95/The-Movie-App.git)
+    git clone [https://github.com/SalihT95/MovieAppCompose.git](https://github.com/SalihT95/MovieAppCompose.git)
     ```
-2.  Android Studio'da projeyi açın (`File > Open`).
-3.  `build.gradle` dosyalarının senkronize olmasını bekleyin.
-4.  **Önemli:** TMDB API anahtarınızı `local.properties` veya ilgili sabitler dosyasına eklediğinizden emin olun.
-5.  Uygulamayı emülatörde veya fiziksel cihazda çalıştırın.
+2.  Android Studio (Giraffe veya daha yeni sürüm) ile projeyi açın.
+3.  Gradle senkronizasyonunun tamamlanmasını bekleyin.
+4.  **API Key:** TMDB API anahtarınızı `local.properties` dosyasına ekleyin:
+    ```properties
+    tmdb_api_key="SENIN_API_ANAHTARIN"
+    ```
+5.  Uygulamayı çalıştırın!
 
 ## 📞 İletişim
 
