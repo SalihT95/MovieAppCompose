@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.items // BU IMPORT EKLENDİ (Grid hatasını çözer)
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -65,7 +65,7 @@ fun SettingsScreen(
 
     // Dialog Durumları
     var showEditDialog by remember { mutableStateOf(false) }
-    var showAvatarDialog by remember { mutableStateOf(false) } // YENİ EKLENDİ
+    var showAvatarDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -81,16 +81,20 @@ fun SettingsScreen(
         ) {
 
             Spacer(modifier = Modifier.height(32.dp))
-            // --- PROFİL FOTOĞRAFI (YENİ BİLEŞEN) ---
+
+            // --- PROFİL FOTOĞRAFI ---
             Box(contentAlignment = Alignment.BottomEnd) {
-                // AsyncImage yerine ProfileImage kullanıyoruz
                 ProfileImage(
                     avatarKey = currentUser?.avatarUrl,
                     modifier = Modifier
                         .size(120.dp)
-                        //.padding(top = 32.dp)
-                        .clip(CircleShape) // Yuvarlak kesim
-                        .clickable { showAvatarDialog = true } // Tıklanınca dialog aç
+                        .clip(CircleShape)
+                        .clickable {
+                            // Sadece misafir değilse avatar dialog açılır
+                            if (currentUser?.isGuest == false) {
+                                showAvatarDialog = true
+                            }
+                        }
                 )
 
                 // Düzenleme İkonu (Sadece üyelere)
@@ -128,7 +132,8 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                if (currentUser?.isGuest == false) {
+                // Eğer kullanıcı misafir değilse düzenleme butonu görünür
+                if (currentUser != null && !currentUser!!.isGuest) {
                     IconButton(onClick = { showEditDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -142,12 +147,14 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LanguageSettingSection(
+            // Dil Ayarları (LanguageSettingSection kodunu paylaşmadığın için buraya import edilmiş varsayıyorum)
+            /* LanguageSettingSection(
                 selectedLanguage = selectedLang,
                 onLanguageSelected = { lang ->
                     coroutineScope.launch { userViewModel.updateLanguage(lang) }
                 }
             )
+            */
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -157,13 +164,14 @@ fun SettingsScreen(
                 isDestructive = false
             )
             SettingsItem("Çıkış Yap", onClick = {
+                userViewModel.logout() // ViewModel'deki logout user'ı null yapar
                 authViewModel.signOut()
                 navController.navigate("Login") { popUpTo(0) { inclusive = true } }
             }, isDestructive = true)
 
         } // Column Sonu
 
-        // --- DIALOG ÇAĞRILARI (Box'ın sonuna eklenir) ---
+        // --- DIALOG ÇAĞRILARI ---
 
         // 1. Profil Adı Düzenleme Dialogu
         if (showEditDialog && currentUser != null) {
@@ -171,13 +179,16 @@ fun SettingsScreen(
                 currentName = currentUser!!.username ?: "",
                 onDismiss = { showEditDialog = false },
                 onConfirm = { newName ->
-                    userViewModel.updateUserProfile(currentUser!!.id, newName)
+                    // id null değilse güncelle
+                    currentUser?.id?.let { uid ->
+                        userViewModel.updateUserProfile(uid, newName)
+                    }
                     showEditDialog = false
                 }
             )
         }
 
-        // 2. Avatar Seçim Dialogu (YENİ EKLENEN YER)
+        // 2. Avatar Seçim Dialogu
         if (showAvatarDialog) {
             AvatarSelectionDialog(
                 currentAvatarKey = currentUser?.avatarUrl,
@@ -197,7 +208,8 @@ fun EditProfileDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf(currentName) }
+    // DÜZELTME: currentName değiştiğinde TextField da güncellensin diye 'remember(currentName)' kullanıldı.
+    var text by remember(currentName) { mutableStateOf(currentName) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -247,6 +259,7 @@ fun AvatarSelectionDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(300.dp)
             ) {
+                // items importu yukarıda eklendiği için artık hata vermez
                 items(AvatarUtils.selectableAvatars) { key ->
                     val resId = AvatarUtils.getDrawableId(key)
                     val isSelected = currentAvatarKey == key

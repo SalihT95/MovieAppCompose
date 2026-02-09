@@ -24,16 +24,16 @@ class UserViewModel @Inject constructor(
     private val _selectedLanguage = MutableStateFlow(LanguagePreference.selectedLanguage)
     val selectedLanguage: StateFlow<String> = _selectedLanguage
 
-    fun setAccount(details: UserAccount) {
-        _accountDetails.value = details
-    }
-
     private val _currentUser = MutableStateFlow<UserAccount?>(null)
     val currentUser: StateFlow<UserAccount?> = _currentUser
 
     init {
         loadLanguagePreference()
         loadUser()
+    }
+
+    fun setAccount(details: UserAccount) {
+        _accountDetails.value = details
     }
 
     private fun loadUser() {
@@ -69,24 +69,41 @@ class UserViewModel @Inject constructor(
 
     // --- AVATAR GÜNCELLEME ---
     fun updateAvatar(newAvatarKey: String) {
-        val uid = _currentUser.value?.id ?: return
+        // currentUser null ise işlem yapma
+        val user = _currentUser.value ?: return
+
         viewModelScope.launch {
-            // 1. Firestore güncelle
-            userRepository.updateUserField(uid, "avatarUrl", newAvatarKey)
+            // 1. Firestore'u güncelle (ID garanti dolu olmalı)
+            userRepository.updateUserField(user.id, "avatarUrl", newAvatarKey)
 
-            // 2. Local State güncelle (UI anlık değişsin)
-            _currentUser.value = _currentUser.value?.copy(avatarUrl = newAvatarKey)
+            // 2. Yeni objeyi oluştur
+            val updatedUser = user.copy(avatarUrl = newAvatarKey)
 
-            // 3. Room güncelle
-            _currentUser.value?.let { userRepository.saveUser(it) }
+            // 3. Local State'i güncelle
+            _currentUser.value = updatedUser
+
+            // 4. Room veritabanını güncelle
+            userRepository.saveUser(updatedUser)
         }
     }
 
+    // --- PROFİL İSMİ GÜNCELLEME ---
     fun updateUserProfile(userId: String, newUsername: String) {
+        // currentUser null ise işlem yapma
+        val user = _currentUser.value ?: return
+
         viewModelScope.launch {
+            // 1. Firestore güncelle
             userRepository.updateUserField(userId, "username", newUsername)
-            _currentUser.value = _currentUser.value?.copy(username = newUsername)
-            _currentUser.value?.let { userRepository.saveUser(it) }
+
+            // 2. Yeni objeyi oluştur
+            val updatedUser = user.copy(username = newUsername)
+
+            // 3. Local State güncelle
+            _currentUser.value = updatedUser
+
+            // 4. Room güncelle
+            userRepository.saveUser(updatedUser)
         }
     }
 
@@ -95,12 +112,15 @@ class UserViewModel @Inject constructor(
             _selectedLanguage.value = lang
             LanguagePreference.selectedLanguage = lang
             userPrefs.saveLanguage(lang)
-            _currentUser.value = currentUser.value?.copy(
-                iso31661 = lang,
-                iso6391 = lang
-            )
-            currentUser.value?.let { user ->
-                userRepository.saveUser(user.copy(iso31661 = lang, iso6391 = lang))
+
+            // Kullanıcı varsa onun dil tercihini de güncelle
+            _currentUser.value?.let { user ->
+                val updatedUser = user.copy(
+                    iso31661 = lang,
+                    iso6391 = lang
+                )
+                _currentUser.value = updatedUser
+                userRepository.saveUser(updatedUser)
             }
         }
     }
