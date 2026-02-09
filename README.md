@@ -8,47 +8,75 @@ XML kullanılmadan tamamen **Declarative UI** yaklaşımıyla yazılan bu proje,
 
 Uygulamanın %100 Compose ile geliştirilen arayüzünden kareler:
 
-| Giriş / Splash | Ana Sayfa | Film Detayı |
-|:---:|:---:|:---:|
-| <img src="Screenshots/Screenshot1.png" width="250" alt="Splash Screen"> | <img src="Screenshots/Screenshot2.png" width="250" alt="Home Screen"> | <img src="Screenshots/Screenshot3.png" width="250" alt="Detail Screen"> |
+### 1. Giriş ve Keşfet
+Kullanıcılar güvenli bir şekilde giriş yapabilir, **Misafir Modu** ile uygulamayı deneyimleyebilir ve türlere göre filtreleme yapabilir.
 
-| Arama / Liste | Profil / Ayarlar | 🎥 Canlı Demo |
+| Giriş Ekranı | Ana Sayfa | Kategori Filtreleme |
 |:---:|:---:|:---:|
-| <img src="Screenshots/Screenshot4.png" width="250" alt="Search Screen"> | <img src="Screenshots/Screenshot5.png" width="250" alt="Profile Screen"> | **[▶️ Videoyu İzle](Screenshots/Screen_recording_youtube.webm)**<br>*(WebM formatında kayıt)* |
+| <img src="Screenshots/Screenshot_20260209_232914.png" width="250" alt="Login Screen"> | <img src="Screenshots/Screenshot_20260209_233020.png" width="250" alt="Home Screen"> | <img src="Screenshots/Screenshot_20260209_233201.png" width="250" alt="Genre List"> |
+
+### 2. Film ve Oyuncu Detayları
+Film hakkında özet, puan ve oyuncu kadrosu bilgileri. Oyuncuların üzerine tıklandığında detaylı **Biyografi ve Filmografi** sayfaları açılır.
+
+| Film Detayı (Avatar) | Oyuncu: Sam Worthington | Oyuncu: Chris Evans |
+|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260209_233153.png" width="250" alt="Movie Detail Avatar"> | <img src="Screenshots/Screenshot_20260209_233220.png" width="250" alt="Actor Sam"> | <img src="Screenshots/Screenshot_20260209_233516.png" width="250" alt="Actor Chris"> |
+
+| Film Detayı (Komedi) |  |  |
+|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260209_233311.png" width="250" alt="Movie Detail Comedy"> | | |
+
+### 3. Arama Deneyimi
+Kullanıcı yazmaya başladığı anda çalışan dinamik arama ve veri yüklenirken gösterilen **Skeleton (Kemik)** yükleme animasyonları.
+
+| Skeleton Loading | Arama Sonuçları | Canlı Demo |
+|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260209_233031.png" width="250" alt="Search Loading"> | <img src="Screenshots/Screenshot_20260209_233117.png" width="250" alt="Search Results"> | **[▶️ Videoyu İzle](Screenshots/Screen_recording_youtube.webm)**<br>*(Uygulama Akış Videosu)* |
+
+### 4. Profil ve Kişiselleştirme
+Kullanıcılar favori filmlerini kaydedebilir, **Avatar** galerisinden profil resmi seçebilir ve hesaplarını yönetebilirler.
+
+| Profil & Ayarlar | Avatar Seçimi | Favorilerim |
+|:---:|:---:|:---:|
+| <img src="Screenshots/Screenshot_20260209_233540.png" width="250" alt="Profile Settings"> | <img src="Screenshots/Screenshot_20260209_233611.png" width="250" alt="Avatar Selection"> | <img src="Screenshots/Screenshot_20260209_233531.png" width="250" alt="Favorites"> |
+
+### 5. Uygulama Hakkında
+Geliştirici bilgileri ve kullanılan teknolojilerin özeti.
+
+| Hakkında Ekranı |
+|:---:|
+| <img src="Screenshots/Screenshot_20260209_233626.png" width="250" alt="About Screen"> |
+
+---
 
 ## ✨ Temel Özellikler
 
-* **Modern UI:** Tamamen **Jetpack Compose** (Material 3) ile geliştirilmiş akıcı ve reaktif arayüzler.
-* **Oyuncu Detayları:** Aktörlerin biyografileri, doğum tarihleri ve rol aldıkları diğer yapımlar (Filmografi).
-* **Gelişmiş Arama:** TMDB veritabanında film ve oyuncu arama.
+* **Modern UI:** Tamamen **Jetpack Compose** (Material 3) ile geliştirilmiş akıcı arayüzler.
+* **Kapsamlı Veri:** Filmler, türler, oyuncu biyografileri ve filmografileri.
+* **Kişiselleştirme:**
+    * **Favoriler:** Beğenilen filmleri listeye ekleme/çıkarma.
+    * **Avatar:** Hazır galeri üzerinden eğlenceli profil resmi seçimi.
+    * **Profil Düzenleme:** Kullanıcı adı güncelleme.
+* **Gelişmiş Arama:** Anlık arama ve Skeleton loading efektleri.
 * **Firebase Entegrasyonu:**
-    * **Auth:** Email/Şifre ile güvenli kullanıcı girişi ve kaydı.
-    * **Firestore:** Favori filmleri buluta kaydetme ve senkronizasyon.
-* **Misafir Girişi (Guest User):** Kayıt zorunluluğu olmadan uygulamayı deneyimleme imkanı.
-* **Dinamik Animasyonlar:** Compose Animation API ile zengin geçiş efektleri.
+    * **Auth:** Email/Şifre ile güvenli giriş.
+    * **Firestore:** Kullanıcı verilerinin (Favoriler, Profil) bulutta saklanması.
+* **Misafir Girişi:** Üye olmadan uygulamayı keşfetme imkanı.
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 
-Proje, modern Android geliştirme standartlarına uygun olarak inşa edilmiştir:
+Proje, endüstri standartlarına uygun modern kütüphanelerle geliştirilmiştir:
 
 * **Dil:** Kotlin (%100)
 * **UI Toolkit:** **Jetpack Compose** (No XML)
-* **Mimari:** Clean Architecture & MVVM (Model-View-ViewModel)
+* **Mimari:** Clean Architecture & MVVM
 * **Asenkron İşlemler:** Coroutines & Flow
 * **Ağ (Network):** Retrofit & OkHttp
-* **Görsel Yükleme:** Coil (Compose-first image loading)
+* **Görsel Yükleme:** Coil
 * **Dependency Injection:** Hilt
 * **Navigasyon:** Jetpack Navigation Compose
-* **Veri Tabanı (Local):** Room Database (Önbellekleme için)
-* **Diğer:** Accompanist (Pager vb. için), Serialization
-
-## 📂 Proje Mimarisi
-
-Uygulama, sorumlulukların ayrılması (Separation of Concerns) ilkesine dayanan katmanlı bir yapıya sahiptir:
-
-* **Domain Layer:** İş mantığı (Use Cases), Repository arayüzleri ve Model sınıfları. (Platform bağımsız)
-* **Data Layer:** API çağrıları, Veritabanı işlemleri ve Repository implementasyonları.
-* **Presentation Layer:** UI (Composables) ve ViewModel (State Management).
+* **Veri Tabanı (Local):** Room Database
+* **Backend:** Firebase (Authentication, Firestore)
 
 ## 🚀 Kurulum
 
@@ -58,9 +86,9 @@ Projeyi yerel ortamınızda çalıştırmak için:
     ```bash
     git clone [https://github.com/SalihT95/MovieAppCompose.git](https://github.com/SalihT95/MovieAppCompose.git)
     ```
-2.  Android Studio (Giraffe veya daha yeni sürüm) ile projeyi açın.
+2.  Android Studio ile projeyi açın.
 3.  Gradle senkronizasyonunun tamamlanmasını bekleyin.
-4.  **API Key:** TMDB API anahtarınızı `local.properties` dosyasına ekleyin:
+4.  **Önemli:** TMDB API anahtarınızı `local.properties` dosyasına ekleyin:
     ```properties
     tmdb_api_key="SENIN_API_ANAHTARIN"
     ```
@@ -69,8 +97,10 @@ Projeyi yerel ortamınızda çalıştırmak için:
 ## 📞 İletişim
 
 **Geliştirici:** Salih Türkoğlu
-* GitHub: [@SalihT95](https://github.com/SalihT95)
-* Web: [salihturkoglu.dev](https://salihturkoglu.dev)
+* 📧 Email: [turkoglusalih00@gmail.com](mailto:turkoglusalih00@gmail.com)
+* 💻 GitHub: [@SalihT95](https://github.com/SalihT95)
+* 🌐 Web: [salihturkoglu.dev](https://salihturkoglu.dev)
+* 🔗 LinkedIn: [Profilim](https://linkedin.com/in/salihturkoglu)
 
 ---
 *Bu proje açık kaynaklıdır ve eğitim amaçlı geliştirilmiştir.*
