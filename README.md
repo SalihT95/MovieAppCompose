@@ -13,7 +13,7 @@ Kullanıcılar güvenli bir şekilde giriş yapabilir, **Misafir Modu** ile uygu
 
 | Giriş Ekranı | Ana Sayfa | Kategori Filtreleme |
 |:---:|:---:|:---:|
-| <img src="Screenshots/Screenshot_20260209_232914.png" width="250" alt="Login Screen"> | <img src="Screenshots/Screenshot_20260209_233020.png" width="250" alt="Home Screen"> | <img src="Screenshots/Screenshot_20260209_233201.png" width="250" alt="Genre List"> |
+| <img src="Screenshots/Screenshot_20260209_232914.png" width="250" alt="Login Screen"> | <img src="Screenshots/Screenshot_20260209_233020.png" width="250" alt="Home Screen 1"> | <img src="Screenshots/Screenshot_20260210_012041.png" width="250" alt="Home Screen 2"> | <img src="Screenshots/Screenshot_20260209_233201.png" width="250" alt="Genre List"> | <img src="Screenshots/Screenshot_20260210_011622.png" width="250" alt="Popular List"> | 
 
 ### 2. Film ve Oyuncu Detayları
 Film hakkında özet, puan ve oyuncu kadrosu bilgileri. Oyuncuların üzerine tıklandığında detaylı **Biyografi ve Filmografi** sayfaları açılır.
