@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items // BU IMPORT EKLENDİ (Grid hatasını çözer)
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -51,6 +51,7 @@ import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 import com.turkoglu.moviecomposeapp.util.AvatarUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -146,14 +147,14 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Dil Ayarları (LanguageSettingSection kodunu paylaşmadığın için buraya import edilmiş varsayıyorum)
-            /* LanguageSettingSection(
+            // Dil Ayarları
+            LanguageSettingSection(
                 selectedLanguage = selectedLang,
                 onLanguageSelected = { lang ->
                     coroutineScope.launch { userViewModel.updateLanguage(lang) }
                 }
             )
-            */
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -207,7 +208,6 @@ fun EditProfileDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    // DÜZELTME: currentName değiştiğinde TextField da güncellensin diye 'remember(currentName)' kullanıldı.
     var text by remember(currentName) { mutableStateOf(currentName) }
 
     AlertDialog(
@@ -258,7 +258,6 @@ fun AvatarSelectionDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(300.dp)
             ) {
-                // items importu yukarıda eklendiği için artık hata vermez
                 items(AvatarUtils.selectableAvatars) { key ->
                     val resId = AvatarUtils.getDrawableId(key)
                     val isSelected = currentAvatarKey == key
