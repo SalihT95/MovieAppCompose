@@ -104,7 +104,7 @@ Projeyi yerel ortamınızda çalıştırmak için:
 * 📧 Email: [turkoglusalih00@gmail.com](mailto:turkoglusalih00@gmail.com)
 * 💻 GitHub: [@SalihT95](https://github.com/SalihT95)
 * 🌐 Web: [salihturkoglu.dev](https://salihturkoglu.dev)
-* 🔗 LinkedIn: [Profilim](https://linkedin.com/in/salihturkoglu)
+* 🔗 LinkedIn: [Profilim](https://linkedin.com/in/salih-turkoglu1)
 
 ---
 *Bu proje açık kaynaklıdır ve eğitim amaçlı geliştirilmiştir.*
