@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,6 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // API 35'te edge-to-edge varsayılan olarak zorunlu.
+        // Bu çağrı status bar ve navigation bar'ı şeffaf yapar.
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             val themeViewModel: ThemeViewModel = hiltViewModel()

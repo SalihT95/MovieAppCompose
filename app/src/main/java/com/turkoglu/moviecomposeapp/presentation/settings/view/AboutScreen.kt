@@ -46,12 +46,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.firebase.BuildConfig
+import com.turkoglu.moviecomposeapp.BuildConfig
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
 
@@ -226,6 +227,17 @@ fun TmdbAttributionSection(context: Context) {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.tmdb),
+                contentDescription = "TMDB Logo",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .height(52.dp)
+                    .fillMaxWidth(0.55f)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = "The Movie Database (TMDB)",
                 style = MaterialTheme.typography.titleMedium,
@@ -237,7 +249,7 @@ fun TmdbAttributionSection(context: Context) {
 
             Text(
                 text = "Bu ürün TMDB API'sini kullanmaktadır ancak TMDB tarafından onaylanmamıştır veya sertifikalandırılmamıştır.",
-                //"This product uses the TMDB API but is not endorsed or certified by TMDB."
+                //("This product uses the TMDB API but is not endorsed or certified by TMDB.")
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White,
                 textAlign = TextAlign.Center

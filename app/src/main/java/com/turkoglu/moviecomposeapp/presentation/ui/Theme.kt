@@ -13,10 +13,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 // 135 Derece Gradyan Renkleri
 private val ColorStart = Color(0xFF000000)   // #000000
@@ -29,11 +29,10 @@ private val ColorEnd = Color(0xFF1B0707)     // #1b0707
  */
 val AppBackgroundGradient: Brush = Brush.linearGradient(
     colors = listOf(ColorStart, ColorCenter, ColorEnd),
-    // Başlangıç: Sol Alt Köşe (BottomStart)
     start = Offset(0f, Float.POSITIVE_INFINITY),
-    // Bitiş: Sağ Üst Köşe (TopEnd)
     end = Offset(Float.POSITIVE_INFINITY, 0f)
 )
+
 private val DarkColorScheme = darkColorScheme(
     primary = AccentRed,
     onPrimary = GrayTextPrimary,
@@ -77,7 +76,6 @@ fun MovieComposeAppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> DarkColorScheme
     }
@@ -86,9 +84,13 @@ fun MovieComposeAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            // Android 15 (API 35) ile window.statusBarColor deprecated oldu.
+            // WindowInsetsControllerCompat ile status bar ikon rengi ayarlanır.
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            WindowInsetsControllerCompat(window, view).apply {
+                isAppearanceLightStatusBars = !darkTheme
+                isAppearanceLightNavigationBars = !darkTheme
+            }
         }
     }
 

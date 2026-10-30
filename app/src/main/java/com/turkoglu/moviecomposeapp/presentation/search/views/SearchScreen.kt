@@ -270,7 +270,7 @@ fun SearchBar(
         shape = RoundedCornerShape(25.dp),
         keyboardOptions = KeyboardOptions.Default.copy(
             capitalization = KeyboardCapitalization.Words,
-            autoCorrect = true,
+            autoCorrectEnabled = true,
             keyboardType = KeyboardType.Text
         ),
         textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
