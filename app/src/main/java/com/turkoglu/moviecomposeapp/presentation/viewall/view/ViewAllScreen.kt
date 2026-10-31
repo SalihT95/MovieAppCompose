@@ -5,6 +5,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -41,9 +42,11 @@ fun ViewAllScreen(
     val title = viewModel.screenTitle.value.movies
 
     Scaffold(
-        modifier.background(AppBackgroundGradient),
+        contentWindowInsets = WindowInsets(0),
+        modifier = modifier.background(AppBackgroundGradient),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0),
                 title = {
                     Text(
                         text = title,

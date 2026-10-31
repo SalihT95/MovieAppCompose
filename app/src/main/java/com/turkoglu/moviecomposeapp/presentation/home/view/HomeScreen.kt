@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,6 +65,7 @@ fun HomeScreen(
     val currentUser by userViewModel.currentUser.collectAsState()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = { HomeScreenHeader(navController, genreList, currentUser) },
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.background(AppBackgroundGradient)

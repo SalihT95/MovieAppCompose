@@ -2,6 +2,7 @@ package com.turkoglu.moviecomposeapp.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,8 @@ fun AppScaffold(
                 }
             }
         },
+        // Dış Scaffold tüm inset'leri (status bar dahil) yönetir
+        // İç ekranlar kendi Scaffold'larında windowInsets = WindowInsets(0) kullanmalı
         content = { padding ->
             Box(
                 modifier = Modifier
