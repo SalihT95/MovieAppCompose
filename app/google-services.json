@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "364855711952",
-    "project_id": "movieappdb-592c2",
-    "storage_bucket": "movieappdb-592c2.firebasestorage.app"
+    "project_number": "1011364501119",
+    "project_id": "themoviedb-b55fa",
+    "storage_bucket": "themoviedb-b55fa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:364855711952:android:98066d103020ca40e466d5",
+        "mobilesdk_app_id": "1:1011364501119:android:bee2b401d81219530b114a",
         "android_client_info": {
           "package_name": "com.turkoglu.moviecomposeapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1011364501119-13ojsiekh2bh0rv4iindvr7cj7hlo4qo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyC5sOTTfrT0WsKOiR6VlYPmaoZlmNjw2-g"
+          "current_key": "AIzaSyBNEXeAjKa31xGJanV7X9AKmFo1qM-CefE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011364501119-13ojsiekh2bh0rv4iindvr7cj7hlo4qo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.settings.view
+﻿package com.turkoglu.moviecomposeapp.presentation.settings.view
 
 import android.content.Context
 import android.content.Intent
@@ -53,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.BuildConfig
 import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -70,11 +71,8 @@ fun AboutScreen(onBack: () -> Unit) {
                 windowInsets = WindowInsets(0),
                 title = { Text("Hakkında", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri"
-                        )
+                    Box(modifier = Modifier.padding(start = 12.dp, end = 8.dp)) {
+                        CircularBackButtons(onBackClick = onBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.app.Activity
+import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.turkoglu.moviecomposeapp.data.local.UserPrefs
@@ -257,6 +259,82 @@ class AuthViewModel @Inject constructor(
                 e.localizedMessage ?: "Hesap silinirken bir hata oluştu."
             }
             onComplete(false, msg)
+        }
+    }
+
+    // --- SOSYAL GİRİŞ (GOOGLE & APPLE / ICLOUD) ---
+    fun signInWithProvider(
+        activity: Activity,
+        providerId: String,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
+        loginState = LoginUiState.Loading
+        val provider = OAuthProvider.newBuilder(providerId).apply {
+            if (providerId == "apple.com") {
+                scopes = listOf("email", "name")
+            }
+        }
+
+        auth.startActivityForSignInWithProvider(activity, provider.build())
+            .addOnSuccessListener { authResult ->
+                val user = authResult.user
+                if (user != null) {
+                    viewModelScope.launch {
+                        handleSocialLoginSuccess(user, onComplete)
+                    }
+                } else {
+                    val msg = "Giriş işlemi tamamlanamadı: Kullanıcı bilgisi alınamadı."
+                    loginState = LoginUiState.Error(msg)
+                    onComplete(false, msg)
+                }
+            }
+            .addOnFailureListener { e ->
+                val errorMsg = e.localizedMessage ?: "Giriş yapılamadı."
+                loginState = LoginUiState.Error(errorMsg)
+                onComplete(false, errorMsg)
+            }
+    }
+
+    private suspend fun handleSocialLoginSuccess(
+        user: com.google.firebase.auth.FirebaseUser,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
+        try {
+            val userDoc = firestore.collection("users").document(user.uid).get().await()
+            val account: UserAccount
+            if (!userDoc.exists()) {
+                val defaultUsername = user.displayName?.ifBlank { null } ?: emailToUsername(user.email)
+                val defaultAvatar = AvatarUtils.getRandomAvatar()
+                val userMap = hashMapOf(
+                    "userId" to user.uid,
+                    "username" to defaultUsername,
+                    "email" to (user.email ?: ""),
+                    "avatarUrl" to defaultAvatar,
+                    "createdAt" to System.currentTimeMillis()
+                )
+                firestore.collection("users").document(user.uid).set(userMap).await()
+                account = UserAccount(
+                    id = user.uid,
+                    username = defaultUsername,
+                    name = user.displayName ?: defaultUsername,
+                    avatarUrl = defaultAvatar,
+                    isGuest = false
+                )
+            } else {
+                account = UserAccount(
+                    id = user.uid,
+                    username = userDoc.getString("username") ?: user.displayName ?: "Kullanıcı",
+                    name = userDoc.getString("name") ?: user.displayName ?: "",
+                    avatarUrl = userDoc.getString("avatarUrl") ?: AvatarUtils.getRandomAvatar(),
+                    isGuest = false
+                )
+            }
+            loginState = LoginUiState.Success(user.uid, account)
+            onComplete(true, null)
+        } catch (e: Exception) {
+            val err = e.localizedMessage ?: "Kullanıcı profili oluşturulamadı."
+            loginState = LoginUiState.Error(err)
+            onComplete(false, err)
         }
     }
 }

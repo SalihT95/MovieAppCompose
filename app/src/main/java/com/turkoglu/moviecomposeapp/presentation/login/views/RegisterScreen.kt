@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.login.views
+﻿package com.turkoglu.moviecomposeapp.presentation.login.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.turkoglu.moviecomposeapp.presentation.component.CircularBackButtons
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.login.LoginUiState
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -64,6 +65,12 @@ fun RegisterScreen(
             .fillMaxSize()
             .background(AppBackgroundGradient)
     ) {
+        CircularBackButtons(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 48.dp),
+            onBackClick = { navController.popBackStack() }
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()

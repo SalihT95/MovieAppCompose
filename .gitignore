@@ -21,3 +21,6 @@ local.properties
 /.idea/runConfigurations.xml
 /.idea/deviceManager.xml
 /app/src/main/java/com/turkoglu/moviecomposeapp/FIREBASE_SETUP.md
+*.aab
+*.apk
+/app/release/

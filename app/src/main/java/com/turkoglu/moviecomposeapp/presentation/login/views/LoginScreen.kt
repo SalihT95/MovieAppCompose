@@ -1,5 +1,13 @@
-package com.turkoglu.moviecomposeapp.presentation.login.views
+﻿package com.turkoglu.moviecomposeapp.presentation.login.views
 
+import android.app.Activity
+import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,6 +70,7 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit // Web yerine uygulama içi kayıt ekranına gitmek için
 ) {
+    val context = LocalContext.current
     // Odak yöneticisi (Klavye kapatmak için)
     val focusManager = LocalFocusManager.current
 
@@ -224,6 +233,66 @@ fun LoginScreen(
                 }
             )
 
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // --- VEYA AYIRICI ---
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
+                Text(
+                    text = "veya",
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- GOOGLE İLE GİRİŞ BUTONU ---
+            SocialSignInButton(
+                icon = painterResource(id = R.drawable.ic_google),
+                text = "Google ile Giriş Yap",
+                containerColor = Color.White,
+                contentColor = Color(0xFF1F1F1F),
+                onClick = {
+                    val activity = context as? Activity
+                    if (activity != null) {
+                        viewModel.signInWithProvider(activity, "google.com") { success, _ ->
+                            if (success) onLoginSuccess()
+                        }
+                    }
+                }
+            )
+
+            /* İleride Apple Developer hesabı eklendiğinde açılabilir:
+            Spacer(modifier = Modifier.height(12.dp))
+            SocialSignInButton(
+                icon = painterResource(id = R.drawable.ic_apple),
+                text = "iCloud / Apple ile Giriş Yap",
+                containerColor = Color(0xFF121212),
+                contentColor = Color.White,
+                borderColor = Color.White.copy(alpha = 0.25f),
+                onClick = {
+                    val activity = context as? Activity
+                    if (activity != null) {
+                        viewModel.signInWithProvider(activity, "apple.com") { success, _ ->
+                            if (success) onLoginSuccess()
+                        }
+                    }
+                }
+            )
+            */
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // --- MİSAFİR GİRİŞİ ---
@@ -275,6 +344,51 @@ fun LoginScreen(
 
                 else -> Unit
             }
+        }
+    }
+}
+
+@Composable
+fun SocialSignInButton(
+    icon: Painter,
+    text: String,
+    containerColor: Color,
+    contentColor: Color,
+    borderColor: Color? = null,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .then(
+                if (borderColor != null) Modifier.border(1.dp, borderColor, MaterialTheme.shapes.medium)
+                else Modifier
+            ),
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+                color = contentColor
+            )
         }
     }
 }
