@@ -24,3 +24,7 @@ local.properties
 *.aab
 *.apk
 /app/release/
+
+# Firebase
+/app/google-services.json
+google-services.json
