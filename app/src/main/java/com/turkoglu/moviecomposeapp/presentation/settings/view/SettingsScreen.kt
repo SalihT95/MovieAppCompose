@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.settings.view
+﻿package com.turkoglu.moviecomposeapp.presentation.settings.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import android.widget.Toast
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.platform.LocalContext
 import com.turkoglu.moviecomposeapp.presentation.component.ProfileImage
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -64,8 +67,11 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     // Dialog Durumları
+    val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
     var showAvatarDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var isDeletingAccount by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -169,6 +175,15 @@ fun SettingsScreen(
                 navController.navigate("Login") { popUpTo(0) { inclusive = true } }
             }, isDestructive = true)
 
+
+            // Giris yapmis uyeler icin Hesabimi Sil butonu
+            if (currentUser != null && !currentUser!!.isGuest) {
+                SettingsItem(
+                    title = "Hesabımı Sil",
+                    onClick = { showDeleteAccountDialog = true },
+                    isDestructive = true
+                )
+            }
         } // Column Sonu
 
         // --- DIALOG ÇAĞRILARI ---
@@ -197,6 +212,66 @@ fun SettingsScreen(
                     userViewModel.updateAvatar(selectedKey)
                     showAvatarDialog = false
                 }
+            )
+        }
+
+        // 3. Hesap Silme Onay Dialogu
+        if (showDeleteAccountDialog && currentUser != null) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!isDeletingAccount) showDeleteAccountDialog = false
+                },
+                title = { Text(text = "Hesabınızı Silmek İstiyor musunuz?") },
+                text = {
+                    Text(
+                        text = "Bu işlem geri alınamaz. Profil bilgileriniz, oturumunuz ve favorilerinize eklediğiniz tüm filmler kalıcı olarak silinecektir."
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            val uid = currentUser?.id ?: return@Button
+                            isDeletingAccount = true
+                            userViewModel.deleteAccount(uid) { firestoreSuccess, errorMsg ->
+                                if (firestoreSuccess) {
+                                    authViewModel.deleteAuthAccount { authSuccess, authErrorMsg ->
+                                        isDeletingAccount = false
+                                        showDeleteAccountDialog = false
+                                        if (authSuccess) {
+                                            Toast.makeText(context, "Hesabınız başarıyla silindi.", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("Login") {
+                                                popUpTo(0) { inclusive = true }
+                                            }
+                                        } else {
+                                            Toast.makeText(context, authErrorMsg ?: "Hata oluştu.", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                } else {
+                                    isDeletingAccount = false
+                                    showDeleteAccountDialog = false
+                                    Toast.makeText(context, errorMsg ?: "Veriler silinirken hata oluştu.", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        },
+                        enabled = !isDeletingAccount,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(if (isDeletingAccount) "Siliniyor..." else "Evet, Hesabımı Sil")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDeleteAccountDialog = false },
+                        enabled = !isDeletingAccount
+                    ) {
+                        Text("Vazgeç")
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                textContentColor = MaterialTheme.colorScheme.onSurface
             )
         }
     }

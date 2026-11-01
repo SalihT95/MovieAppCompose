@@ -15,7 +15,7 @@ class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore // 1. Firestore Eklendi
 ) {
 
-    // Local Veritabanı İşlemleri (Room)
+    // Local VeritabanÄ± Ä°ÅŸlemleri (Room)
     suspend fun saveUser(user: UserAccount) {
         database.userAccountDao.insert(user)
     }
@@ -26,21 +26,21 @@ class UserRepository @Inject constructor(
 
     fun getUserFlow(): Flow<UserAccount?> = database.userAccountDao.getUserAccount()
 
-    // 2. Firestore Güncelleme İşlemi (Yeni)
-    // Bu fonksiyon dinamiktir: İster username, ister avatarUrl güncelleyebilirsin.
+    // 2. Firestore GÃ¼ncelleme Ä°ÅŸlemi (Yeni)
+    // Bu fonksiyon dinamiktir: Ä°ster username, ister avatarUrl gÃ¼ncelleyebilirsin.
     suspend fun updateUserField(userId: String, field: String, value: Any) {
         try {
             firestore.collection("users")
                 .document(userId)
                 .update(field, value)
-                .await() // İşlemin bitmesini bekle (Suspend function)
+                .await() // Ä°ÅŸlemin bitmesini bekle (Suspend function)
         } catch (e: Exception) {
             e.printStackTrace()
-            // İstersen hatayı yukarı fırlatabilirsin: throw e
+            // Ä°stersen hatayÄ± yukarÄ± fÄ±rlatabilirsin: throw e
         }
     }
 
-    // 1. Favoriye Ekle (Senin Movie modelindeki alanları kaydediyoruz)
+    // 1. Favoriye Ekle (Senin Movie modelindeki alanlarÄ± kaydediyoruz)
     suspend fun addFavorite(userId: String, movie: Movie) {
         try {
             val movieMap = hashMapOf(
@@ -57,7 +57,7 @@ class UserRepository @Inject constructor(
             firestore.collection("users")
                 .document(userId)
                 .collection("favorites")
-                .document(movie.id.toString()) // ID'yi döküman adı yapıyoruz
+                .document(movie.id.toString()) // ID'yi dÃ¶kÃ¼man adÄ± yapÄ±yoruz
                 .set(movieMap)
                 .await()
         } catch (e: Exception) {
@@ -65,7 +65,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    // 2. Favoriden Çıkar
+    // 2. Favoriden Ã‡Ä±kar
     suspend fun removeFavorite(userId: String, movieId: Int) {
         try {
             firestore.collection("users")
@@ -79,7 +79,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    // 3. Kontrol Et (Kalp dolu mu boş mu?)
+    // 3. Kontrol Et (Kalp dolu mu boÅŸ mu?)
     suspend fun isFavorite(userId: String, movieId: Int): Boolean {
         return try {
             val doc = firestore.collection("users")
@@ -94,7 +94,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    // 4. Favori Listesini Canlı Çekme (Real-time Flow)
+    // 4. Favori Listesini CanlÄ± Ã‡ekme (Real-time Flow)
     fun getFavoritesFlow(userId: String): Flow<List<Movie>> = callbackFlow {
         val listener = firestore.collection("users")
             .document(userId)
@@ -144,4 +144,10 @@ class UserRepository @Inject constructor(
         }
     }
 
+    // 6. Kullanıcıyı ve Verilerini Firestore ve Room'dan Kalıcı Sil
+    suspend fun deleteUserAccount(userId: String) {
+        deleteAllFavorites(userId)
+        firestore.collection("users").document(userId).delete().await()
+        clearUser()
+    }
 }

@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.user
+﻿package com.turkoglu.moviecomposeapp.presentation.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -121,6 +121,19 @@ class UserViewModel @Inject constructor(
                 )
                 _currentUser.value = updatedUser
                 userRepository.saveUser(updatedUser)
+            }
+        }
+    }
+
+    // --- HESAP VE VERİLERİ SİLME ---
+    fun deleteAccount(userId: String, onComplete: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userRepository.deleteUserAccount(userId)
+                _currentUser.value = null
+                onComplete(true, null)
+            } catch (e: Exception) {
+                onComplete(false, e.localizedMessage ?: "Veriler silinirken hata oluştu.")
             }
         }
     }

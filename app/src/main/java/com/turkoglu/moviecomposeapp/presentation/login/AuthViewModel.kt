@@ -1,4 +1,4 @@
-package com.turkoglu.moviecomposeapp.presentation.login
+﻿package com.turkoglu.moviecomposeapp.presentation.login
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -240,5 +240,23 @@ class AuthViewModel @Inject constructor(
         // Misafir verilerini de temizle
         userPrefs.saveGuestInfo("", "")
         loginState = LoginUiState.Idle
+    }
+
+    fun deleteAuthAccount(onComplete: (Boolean, String?) -> Unit) = viewModelScope.launch {
+        try {
+            val user = auth.currentUser
+            user?.delete()?.await()
+            userPrefs.saveCredentials("", "")
+            userPrefs.saveGuestInfo("", "")
+            loginState = LoginUiState.Idle
+            onComplete(true, null)
+        } catch (e: Exception) {
+            val msg = if (e.message?.contains("recent-login", ignoreCase = true) == true) {
+                "Güvenlik nedeniyle lütfen çıkış yapıp tekrar giriş yaptıktan sonra hesap silmeyi deneyin."
+            } else {
+                e.localizedMessage ?: "Hesap silinirken bir hata oluştu."
+            }
+            onComplete(false, msg)
+        }
     }
 }
