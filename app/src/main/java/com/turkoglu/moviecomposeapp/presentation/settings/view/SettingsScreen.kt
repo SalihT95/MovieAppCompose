@@ -1,4 +1,4 @@
-﻿package com.turkoglu.moviecomposeapp.presentation.settings.view
+package com.turkoglu.moviecomposeapp.presentation.settings.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,8 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -46,9 +50,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.platform.LocalContext
+import com.turkoglu.moviecomposeapp.BuildConfig
 import com.turkoglu.moviecomposeapp.presentation.component.ProfileImage
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
 import com.turkoglu.moviecomposeapp.presentation.ui.AppBackgroundGradient
@@ -81,6 +88,7 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
@@ -165,16 +173,32 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsItem(
-                "Hakkında",
+                title = "Hakkında",
                 onClick = { navController.navigate("About") },
+                isDestructive = false,
+                trailingText = "v${BuildConfig.VERSION_NAME}"
+            )
+            SettingsItem(
+                title = if (selectedLang == "tr") "Gizlilik Politikası" else "Privacy Policy",
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://salihturkoglu.dev/moviecompose-privacy"))
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, if (selectedLang == "tr") "Bağlantı açılamadı" else "Could not open link", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 isDestructive = false
             )
-            SettingsItem("Çıkış Yap", onClick = {
-                userViewModel.logout() // ViewModel'deki logout user'ı null yapar
-                authViewModel.signOut()
-                navController.navigate("Login") { popUpTo(0) { inclusive = true } }
-            }, isDestructive = true)
-
+            SettingsItem(
+                title = "Çıkış Yap",
+                onClick = {
+                    userViewModel.logout() // ViewModel'deki logout user'ı null yapar
+                    authViewModel.signOut()
+                    navController.navigate("Login") { popUpTo(0) { inclusive = true } }
+                },
+                isDestructive = true
+            )
 
             // Giris yapmis uyeler icin Hesabimi Sil butonu
             if (currentUser != null && !currentUser!!.isGuest) {
@@ -184,6 +208,37 @@ fun SettingsScreen(
                     isDestructive = true
                 )
             }
+
+            Spacer(modifier = Modifier.height(36.dp))
+
+            // --- VERSİYON BİLGİSİ (FOOTER) ---
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        Toast.makeText(
+                            context,
+                            "MovieScout v${BuildConfig.VERSION_NAME} (Yapı ${BuildConfig.VERSION_CODE}) - En güncel sürümdesiniz",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .padding(vertical = 12.dp)
+            ) {
+                Text(
+                    text = "MovieScout",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Sürüm ${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         } // Column Sonu
 
         // --- DIALOG ÇAĞRILARI ---
@@ -359,12 +414,17 @@ fun AvatarSelectionDialog(
 }
 
 @Composable
-fun SettingsItem(title: String, onClick: () -> Unit, isDestructive: Boolean) {
+fun SettingsItem(
+    title: String,
+    onClick: () -> Unit,
+    isDestructive: Boolean = false,
+    trailingText: String? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 4.dp)
+            .padding(vertical = 6.dp, horizontal = 4.dp)
             .background(
                 MaterialTheme.colorScheme.surface.copy(alpha = 0.1f),
                 MaterialTheme.shapes.small
@@ -378,5 +438,25 @@ fun SettingsItem(title: String, onClick: () -> Unit, isDestructive: Boolean) {
             fontWeight = FontWeight.Medium,
             modifier = Modifier.align(Alignment.CenterStart)
         )
+
+        if (trailingText != null) {
+            Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = trailingText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }

@@ -13,7 +13,11 @@ import com.turkoglu.moviecomposeapp.data.repo.MovieRepositoryImpl
 import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +30,10 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val useIncreasingPage = true
+
+    // Splash ekranının dinlediği veri hazır bayrağı
+    private val _isHomeDataReady = MutableStateFlow(false)
+    val isHomeDataReady: StateFlow<Boolean> = _isHomeDataReady.asStateFlow()
 
     private val _popularState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
     val popularState: State<Flow<PagingData<Movie>>> = _popularState
@@ -81,15 +89,37 @@ class HomeViewModel @Inject constructor(
     private val _westernState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
 
     init {
-        loadMovies()
+        preloadAndInitialize()
     }
 
-    private fun loadMovies() {
+    private fun preloadAndInitialize() = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            // 1. Splash ekranındayken ilk 4 ana bölümün 1. sayfalarını ve kategorileri arka planda indir
+            movieRepository.preloadHomeData()
+            genreRepository.preloadGenres()
+        } catch (e: Exception) {
+            // Ağ hatası olsa bile Pager doğrudan kendisi deneyecektir
+        }
+
+        // 2. Ana ekran bölümlerini RAM'deki önbellekle anında başlat
+        initMainSections()
+
+        // 3. Splash ekranına verinin hazır olduğunu sinyalle
+        _isHomeDataReady.value = true
+
+        // 4. Diğer alt türleri arka planda yükle
+        initOtherCategories()
+    }
+
+    private fun initMainSections() {
         getGenres()
         getPopularMovies()
         getTopRatedMovies()
         getNowPlayingMovies()
         getUpcomingMovies()
+    }
+
+    private fun initOtherCategories() {
         getActionMovies()
         getAdventureMovies()
         getAnimationMovies()

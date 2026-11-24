@@ -11,7 +11,7 @@ data class DetailState(
     val posterPath: String? = null,
     val backdropPath: String? = null,
     val releaseDate: String = "",
-    val revenue: Int = 0,
+    val revenue: Long = 0L,
     val title: String = "",
     val voteAverage: Double = 0.0
 ) {

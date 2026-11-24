@@ -3,6 +3,7 @@ package com.turkoglu.moviecomposeapp.presentation
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,8 +15,10 @@ import androidx.navigation.navArgument
 import com.turkoglu.moviecomposeapp.presentation.cast.view.CastScreen
 import com.turkoglu.moviecomposeapp.presentation.detail.view.DetailScreen
 import com.turkoglu.moviecomposeapp.presentation.fav.view.FavScreen
+import com.turkoglu.moviecomposeapp.presentation.home.HomeViewModel
 import com.turkoglu.moviecomposeapp.presentation.home.view.HomeScreen
 import com.turkoglu.moviecomposeapp.presentation.login.AuthViewModel
+import com.turkoglu.moviecomposeapp.presentation.login.LoginUiState
 import com.turkoglu.moviecomposeapp.presentation.login.views.LoginScreen
 import com.turkoglu.moviecomposeapp.presentation.login.views.RegisterScreen // Yeni Import
 import com.turkoglu.moviecomposeapp.presentation.onboarding.OnboardingScreen
@@ -24,6 +27,7 @@ import com.turkoglu.moviecomposeapp.presentation.settings.view.AboutScreen
 import com.turkoglu.moviecomposeapp.presentation.settings.view.SettingsScreen
 import com.turkoglu.moviecomposeapp.presentation.splash.SplashScreen
 import com.turkoglu.moviecomposeapp.presentation.ui.ThemeViewModel
+import com.turkoglu.moviecomposeapp.presentation.user.UserViewModel
 import com.turkoglu.moviecomposeapp.presentation.viewall.view.ViewAllScreen
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -31,10 +35,21 @@ import com.turkoglu.moviecomposeapp.presentation.viewall.view.ViewAllScreen
 fun MainScreen(
     navController: NavHostController,
     themeViewModel: ThemeViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     val onboardingDone by themeViewModel.onboardingDone.collectAsStateWithLifecycle()
     val isRemembered by authViewModel.rememberMe.collectAsStateWithLifecycle()
+    val loginState = authViewModel.loginState
+
+    // Açılışta oturum açıksa veya misafir tespit edildiyse UserViewModel'e aktar
+    LaunchedEffect(loginState) {
+        if (loginState is LoginUiState.Success) {
+            userViewModel.setAccount(loginState.account)
+            userViewModel.saveUser(loginState.account)
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -42,16 +57,22 @@ fun MainScreen(
     ) {
         // --- SPLASH SCREEN ---
         composable(Screen.Splash.route) {
+            val isHomeDataReady by homeViewModel.isHomeDataReady.collectAsStateWithLifecycle()
             AppScaffold(navController, showBottomBar = false) {
-                SplashScreen {
+                SplashScreen(isDataReady = isHomeDataReady) {
+                    // Kullanıcı oturumu açık mı (Firebase veya Kayıtlı Misafir veya Beni Hatırla)
+                    val hasActiveSession = (loginState is LoginUiState.Success) || 
+                                           authViewModel.isUserLoggedIn || 
+                                           isRemembered
+
                     when {
                         !onboardingDone -> {
                             navController.navigate(Screen.Onboarding.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
                         }
-                        // Eğer beni hatırla aktifse VE Firebase'de oturum açıksa (ViewModel init bloğunda kontrol ediliyor)
-                        isRemembered -> {
+
+                        hasActiveSession -> {
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
@@ -116,7 +137,11 @@ fun MainScreen(
         // --- HOME SCREEN ---
         composable(Screen.Home.route) {
             AppScaffold(navController, showBottomBar = Screen.Home.isBottomBarVisible) {
-                HomeScreen(navController) { movie ->
+                HomeScreen(
+                    navController = navController,
+                    viewModel = homeViewModel,
+                    userViewModel = userViewModel
+                ) { movie ->
                     navController.navigate(
                         Screen.Detail.route.replace(
                             "{movieId}",

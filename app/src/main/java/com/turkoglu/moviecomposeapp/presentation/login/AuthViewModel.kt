@@ -39,6 +39,9 @@ class AuthViewModel @Inject constructor(
     val rememberMe = userPrefs.getRememberMe()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val isUserLoggedIn: Boolean
+        get() = (auth.currentUser != null) || (loginState is LoginUiState.Success)
+
     init {
         checkCurrentUser()
     }

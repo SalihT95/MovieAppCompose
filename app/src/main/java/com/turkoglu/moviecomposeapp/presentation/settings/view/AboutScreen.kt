@@ -1,4 +1,4 @@
-﻿package com.turkoglu.moviecomposeapp.presentation.settings.view
+package com.turkoglu.moviecomposeapp.presentation.settings.view
 
 import android.content.Context
 import android.content.Intent
@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Person
@@ -126,21 +127,25 @@ fun AboutScreen(onBack: () -> Unit) {
 fun AppInfoSection() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
-            painter = painterResource(id = R.drawable.the_movie_logo),
-            contentDescription = "App Logo",
-            modifier = Modifier
-                .size(100.dp)
-                .clip(MaterialTheme.shapes.medium)
+            painter = painterResource(id = R.drawable.movie_scout_app_logo),
+            contentDescription = "MovieScout Logo",
+            modifier = Modifier.size(130.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Movie App",
+            text = "MovieScout",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "Version ${BuildConfig.VERSION_NAME}",
+            text = "Film & Dizi Takip",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Versiyon ${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -197,13 +202,20 @@ fun DeveloperInfoSection(context: Context) {
                 onClick = { openUrl(context, "https://github.com/salihturkoglu") }
             )
 
+            // Gizlilik Politikası
+            SocialRow(
+                icon = Icons.Default.Info,
+                text = "Gizlilik Politikası",
+                onClick = { openUrl(context, "https://salihturkoglu.dev/moviecompose-privacy") }
+            )
+
             // Email
             SocialRow(
                 icon = Icons.Default.Email,
                 text = "İletişim",
                 onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:turkoglusalih00@gmail.com")
+                        data = Uri.parse("mailto:salihturkoglu.dev@gmail.com")
                     }
                     try {
                         context.startActivity(intent)

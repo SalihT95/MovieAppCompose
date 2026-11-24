@@ -9,7 +9,7 @@ data class MovieDetail(
     val popularity: Double,
     val posterPath: String,
     val releaseDate: String,
-    val revenue: Int,
+    val revenue: Long,
     val title: String,
     val voteAverage: Double
 )

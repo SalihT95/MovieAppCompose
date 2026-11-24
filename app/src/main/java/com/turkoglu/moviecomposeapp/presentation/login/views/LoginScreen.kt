@@ -1,4 +1,4 @@
-﻿package com.turkoglu.moviecomposeapp.presentation.login.views
+package com.turkoglu.moviecomposeapp.presentation.login.views
 
 import android.app.Activity
 import androidx.compose.foundation.border
@@ -108,11 +108,9 @@ fun LoginScreen(
 
             // LOGO
             Image(
-                painter = painterResource(id = R.drawable.the_movie_logo),
-                contentDescription = "App Logo",
-                modifier = Modifier
-                    .size(180.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                painter = painterResource(id = R.drawable.movie_scout_app_logo),
+                contentDescription = "MovieScout Logo",
+                modifier = Modifier.size(170.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))

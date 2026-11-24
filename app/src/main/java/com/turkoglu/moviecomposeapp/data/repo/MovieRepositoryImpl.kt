@@ -9,6 +9,7 @@ import com.turkoglu.moviecomposeapp.data.paging.SearchPagingSource
 import com.turkoglu.moviecomposeapp.data.remote.MovieAPI
 import com.turkoglu.moviecomposeapp.data.remote.dto.CreditsDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.MovieDetailDto
+import com.turkoglu.moviecomposeapp.data.remote.dto.MovieListResponseDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.PersonDetailDto
 import com.turkoglu.moviecomposeapp.data.remote.dto.toDomain
 import com.turkoglu.moviecomposeapp.domain.model.Movie
@@ -16,9 +17,14 @@ import com.turkoglu.moviecomposeapp.domain.model.MovieCast
 import com.turkoglu.moviecomposeapp.domain.model.Search
 import com.turkoglu.moviecomposeapp.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MovieRepositoryImpl @Inject constructor(
     private val api: MovieAPI
 ) {
@@ -26,6 +32,28 @@ class MovieRepositoryImpl @Inject constructor(
     companion object {
         private const val DEFAULT_PAGE_SIZE = 27
         private const val LARGE_PAGE_SIZE = 100
+    }
+
+    // İlk sayfa için RAM önbelleği (Splash ekranında doldurulur)
+    private val page1Cache = ConcurrentHashMap<String, MovieListResponseDto>()
+
+    suspend fun preloadHomeData() {
+        coroutineScope {
+            val d1 = async { try { api.getPopularMovies(1) } catch (e: Exception) { null } }
+            val d2 = async { try { api.getNowPlayingMovies(1) } catch (e: Exception) { null } }
+            val d3 = async { try { api.getTopRatedMovies(1) } catch (e: Exception) { null } }
+            val d4 = async { try { api.getUpcomingMovies(1) } catch (e: Exception) { null } }
+
+            val p = d1.await()
+            val np = d2.await()
+            val tr = d3.await()
+            val uc = d4.await()
+
+            if (p != null) page1Cache["popular"] = p
+            if (np != null) page1Cache["now_playing"] = np
+            if (tr != null) page1Cache["top_rated"] = tr
+            if (uc != null) page1Cache["upcoming"] = uc
+        }
     }
 
     // 🔹 Ortak pager helper
@@ -45,25 +73,25 @@ class MovieRepositoryImpl @Inject constructor(
             GenrePagingSource(api, genreId, isSinglePage = useSinglePage)
         }
 
-    // 🔹 Popüler, Top Rated, vb.
+    // 🔹 Popüler, Top Rated, vb. (Önbellek varsa 0 ms'de yüklenir)
     fun getPopularMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getPopularMovies, isSinglePage = useSinglePage)
+            MovieListPagingSource(api::getPopularMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["popular"])
         }
 
     fun getTopRatedMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getTopRatedMovies, isSinglePage = useSinglePage)
+            MovieListPagingSource(api::getTopRatedMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["top_rated"])
         }
 
     fun getNowPlayingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getNowPlayingMovies, isSinglePage = useSinglePage)
+            MovieListPagingSource(api::getNowPlayingMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["now_playing"])
         }
 
     fun getUpcomingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getUpcomingMovies, isSinglePage = useSinglePage)
+            MovieListPagingSource(api::getUpcomingMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["upcoming"])
         }
 
     // 🔹 Film detayları & cast
