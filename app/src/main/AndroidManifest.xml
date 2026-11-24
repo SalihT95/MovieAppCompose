@@ -6,7 +6,7 @@
 
     <application
         android:name=".MovieApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/movieapplogo"
@@ -15,8 +15,12 @@
         android:roundIcon="@mipmap/movieapplogo"
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieComposeAppTheme"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="35">
+        tools:targetApi="36">
+        <!-- Firebase Analytics: Reklam Kimliği (GAID) toplamasını devre dışı bırak -->
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"

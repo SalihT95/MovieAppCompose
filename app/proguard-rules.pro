@@ -76,3 +76,53 @@
 # ---------------------------------------------------------------------------
 -dontwarn coil.**
 -keep class coil.** { *; }
+
+# ---------------------------------------------------------------------------
+# Firebase
+# ---------------------------------------------------------------------------
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+# Firebase Analytics
+-keep class com.google.android.gms.measurement.** { *; }
+# Firestore
+-keep class com.google.firestore.** { *; }
+-keepattributes *Annotation*
+
+# ---------------------------------------------------------------------------
+# Paging 3
+# ---------------------------------------------------------------------------
+-keep class androidx.paging.** { *; }
+-dontwarn androidx.paging.**
+
+# ---------------------------------------------------------------------------
+# DataStore Preferences
+# ---------------------------------------------------------------------------
+-keep class androidx.datastore.** { *; }
+-dontwarn androidx.datastore.**
+
+# ---------------------------------------------------------------------------
+# Shimmer
+# ---------------------------------------------------------------------------
+-keep class com.facebook.shimmer.** { *; }
+-dontwarn com.facebook.shimmer.**
+
+# ---------------------------------------------------------------------------
+# Accompanist
+# ---------------------------------------------------------------------------
+-dontwarn com.google.accompanist.**
+-keep class com.google.accompanist.** { *; }
+
+# ---------------------------------------------------------------------------
+# WorkManager
+# ---------------------------------------------------------------------------
+-keep class androidx.work.** { *; }
+-dontwarn androidx.work.**
+
+# ---------------------------------------------------------------------------
+# Security Crypto (EncryptedSharedPreferences)
+# ---------------------------------------------------------------------------
+-keep class androidx.security.crypto.** { *; }
+-dontwarn androidx.security.crypto.**
+
