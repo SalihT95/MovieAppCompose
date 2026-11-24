@@ -65,11 +65,12 @@ fun SplashScreen(
     val screenAlpha = remember { Animatable(1f) }
 
     val currentDataReady by rememberUpdatedState(isDataReady)
+    val currentOnFinished by rememberUpdatedState(onFinished)
 
     LaunchedEffect(Unit) {
         // 1. Logo Büyüme ve Netleşme
         launch {
-            logoAlpha.animateTo(1f, animationSpec = tween(650, easing = FastOutSlowInEasing))
+            logoAlpha.animateTo(1f, animationSpec = tween(550, easing = FastOutSlowInEasing))
         }
         launch {
             logoScale.animateTo(
@@ -82,30 +83,31 @@ fun SplashScreen(
         }
 
         // 2. Slogan Girişi
-        delay(350)
+        delay(250)
         launch {
-            sloganAlpha.animateTo(1f, animationSpec = tween(450))
+            sloganAlpha.animateTo(1f, animationSpec = tween(350))
         }
 
-        // 3. Zarif İlerleme Çubuğu: Veri gelene kadar %80'e kadar akıcı dolsun
-        delay(200)
-        launch {
-            progressWidth.animateTo(0.80f, animationSpec = tween(900, easing = LinearEasing))
+        // 3. İlerleme Çubuğu: 0'dan %75'e akıcı dolsun
+        delay(150)
+        val progressJob = launch {
+            progressWidth.animateTo(0.75f, animationSpec = tween(650, easing = LinearEasing))
         }
 
-        // 4. Verinin arka planda hazır olmasını bekle (en fazla 3.5 saniye emniyet süresi)
+        // 4. Verinin hazır olmasını bekle (en fazla 1200ms emniyet süresi)
         val startTime = System.currentTimeMillis()
-        while (!currentDataReady && (System.currentTimeMillis() - startTime < 3500)) {
+        while (!currentDataReady && (System.currentTimeMillis() - startTime < 1200)) {
             delay(50)
         }
 
-        // 5. Veri hazır! İlerleme çubuğunu %100'e tamamla
-        progressWidth.animateTo(1f, animationSpec = tween(250, easing = FastOutSlowInEasing))
+        // 5. İlerleme çubuğunu %100'e tamamla
+        progressJob.cancel()
+        progressWidth.animateTo(1f, animationSpec = tween(200, easing = FastOutSlowInEasing))
 
         // 6. Pürüzsüz Kararma ile Geçiş
-        delay(150)
-        screenAlpha.animateTo(0f, animationSpec = tween(350, easing = FastOutSlowInEasing))
-        onFinished()
+        delay(100)
+        screenAlpha.animateTo(0f, animationSpec = tween(250, easing = FastOutSlowInEasing))
+        currentOnFinished()
     }
 
     Box(

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -89,25 +90,27 @@ class HomeViewModel @Inject constructor(
     private val _westernState = mutableStateOf<Flow<PagingData<Movie>>>(emptyFlow())
 
     init {
+        // 1. Ana bölümleri DERHAL başlat (HomeScreen hiçbir zaman emptyFlow beklemez)
+        initMainSections()
+        // 2. Arka planda RAM önbelleğini doldur ve Splash'i tetikle
         preloadAndInitialize()
     }
 
     private fun preloadAndInitialize() = viewModelScope.launch(Dispatchers.IO) {
         try {
-            // 1. Splash ekranındayken ilk 4 ana bölümün 1. sayfalarını ve kategorileri arka planda indir
-            movieRepository.preloadHomeData()
-            genreRepository.preloadGenres()
+            // Splash süresi içinde (maksimum 1200ms) ana bölümleri ve kategorileri RAM'e al
+            withTimeoutOrNull(1200) {
+                movieRepository.preloadHomeData()
+                genreRepository.preloadGenres()
+            }
         } catch (e: Exception) {
-            // Ağ hatası olsa bile Pager doğrudan kendisi deneyecektir
+            // Ağ hatası veya zaman aşımı olsa bile Pager doğrudan kendisi sayfaları çeker
+        } finally {
+            // Ne olursa olsun Splash'in takılmaması için veri hazır bayrağını kesin olarak true yap
+            _isHomeDataReady.value = true
         }
 
-        // 2. Ana ekran bölümlerini RAM'deki önbellekle anında başlat
-        initMainSections()
-
-        // 3. Splash ekranına verinin hazır olduğunu sinyalle
-        _isHomeDataReady.value = true
-
-        // 4. Diğer alt türleri arka planda yükle
+        // Diğer alt türleri arka planda yükle
         initOtherCategories()
     }
 

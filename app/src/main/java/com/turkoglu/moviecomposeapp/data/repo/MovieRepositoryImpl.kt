@@ -76,22 +76,22 @@ class MovieRepositoryImpl @Inject constructor(
     // 🔹 Popüler, Top Rated, vb. (Önbellek varsa 0 ms'de yüklenir)
     fun getPopularMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getPopularMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["popular"])
+            MovieListPagingSource(api::getPopularMovies, isSinglePage = useSinglePage, cacheProvider = { page1Cache["popular"] })
         }
 
     fun getTopRatedMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getTopRatedMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["top_rated"])
+            MovieListPagingSource(api::getTopRatedMovies, isSinglePage = useSinglePage, cacheProvider = { page1Cache["top_rated"] })
         }
 
     fun getNowPlayingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getNowPlayingMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["now_playing"])
+            MovieListPagingSource(api::getNowPlayingMovies, isSinglePage = useSinglePage, cacheProvider = { page1Cache["now_playing"] })
         }
 
     fun getUpcomingMovies(useSinglePage: Boolean): Flow<PagingData<Movie>> =
         buildPager(pageSize = LARGE_PAGE_SIZE) {
-            MovieListPagingSource(api::getUpcomingMovies, isSinglePage = useSinglePage, initialCachedResponse = page1Cache["upcoming"])
+            MovieListPagingSource(api::getUpcomingMovies, isSinglePage = useSinglePage, cacheProvider = { page1Cache["upcoming"] })
         }
 
     // 🔹 Film detayları & cast

@@ -26,7 +26,7 @@ class GenrePagingSource(
                 prevKey = if (nextPage == 1 || isSinglePage) null else nextPage - 1,
                 nextKey = if (movieList.isEmpty() || isSinglePage) null else nextPage + 1
             )
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }

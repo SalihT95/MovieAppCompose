@@ -10,7 +10,7 @@ import java.io.IOException
 class MovieListPagingSource(
     private val apiCall: suspend (page: Int) -> MovieListResponseDto,
     private val isSinglePage: Boolean = false,
-    private val initialCachedResponse: MovieListResponseDto? = null
+    private val cacheProvider: (() -> MovieListResponseDto?)? = null
 ) : PagingSource<Int, Movie>() {
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = state.anchorPosition
@@ -18,8 +18,8 @@ class MovieListPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         return try {
             val nextPage = if (isSinglePage) 1 else params.key ?: 1
-            val response = if (nextPage == 1 && initialCachedResponse != null) {
-                initialCachedResponse
+            val response = if (nextPage == 1 && cacheProvider != null) {
+                cacheProvider.invoke() ?: apiCall(1)
             } else {
                 apiCall(nextPage)
             }
@@ -30,7 +30,7 @@ class MovieListPagingSource(
                 prevKey = if (nextPage == 1 || isSinglePage) null else nextPage - 1,
                 nextKey = if (movieList.isEmpty() || isSinglePage) null else nextPage + 1
             )
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }

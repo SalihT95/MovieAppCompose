@@ -69,18 +69,21 @@ fun MainScreen(
                         !onboardingDone -> {
                             navController.navigate(Screen.Onboarding.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
+                                launchSingleTop = true
                             }
                         }
 
                         hasActiveSession -> {
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
+                                launchSingleTop = true
                             }
                         }
 
                         else -> {
                             navController.navigate(Screen.Login.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
+                                launchSingleTop = true
                             }
                         }
                     }
