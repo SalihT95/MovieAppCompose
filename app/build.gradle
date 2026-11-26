@@ -25,8 +25,8 @@ android {
         applicationId "com.turkoglu.moviecomposeapp"
         minSdk 24
         targetSdk 36
-        versionCode 6
-        versionName "1.0"
+        versionCode 7
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -49,8 +49,6 @@ android {
         }
         debug {
             minifyEnabled false
-            applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
         }
     }
     compileOptions {

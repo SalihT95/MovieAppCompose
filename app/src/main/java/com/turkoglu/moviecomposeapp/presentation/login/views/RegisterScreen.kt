@@ -1,4 +1,4 @@
-﻿package com.turkoglu.moviecomposeapp.presentation.login.views
+package com.turkoglu.moviecomposeapp.presentation.login.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,15 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,6 +42,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -55,10 +62,29 @@ fun RegisterScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") } // Yeni alan
+    var confirmPassword by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var validationError by remember { mutableStateOf<String?>(null) }
 
     val loginState = viewModel.loginState
     val focusManager = LocalFocusManager.current
+    val passwordsMismatch = confirmPassword.isNotEmpty() && password != confirmPassword
+
+    val submitRegistration = {
+        focusManager.clearFocus()
+        validationError = when {
+            username.isBlank() -> "Kullanıcı adı boş bırakılamaz."
+            email.isBlank() -> "E-posta adresi boş bırakılamaz."
+            password.length < 6 -> "Şifre en az 6 karakter olmalıdır."
+            password != confirmPassword -> "Girdiğiniz şifreler eşleşmiyor."
+            else -> null
+        }
+        if (validationError == null) {
+            viewModel.register(email.trim(), password, username.trim())
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -74,6 +100,7 @@ fun RegisterScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -90,7 +117,10 @@ fun RegisterScreen(
             // Kullanıcı Adı
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    validationError = null
+                },
                 label = { Text("Kullanıcı Adı") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 singleLine = true,
@@ -103,7 +133,10 @@ fun RegisterScreen(
             // Email
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    validationError = null
+                },
                 label = { Text("E-posta") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 singleLine = true,
@@ -119,27 +152,72 @@ fun RegisterScreen(
             // Şifre
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    validationError = null
+                },
                 label = { Text("Şifre") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                visualTransformation = PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (passwordVisible) "Şifreyi gizle" else "Şifreyi göster"
+                        )
+                    }
+                },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Şifre Tekrar
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = {
+                    confirmPassword = it
+                    validationError = null
+                },
+                label = { Text("Şifre (Tekrar)") },
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                trailingIcon = {
+                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                        Icon(
+                            imageVector = if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (confirmPasswordVisible) "Şifreyi gizle" else "Şifreyi göster"
+                        )
+                    }
+                },
+                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                isError = passwordsMismatch,
+                supportingText = if (passwordsMismatch) {
+                    { Text("Şifreler eşleşmiyor", color = MaterialTheme.colorScheme.error) }
+                } else null,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (loginState !is LoginUiState.Loading) {
+                            submitRegistration()
+                        }
+                    }
                 )
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = {
-                    focusManager.clearFocus()
-                    if (email.isNotBlank() && password.isNotBlank() && username.isNotBlank()) {
-                        viewModel.register(email.trim(), password.trim(), username.trim())
-                    }
-                },
+                onClick = submitRegistration,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -156,6 +234,14 @@ fun RegisterScreen(
             // Geri Dön butonu
             TextButton(onClick = { navController.popBackStack() }) {
                 Text("Giriş ekranına dön", color = MaterialTheme.colorScheme.onSurface)
+            }
+
+            validationError?.let { errorMsg ->
+                Text(
+                    text = errorMsg,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
 
             // Durum Kontrolü
