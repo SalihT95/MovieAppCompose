@@ -1,4 +1,4 @@
-﻿package com.turkoglu.moviecomposeapp.presentation.login
+package com.turkoglu.moviecomposeapp.presentation.login
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,7 +11,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -48,9 +48,12 @@ class AuthViewModel @Inject constructor(
     val rememberMe = userPrefs.getRememberMe()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val isUserLoggedIn: Boolean
-        get() = (auth.currentUser != null) || (loginState is LoginUiState.Success)
-
+    val isUserLoggedIn: Boolean
+
+        get() = (auth.currentUser != null) || (loginState is LoginUiState.Success)
+
+
+
     init {
         checkCurrentUser()
     }
@@ -282,14 +285,12 @@ class AuthViewModel @Inject constructor(
         loginState = LoginUiState.Loading
         try {
             val credentialManager = CredentialManager.create(activity)
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(activity.getString(R.string.default_web_client_id))
-                .setAutoSelectEnabled(false)
-                .build()
+            val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(
+                activity.getString(R.string.default_web_client_id)
+            ).build()
 
             val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(signInWithGoogleOption)
                 .build()
 
             val result = credentialManager.getCredential(
@@ -324,7 +325,8 @@ class AuthViewModel @Inject constructor(
             loginState = LoginUiState.Idle
             onComplete(false, null)
         } catch (e: NoCredentialException) {
-            val msg = "Cihazda uygun Google hesabı bulunamadı veya Google Play Hizmetleri güncel değil."
+            val detail = e.message?.let { " ($it)" } ?: ""
+            val msg = "Cihazda uygun Google hesabı bulunamadı veya yapılandırma hatası$detail"
             loginState = LoginUiState.Error(msg)
             onComplete(false, msg)
         } catch (e: Exception) {
