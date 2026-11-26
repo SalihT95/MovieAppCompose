@@ -27,12 +27,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -143,20 +146,12 @@ fun LoginScreen(
                 label = { Text("Şifre") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Lock Icon") },
                 trailingIcon = {
-                    val image = if (passwordVisible)
-                        painterResource(id = android.R.drawable.ic_menu_view) // Veya kendi ikonun
-                    else
-                        painterResource(id = android.R.drawable.ic_secure) // Veya kendi ikonun
-
-                    // İkon yoksa Icon vector kullanabilirsin, aşağıda Text ile örnekledim:
-                    val iconText = if (passwordVisible) "Gizle" else "Göster"
-                    Text(
-                        text = iconText,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clickable { passwordVisible = !passwordVisible },
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (passwordVisible) "Şifreyi gizle" else "Şifreyi göster"
+                        )
+                    }
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
