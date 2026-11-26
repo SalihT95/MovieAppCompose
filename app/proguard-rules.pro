@@ -126,3 +126,11 @@
 -keep class androidx.security.crypto.** { *; }
 -dontwarn androidx.security.crypto.**
 
+# ---------------------------------------------------------------------------
+# Credential Manager & Google Identity
+# ---------------------------------------------------------------------------
+-keep class androidx.credentials.** { *; }
+-keep class com.google.android.libraries.identity.googleid.** { *; }
+-dontwarn androidx.credentials.**
+-dontwarn com.google.android.libraries.identity.googleid.**
+

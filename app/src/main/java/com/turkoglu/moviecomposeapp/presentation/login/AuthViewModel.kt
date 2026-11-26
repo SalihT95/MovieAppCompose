@@ -6,9 +6,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.app.Activity
-import com.google.firebase.auth.OAuthProvider
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.turkoglu.moviecomposeapp.R
 import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.domain.model.UserAccount
 import com.turkoglu.moviecomposeapp.util.AvatarUtils
@@ -265,7 +274,67 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // --- SOSYAL GİRİŞ (GOOGLE & APPLE / ICLOUD) ---
+    // --- NATIVE GOOGLE İLE GİRİŞ (CREDENTIAL MANAGER) ---
+    fun signInWithGoogle(
+        activity: Activity,
+        onComplete: (Boolean, String?) -> Unit
+    ) = viewModelScope.launch {
+        loginState = LoginUiState.Loading
+        try {
+            val credentialManager = CredentialManager.create(activity)
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(activity.getString(R.string.default_web_client_id))
+                .setAutoSelectEnabled(false)
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            val result = credentialManager.getCredential(
+                request = request,
+                context = activity
+            )
+
+            val credential = result.credential
+            if (credential is CustomCredential &&
+                credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+            ) {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val firebaseCredential = GoogleAuthProvider.getCredential(
+                    googleIdTokenCredential.idToken,
+                    null
+                )
+                val authResult = auth.signInWithCredential(firebaseCredential).await()
+                val user = authResult.user
+                if (user != null) {
+                    handleSocialLoginSuccess(user, onComplete)
+                } else {
+                    val msg = "Giriş tamamlanamadı: Kullanıcı bilgisi alınamadı."
+                    loginState = LoginUiState.Error(msg)
+                    onComplete(false, msg)
+                }
+            } else {
+                val msg = "Geçersiz Google kimlik bilgisi alındı."
+                loginState = LoginUiState.Error(msg)
+                onComplete(false, msg)
+            }
+        } catch (e: GetCredentialCancellationException) {
+            loginState = LoginUiState.Idle
+            onComplete(false, null)
+        } catch (e: NoCredentialException) {
+            val msg = "Cihazda uygun Google hesabı bulunamadı veya Google Play Hizmetleri güncel değil."
+            loginState = LoginUiState.Error(msg)
+            onComplete(false, msg)
+        } catch (e: Exception) {
+            val msg = e.localizedMessage ?: "Google ile giriş yapılamadı."
+            loginState = LoginUiState.Error(msg)
+            onComplete(false, msg)
+        }
+    }
+
+    // --- SOSYAL GİRİŞ (APPLE / ICLOUD VB. İÇİN) ---
     fun signInWithProvider(
         activity: Activity,
         providerId: String,

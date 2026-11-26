@@ -263,9 +263,10 @@ fun LoginScreen(
                 containerColor = Color.White,
                 contentColor = Color(0xFF1F1F1F),
                 onClick = {
+                    focusManager.clearFocus()
                     val activity = context as? Activity
                     if (activity != null) {
-                        viewModel.signInWithProvider(activity, "google.com") { success, _ ->
+                        viewModel.signInWithGoogle(activity) { success, _ ->
                             if (success) onLoginSuccess()
                         }
                     }
