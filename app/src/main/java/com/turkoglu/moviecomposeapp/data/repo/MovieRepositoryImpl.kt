@@ -37,6 +37,10 @@ class MovieRepositoryImpl @Inject constructor(
     // İlk sayfa için RAM önbelleği (Splash ekranında doldurulur)
     private val page1Cache = ConcurrentHashMap<String, MovieListResponseDto>()
 
+    fun clearCache() {
+        page1Cache.clear()
+    }
+
     suspend fun preloadHomeData() {
         coroutineScope {
             val d1 = async { try { api.getPopularMovies(1) } catch (e: Exception) { null } }

@@ -37,4 +37,8 @@ class GenreRepository @Inject constructor(
     }
 
     fun hasCachedGenres(): Boolean = !cachedGenres.isNullOrEmpty()
+
+    fun clearCache() {
+        cachedGenres = null
+    }
 }

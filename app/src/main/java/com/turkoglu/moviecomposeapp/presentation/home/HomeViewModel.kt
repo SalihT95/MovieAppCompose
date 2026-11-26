@@ -8,16 +8,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.turkoglu.moviecomposeapp.data.local.UserPrefs
 import com.turkoglu.moviecomposeapp.data.repo.GenreRepository
 import com.turkoglu.moviecomposeapp.data.repo.MovieRepositoryImpl
 import com.turkoglu.moviecomposeapp.domain.model.Genre
 import com.turkoglu.moviecomposeapp.domain.model.Movie
+import com.turkoglu.moviecomposeapp.util.LanguagePreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -27,10 +30,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val movieRepository: MovieRepositoryImpl,
-    private val genreRepository: GenreRepository
+    private val genreRepository: GenreRepository,
+    private val userPrefs: UserPrefs
 ) : ViewModel() {
 
     private val useIncreasingPage = true
+    private val initialLanguage = LanguagePreference.selectedLanguage
+    private var activeLanguage: String? = null
 
     // Splash ekranının dinlediği veri hazır bayrağı
     private val _isHomeDataReady = MutableStateFlow(false)
@@ -94,6 +100,32 @@ class HomeViewModel @Inject constructor(
         initMainSections()
         // 2. Arka planda RAM önbelleğini doldur ve Splash'i tetikle
         preloadAndInitialize()
+        // 3. Dil değişikliğini dinle ve değiştiğinde verileri yeni dilde tekrar çek
+        observeLanguageChanges()
+    }
+
+    private fun observeLanguageChanges() = viewModelScope.launch {
+        userPrefs.getLanguage()
+            .distinctUntilChanged()
+            .collect { lang ->
+                LanguagePreference.selectedLanguage = lang
+                if (activeLanguage == null) {
+                    activeLanguage = lang
+                    if (lang != initialLanguage) {
+                        refreshForLanguageChange()
+                    }
+                } else if (activeLanguage != lang) {
+                    activeLanguage = lang
+                    refreshForLanguageChange()
+                }
+            }
+    }
+
+    private fun refreshForLanguageChange() {
+        movieRepository.clearCache()
+        genreRepository.clearCache()
+        initMainSections()
+        initOtherCategories()
     }
 
     private fun preloadAndInitialize() = viewModelScope.launch(Dispatchers.IO) {
