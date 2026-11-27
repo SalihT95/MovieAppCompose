@@ -1,6 +1,7 @@
 package com.turkoglu.moviecomposeapp.presentation.login.views
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -104,6 +105,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -260,9 +262,11 @@ fun LoginScreen(
                 onClick = {
                     focusManager.clearFocus()
                     val activity = context as? Activity
-                    if (activity != null) {
-                        viewModel.signInWithGoogle(activity) { success, _ ->
-                            if (success) onLoginSuccess()
+                    if (activity != null && loginState !is LoginUiState.Loading) {
+                        viewModel.signInWithGoogle(activity) { _, errorMsg ->
+                            if (!errorMsg.isNullOrBlank()) {
+                                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
                 }

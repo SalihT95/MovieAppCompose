@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.app.Activity
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -322,14 +324,22 @@ class AuthViewModel @Inject constructor(
                 onComplete(false, msg)
             }
         } catch (e: GetCredentialCancellationException) {
+            Log.d("GoogleSignIn", "Kullanıcı giriş penceresini kapattı", e)
             loginState = LoginUiState.Idle
             onComplete(false, null)
         } catch (e: NoCredentialException) {
+            Log.e("GoogleSignIn", "NoCredentialException: ${e.message}", e)
             val detail = e.message?.let { " ($it)" } ?: ""
             val msg = "Cihazda uygun Google hesabı bulunamadı veya yapılandırma hatası$detail"
             loginState = LoginUiState.Error(msg)
             onComplete(false, msg)
+        } catch (e: GetCredentialException) {
+            Log.e("GoogleSignIn", "GetCredentialException: ${e.type} - ${e.message}", e)
+            val msg = "Google kimlik bilgisi alınamadı: ${e.localizedMessage ?: e.type}"
+            loginState = LoginUiState.Error(msg)
+            onComplete(false, msg)
         } catch (e: Exception) {
+            Log.e("GoogleSignIn", "Google Sign-In error", e)
             val msg = e.localizedMessage ?: "Google ile giriş yapılamadı."
             loginState = LoginUiState.Error(msg)
             onComplete(false, msg)
@@ -373,42 +383,46 @@ class AuthViewModel @Inject constructor(
         user: com.google.firebase.auth.FirebaseUser,
         onComplete: (Boolean, String?) -> Unit
     ) {
-        try {
+        val fallbackUsername = user.displayName?.ifBlank { null } ?: emailToUsername(user.email)
+        val fallbackAvatar = AvatarUtils.getRandomAvatar()
+        val account = try {
             val userDoc = firestore.collection("users").document(user.uid).get().await()
-            val account: UserAccount
             if (!userDoc.exists()) {
-                val defaultUsername = user.displayName?.ifBlank { null } ?: emailToUsername(user.email)
-                val defaultAvatar = AvatarUtils.getRandomAvatar()
                 val userMap = hashMapOf(
                     "userId" to user.uid,
-                    "username" to defaultUsername,
+                    "username" to fallbackUsername,
                     "email" to (user.email ?: ""),
-                    "avatarUrl" to defaultAvatar,
+                    "avatarUrl" to fallbackAvatar,
                     "createdAt" to System.currentTimeMillis()
                 )
                 firestore.collection("users").document(user.uid).set(userMap).await()
-                account = UserAccount(
+                UserAccount(
                     id = user.uid,
-                    username = defaultUsername,
-                    name = user.displayName ?: defaultUsername,
-                    avatarUrl = defaultAvatar,
+                    username = fallbackUsername,
+                    name = user.displayName ?: fallbackUsername,
+                    avatarUrl = fallbackAvatar,
                     isGuest = false
                 )
             } else {
-                account = UserAccount(
+                UserAccount(
                     id = user.uid,
-                    username = userDoc.getString("username") ?: user.displayName ?: "Kullanıcı",
+                    username = userDoc.getString("username") ?: user.displayName ?: fallbackUsername,
                     name = userDoc.getString("name") ?: user.displayName ?: "",
-                    avatarUrl = userDoc.getString("avatarUrl") ?: AvatarUtils.getRandomAvatar(),
+                    avatarUrl = userDoc.getString("avatarUrl") ?: fallbackAvatar,
                     isGuest = false
                 )
             }
-            loginState = LoginUiState.Success(user.uid, account)
-            onComplete(true, null)
         } catch (e: Exception) {
-            val err = e.localizedMessage ?: "Kullanıcı profili oluşturulamadı."
-            loginState = LoginUiState.Error(err)
-            onComplete(false, err)
+            Log.e("GoogleSignIn", "Firestore profil okuma/yazma hatası, yerel profil ile devam ediliyor", e)
+            UserAccount(
+                id = user.uid,
+                username = fallbackUsername,
+                name = user.displayName ?: fallbackUsername,
+                avatarUrl = fallbackAvatar,
+                isGuest = false
+            )
         }
+        loginState = LoginUiState.Success(user.uid, account)
+        onComplete(true, null)
     }
 }

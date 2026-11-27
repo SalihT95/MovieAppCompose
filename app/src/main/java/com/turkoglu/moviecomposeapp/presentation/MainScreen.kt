@@ -111,6 +111,7 @@ fun MainScreen(
                     onLoginSuccess = {
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Login.route) { inclusive = true }
+                            launchSingleTop = true
                         }
                     },
                     // Yeni eklediğimiz callback: Kayıt ekranına git
