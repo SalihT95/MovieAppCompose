@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,13 +54,14 @@ fun OnboardingPageContent(page: OnboardingPage) {
         )
 
         // 3. KATMAN: Yazılar
-        // Butonlar için alttan boşluk bırakıyoruz (padding bottom)
+        // Buton, noktalar ve sistem gezinme çubuğuyla çakışmaması için yeterli alt boşluk bırakıyoruz
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 160.dp), // Buton ve noktalar için yer bırakıyoruz
+                .padding(bottom = 140.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

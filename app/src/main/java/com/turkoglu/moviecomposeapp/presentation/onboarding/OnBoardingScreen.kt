@@ -54,7 +54,7 @@ fun OnboardingScreen(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp) // Alt kenardan boşluk
+                .padding(bottom = 24.dp) // Alt kenardan boşluk
                 .navigationBarsPadding(), // Sanal tuşların altında kalmaması için
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -64,7 +64,7 @@ fun OnboardingScreen(
                 currentPage = pagerState.currentPage
             )
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(20.dp))
 
             // Buton
             Button(
