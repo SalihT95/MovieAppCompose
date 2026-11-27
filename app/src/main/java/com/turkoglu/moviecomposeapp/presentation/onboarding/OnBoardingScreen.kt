@@ -54,7 +54,7 @@ fun OnboardingScreen(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp) // Alt kenardan boşluk
+                .padding(bottom = 16.dp) // Alt kenardan boşluk
                 .navigationBarsPadding(), // Sanal tuşların altında kalmaması için
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -64,7 +64,7 @@ fun OnboardingScreen(
                 currentPage = pagerState.currentPage
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
 
             // Buton
             Button(
@@ -79,7 +79,7 @@ fun OnboardingScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp), // Buton yüksekliği
+                    .height(48.dp), // Buton yüksekliği
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White

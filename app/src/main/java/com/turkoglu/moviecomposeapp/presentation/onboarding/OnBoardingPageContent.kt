@@ -54,26 +54,26 @@ fun OnboardingPageContent(page: OnboardingPage) {
         )
 
         // 3. KATMAN: Yazılar
-        // Buton, noktalar ve sistem gezinme çubuğuyla çakışmaması için yeterli alt boşluk bırakıyoruz
+        // Görselin içindeki yazıyla ve alttaki 3 nokta/butonla çakışmaması için alt koyu alanda kompakt konumlandırıyoruz
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 140.dp),
+                .padding(bottom = 116.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = page.title,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = page.description,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = Color.White.copy(alpha = 0.9f)
             )
